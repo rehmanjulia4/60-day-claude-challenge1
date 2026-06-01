@@ -1,0 +1,335 @@
+
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+.card {
+  background: var(--color-background-primary);
+  border: 0.5px solid var(--color-border-tertiary);
+  border-radius: var(--border-radius-lg);
+  overflow: hidden;
+  font-family: var(--font-sans);
+  max-width: 680px;
+}
+.header {
+  background: #07111f;
+  padding: 32px 32px 24px;
+  position: relative;
+}
+.header-top {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+}
+.avatar {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: #0f2a4a;
+  border: 2px solid #1e4a8a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  font-weight: 500;
+  color: #7cc4ff;
+  flex-shrink: 0;
+  letter-spacing: 1px;
+}
+.header-text { flex: 1; }
+.name {
+  font-size: 22px;
+  font-weight: 500;
+  color: #e8f4ff;
+  line-height: 1.2;
+  margin-bottom: 4px;
+}
+.title-line {
+  font-size: 12px;
+  color: #4a9eff;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+.badge-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+.badge {
+  font-size: 11px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  border: 0.5px solid;
+  letter-spacing: 0.3px;
+}
+.badge-blue { background: #0a1e3a; color: #7cc4ff; border-color: #1e4a8a; }
+.badge-purple { background: #120a2a; color: #c4a8ff; border-color: #3b1fa0; }
+.badge-teal { background: #04201a; color: #2af5a0; border-color: #0f6e56; }
+.live-dot {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: #2af5a0;
+  margin-top: 14px;
+}
+.dot { width: 7px; height: 7px; border-radius: 50%; background: #2af5a0; }
+.body { padding: 24px 28px; }
+.section-label {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--color-text-tertiary);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+.archetype-block {
+  background: var(--color-background-secondary);
+  border-radius: var(--border-radius-md);
+  padding: 14px 16px;
+  margin-bottom: 20px;
+  border-left: 3px solid #378ADD;
+  border-radius: 0;
+}
+.archetype-title {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--color-text-primary);
+  margin-bottom: 5px;
+}
+.archetype-sub {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+}
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.metric-card {
+  background: var(--color-background-secondary);
+  border-radius: var(--border-radius-md);
+  padding: 12px 14px;
+}
+.metric-label {
+  font-size: 11px;
+  color: var(--color-text-tertiary);
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+.metric-value {
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--color-text-primary);
+  line-height: 1.1;
+}
+.metric-sub {
+  font-size: 11px;
+  color: var(--color-text-secondary);
+  margin-top: 2px;
+}
+.trait-row {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.trait {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+.trait-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--border-radius-md);
+  background: var(--color-background-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--color-text-secondary);
+  font-size: 16px;
+}
+.trait-text { flex: 1; padding-top: 2px; }
+.trait-title { font-size: 13px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 2px; }
+.trait-desc { font-size: 12px; color: var(--color-text-secondary); line-height: 1.5; }
+.bar-row { margin-bottom: 20px; }
+.bar-item { margin-bottom: 10px; }
+.bar-header { display: flex; justify-content: space-between; margin-bottom: 4px; }
+.bar-name { font-size: 12px; color: var(--color-text-secondary); }
+.bar-val { font-size: 12px; font-weight: 500; color: var(--color-text-primary); }
+.bar-track { height: 4px; background: var(--color-background-secondary); border-radius: 2px; }
+.bar-fill { height: 4px; border-radius: 2px; }
+.divider { height: 0.5px; background: var(--color-border-tertiary); margin: 0 0 20px; }
+.brand-statement {
+  background: var(--color-background-secondary);
+  border-radius: var(--border-radius-md);
+  padding: 16px;
+  margin-bottom: 20px;
+}
+.brand-quote {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  line-height: 1.7;
+  font-style: italic;
+}
+.footer {
+  border-top: 0.5px solid var(--color-border-tertiary);
+  padding: 14px 28px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.footer-left { font-size: 11px; color: var(--color-text-tertiary); }
+.footer-right { display: flex; gap: 8px; }
+.geo-tag {
+  font-size: 11px;
+  color: var(--color-text-tertiary);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+</style>
+
+<div class="card">
+
+  <div class="header">
+    <div class="header-top">
+      <div class="avatar">JR</div>
+      <div class="header-text">
+        <div class="name">Dr. Julia Rehman</div>
+        <div class="title-line">Chief Intelligence &amp; Transformation Officer</div>
+        <div class="badge-row">
+          <span class="badge badge-blue">Healthcare AI</span>
+          <span class="badge badge-purple">Strategy</span>
+          <span class="badge badge-teal">Transformation</span>
+          <span class="badge badge-blue">Analytics</span>
+          <span class="badge badge-purple">Governance</span>
+        </div>
+      </div>
+    </div>
+    <div class="live-dot">
+      <div class="dot"></div>
+      AI Maturity: Executive Power User
+    </div>
+  </div>
+
+  <div class="body">
+
+    <div class="section-label">Archetype</div>
+    <div class="archetype-block">
+      <div class="archetype-title">The Orchestrator</div>
+      <div class="archetype-sub">Doesn't just use AI — conducts it. Drives enterprise-wide transformation at the intersection of strategy, data, operations, and governance. Compresses weeks of thinking into hours.</div>
+    </div>
+
+    <div class="section-label">Impact footprint</div>
+    <div class="grid-3">
+      <div class="metric-card">
+        <div class="metric-label">Markets</div>
+        <div class="metric-value">4</div>
+        <div class="metric-sub">US · UAE · KSA · India</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">AI use cases</div>
+        <div class="metric-value">9+</div>
+        <div class="metric-sub">Strategic domains</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Peak role</div>
+        <div class="metric-value">CEO</div>
+        <div class="metric-sub">Healthcare / Digital Health</div>
+      </div>
+    </div>
+
+    <div class="section-label">How AI is used</div>
+    <div class="trait-row">
+      <div class="trait">
+        <div class="trait-icon"><i class="ti ti-chart-bar" aria-hidden="true"></i></div>
+        <div class="trait-text">
+          <div class="trait-title">Strategic planning &amp; decision support</div>
+          <div class="trait-desc">Pressure-tests strategy, synthesizes evidence, models org-wide implications before any room is entered.</div>
+        </div>
+      </div>
+      <div class="trait">
+        <div class="trait-icon"><i class="ti ti-users" aria-hidden="true"></i></div>
+        <div class="trait-text">
+          <div class="trait-title">Stakeholder &amp; board preparation</div>
+          <div class="trait-desc">Translates complex analytics into executive narratives that move clinicians, regulators, and boards to act.</div>
+        </div>
+      </div>
+      <div class="trait">
+        <div class="trait-icon"><i class="ti ti-brain" aria-hidden="true"></i></div>
+        <div class="trait-text">
+          <div class="trait-title">Thought leadership &amp; intellectual capital</div>
+          <div class="trait-desc">Converts deep expertise into frameworks, publications, and advisory offerings at scale.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="section-label">Executive strengths</div>
+    <div class="bar-row">
+      <div class="bar-item">
+        <div class="bar-header"><span class="bar-name">Strategic leadership</span><span class="bar-val">98</span></div>
+        <div class="bar-track"><div class="bar-fill" style="width:98%;background:#378ADD;"></div></div>
+      </div>
+      <div class="bar-item">
+        <div class="bar-header"><span class="bar-name">Executive communication</span><span class="bar-val">95</span></div>
+        <div class="bar-track"><div class="bar-fill" style="width:95%;background:#7F77DD;"></div></div>
+      </div>
+      <div class="bar-item">
+        <div class="bar-header"><span class="bar-name">Enterprise systems thinking</span><span class="bar-val">97</span></div>
+        <div class="bar-track"><div class="bar-fill" style="width:97%;background:#1D9E75;"></div></div>
+      </div>
+      <div class="bar-item">
+        <div class="bar-header"><span class="bar-name">Innovation leadership</span><span class="bar-val">94</span></div>
+        <div class="bar-track"><div class="bar-fill" style="width:94%;background:#378ADD;"></div></div>
+      </div>
+      <div class="bar-item">
+        <div class="bar-header"><span class="bar-name">Opportunity generation</span><span class="bar-val">99</span></div>
+        <div class="bar-track"><div class="bar-fill" style="width:99%;background:#7F77DD;"></div></div>
+      </div>
+    </div>
+
+    <div class="section-label">Brand statement</div>
+    <div class="brand-statement">
+      <div class="brand-quote">"Healthcare executive and transformation leader who leverages data, AI, analytics, governance, and operational excellence to improve organizational performance, accelerate innovation, and create sustainable impact across healthcare systems."</div>
+    </div>
+
+    <div class="section-label">Operating model</div>
+    <div style="display:flex; align-items:center; gap:0; flex-wrap:wrap; margin-bottom:20px;">
+      <span style="font-size:12px; color:var(--color-text-secondary); background:var(--color-background-secondary); padding:5px 10px; border-radius:4px;">Vision</span>
+      <i class="ti ti-arrow-right" style="font-size:12px; color:var(--color-text-tertiary); margin:0 4px;" aria-hidden="true"></i>
+      <span style="font-size:12px; color:var(--color-text-secondary); background:var(--color-background-secondary); padding:5px 10px; border-radius:4px;">Strategy</span>
+      <i class="ti ti-arrow-right" style="font-size:12px; color:var(--color-text-tertiary); margin:0 4px;" aria-hidden="true"></i>
+      <span style="font-size:12px; color:var(--color-text-secondary); background:var(--color-background-secondary); padding:5px 10px; border-radius:4px;">Alignment</span>
+      <i class="ti ti-arrow-right" style="font-size:12px; color:var(--color-text-tertiary); margin:0 4px;" aria-hidden="true"></i>
+      <span style="font-size:12px; color:var(--color-text-secondary); background:var(--color-background-secondary); padding:5px 10px; border-radius:4px;">Execution</span>
+      <i class="ti ti-arrow-right" style="font-size:12px; color:var(--color-text-tertiary); margin:0 4px;" aria-hidden="true"></i>
+      <span style="font-size:12px; color:var(--color-text-secondary); background:var(--color-background-secondary); padding:5px 10px; border-radius:4px;">Measurement</span>
+      <i class="ti ti-arrow-right" style="font-size:12px; color:var(--color-text-tertiary); margin:0 4px;" aria-hidden="true"></i>
+      <span style="font-size:12px; color:#1D9E75; background:#E1F5EE; padding:5px 10px; border-radius:4px;">Improvement</span>
+    </div>
+
+  </div>
+
+  <div class="footer">
+    <div class="footer-left">AI Personality Profile · June 2026</div>
+    <div class="geo-tag">
+      <i class="ti ti-map-pin" style="font-size:13px;" aria-hidden="true"></i>
+      Abu Dhabi, UAE
+    </div>
+  </div>
+
+</div>
