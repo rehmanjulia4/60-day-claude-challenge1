@@ -1,0 +1,41 @@
+Moving an AI tool from pilot to production in healthcare requires evaluating several interconnected dimensions. Here's a practical framework:
+
+**Clinical Performance**
+- Does the tool perform consistently across diverse patient populations, not just the pilot cohort? Subgroup analysis matters: performance gaps by age, ethnicity, acuity, or care setting can hide in aggregate metrics.
+- Is accuracy validated against a held-out dataset, not just training or pilot data?
+- What is the failure mode? A tool that is wrong confidently is more dangerous than one that flags uncertainty.
+
+**Clinical Workflow Integration**
+- Does the tool fit into actual clinical workflows, or does it require workarounds? Pilot participants are often motivated early adopters. Production users are not.
+- Have frontline clinicians (not just champions) been observed using it under realistic conditions?
+- What happens when the tool is unavailable? Downtime tolerance must be defined.
+
+**Safety and Risk**
+- Has a formal failure modes and effects analysis (FMEA) or similar prospective hazard analysis been done?
+- Are there guardrails for out-of-distribution inputs? The pilot likely had relatively clean, curated data. Production data is messier.
+- Is there a clear escalation path when the AI produces a questionable output?
+
+**Regulatory and Compliance Readiness**
+- If the tool is a Software as a Medical Device (SaMD), does it have appropriate FDA clearance or a defensible regulatory pathway?
+- Are audit logs, consent processes, and data governance structures in place for production scale?
+- Has legal reviewed liability allocation in vendor contracts?
+
+**Equity and Bias**
+- Was the pilot population representative? Bias that was tolerable at small scale becomes a patient safety issue at production volume.
+- Is there a mechanism to monitor for disparate outcomes post-deployment?
+
+**Operational Infrastructure**
+- Can the IT and data infrastructure handle production load, latency requirements, and integration with the EHR at scale?
+- Are model versioning and change management processes defined? What happens when the vendor pushes an update?
+- Is there a rollback plan?
+
+**Governance and Monitoring**
+- Who owns the tool post-deployment? A named clinical and operational owner, not just the vendor.
+- Is there a defined monitoring cadence with predefined thresholds that would trigger pause or pullback?
+- Has the organization established a process for ongoing algorithmic audits?
+
+**Change Management**
+- Has training been designed for the full production user population, not just pilot participants?
+- Is leadership alignment in place to sustain the tool through the inevitable rough patches after go-live?
+
+**The key mindset shift:** a pilot answers "can this work?" Production readiness asks "can this work safely, equitably, and sustainably at scale, with ordinary users, in ordinary conditions, indefinitely?" Those are very different questions. Organizations that skip the gap between them tend to discover it painfully after go-live.
