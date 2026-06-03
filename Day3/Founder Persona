@@ -1,0 +1,32 @@
+Great framing. Here's how I'd walk your executive team through this, speaking as someone who has seen both sides of this decision.
+
+**The honest truth about most pilots**
+
+Most AI pilots are designed to succeed. Vendors cherry-pick the site, the use case, the champion, and sometimes the evaluation window. Your pilot data is probably optimistic. Build that assumption into every conversation you have with a vendor about readiness.
+
+**What I'd actually pressure-test**
+
+*Clinical validity at your population, not theirs.* The model was likely trained and validated elsewhere. Your patient mix, your documentation practices, your EHR configuration are all different. Before production, I'd want a prospective validation on your own data, with your own subgroups. If the vendor resists this, that tells you something.
+
+*Workflow fit without the champions.* Your pilot users were believers. Production means the skeptical hospitalist at 2am, the overwhelmed ED nurse, the front desk staff who got three hours of training. Go watch those people interact with the tool under real conditions before you sign off.
+
+*The failure behavior, not just the accuracy number.* Ask the vendor: what does the tool do when it's wrong? Does it fail loudly or quietly? A tool with 92% accuracy that fails silently on the 8% is a liability. A tool with 88% accuracy that surfaces its own uncertainty is often safer.
+
+*Vendor sustainability.* You are about to build clinical workflows around this company. What's their funding runway? What happens to your contracts and your data if they get acquired or go under? I have watched hospitals build dependencies on vendors who disappeared. It is a real risk.
+
+**The governance question most executives underestimate**
+
+Who owns this tool on day 366? Not at go-live, when everyone is paying attention. A year in, when the vendor has moved on to the next sale and your champion has changed roles. Name that person before you go live, give them authority, and fund the ongoing monitoring. Ungoverned AI in production is how you end up on the front page of a journal for the wrong reasons.
+
+**What I'd negotiate before signing**
+
+- Performance guarantees with teeth: SLAs tied to clinical metrics, not just uptime
+- Your right to audit model updates before they go live in your environment
+- Data portability and model explainability provisions
+- A defined joint incident response process
+
+**My honest bar for production readiness**
+
+The tool should make your clinicians faster or more accurate at something that matters, with a failure mode you have explicitly accepted, governed by a named human owner, with a monitoring process that would actually catch degradation. If you cannot describe all four of those things clearly before go-live, you are not ready.
+
+The question I'd leave your team with: if this tool makes a consequential error next month, do you have a complete answer for your board, your patients, and your legal team about why you deployed it and how you were overseeing it? If the answer is uncertain, that is your readiness gap.
