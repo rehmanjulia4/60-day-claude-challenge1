@@ -1,0 +1,71 @@
+Good question, and one where the technical details matter more than most executive frameworks acknowledge. Here is how I think about it from the engineering and infrastructure side.
+
+**Start with what the pilot actually measured**
+
+Most pilots measure outcomes. What they rarely measure is system behavior. Before production sign-off, I want to know:
+
+- What was the p99 latency under pilot load? What do we expect it to be at 10x volume?
+- What was the error rate on the API or inference layer, not just the clinical accuracy metric?
+- Were there silent failures: cases where the model returned a result but it was based on incomplete or malformed input?
+
+If nobody captured this during the pilot, instrument it now before you scale.
+
+**The integration surface is where things break**
+
+EHR integrations are fragile. HL7 and FHIR implementations vary significantly across versions, configurations, and vendor interpretations. What worked in the pilot may break when:
+
+- A different patient population sends edge-case data structures
+- The EHR vendor pushes an update that changes a field mapping
+- Volume increases expose race conditions or timeout behaviors that never appeared at pilot scale
+
+Before production, I want a full integration test suite that covers not just the happy path but malformed inputs, missing fields, unexpected null values, and concurrent requests. If the vendor does not have this, build it yourself or require it contractually.
+
+**Model versioning and change management**
+
+This is the issue I see cause the most problems in production. You need explicit answers to:
+
+- How does the vendor notify you of model updates?
+- Do updates go live automatically or do you control the deployment window?
+- Is there a staging environment where you can validate a new model version against your data before it hits production?
+- What is the rollback procedure and how long does it take?
+
+A model update that shifts behavior even slightly can have clinical consequences. You need the same change control rigor you would apply to any clinical decision support system, ideally gated by your clinical informatics team.
+
+**Data pipeline integrity**
+
+The model is only as good as the data it receives. In production, data pipelines degrade. Fields stop populating. Interfaces go down and come back with gaps. Upstream system changes break assumptions the model was trained on.
+
+Before go-live, define your data quality monitoring: what fields are required, what distributions are expected, and what threshold triggers an alert or a circuit breaker that pulls the model output rather than surfacing a result based on bad input. This is unglamorous work and vendors rarely do it for you.
+
+**Infrastructure for the failure case**
+
+Define graceful degradation explicitly. If the AI service is unavailable, what does the clinician see? A blank field with no explanation is dangerous. A clear "AI assistance unavailable, proceed manually" message is not. This needs to be designed and tested, not assumed.
+
+Also: what is your DR and failover story? If this tool is in a critical workflow, it needs the same availability SLA as your EHR, not a best-effort cloud service.
+
+**Observability in production**
+
+You cannot manage what you cannot see. Before go-live I want:
+
+- Inference logging with enough context to reconstruct why the model produced a given output
+- Drift detection: alerts when input data distributions shift meaningfully from what the model was trained on
+- Performance dashboards that clinical and technical owners can both read
+- A defined review cadence, not just alerting but a human looking at the data regularly
+
+If the vendor cannot provide model explainability at the case level, that is a monitoring gap you need to solve some other way, because when a clinician questions an output you need to be able to investigate it.
+
+**The security and compliance layer**
+
+PHI in the inference pipeline needs the same controls as PHI anywhere else, but the audit trail requirements are often underspecified for AI systems. Before production, confirm:
+
+- What PHI is logged where, for how long, and under what access controls?
+- Is the inference endpoint covered by your BAA?
+- If the model is hosted in the vendor's cloud, what is the data residency and isolation model?
+
+**My practical readiness checklist**
+
+Before I would sign off on production deployment I want to see: a load test at 2x expected peak volume, a full integration test suite including edge cases, documented change control for model updates, a data quality monitoring spec with defined circuit breakers, a tested graceful degradation path, production observability tooling in place, and a named technical owner with on-call responsibility.
+
+The clinical and governance teams own the "should we deploy this" question. The engineering team's job is to make sure that when something goes wrong in production, and something always eventually goes wrong, you have the instrumentation to find it fast, the runbooks to respond, and the architecture to limit the blast radius.
+
+If you cannot answer "how will we know if this is quietly failing" before go-live, you are not ready.
