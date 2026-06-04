@@ -204,17 +204,9 @@ Capsule Hub is a Chrome extension that allows reusable prompts, workflows, and p
 
 ---
 
-## Screenshots
 
-> Add the following screenshots to this folder:
->
-> 1. Claude prompt conversation (the four questions and answers)
-> 2. Claude-generated roadmap output
-> 3. Capsule Hub saved prompt view
-> 4. LinkedIn infographic or roadmap preview
-> 5. GitHub Day4 folder and day4.md file confirmation
 
----
+
 
 ## LinkedIn Post
 
