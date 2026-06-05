@@ -37,7 +37,7 @@ The roadmap was generic and assumed a complete beginner. It lacked personalizati
 - Week 3: Build projects
 - Week 4: Create a portfolio
 
-> *Insert Screenshot Here*
+
 
 ---
 
@@ -96,7 +96,7 @@ The roadmap was tailored specifically for a healthcare executive seeking to beco
 - Week 3: Healthcare AI Transformation — Build an AI governance framework, AI value realization model, healthcare AI maturity assessment
 - Week 4: Thought Leadership — Create a LinkedIn content series, conference presentation, healthcare AI whitepaper, executive AI roadmap
 
-> *Insert Screenshot Here*
+
 
 ---
 
