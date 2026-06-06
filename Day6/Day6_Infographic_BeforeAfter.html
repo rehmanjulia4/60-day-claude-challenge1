@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1080">
+<title>Day 6 – AI Resume Optimizer</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    width: 1080px;
+    height: 1080px;
+    overflow: hidden;
+    background: #0a1628;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  .canvas {
+    width: 1080px;
+    height: 1080px;
+    position: relative;
+    background: linear-gradient(145deg, #0a1628 0%, #0f2145 50%, #0a1628 100%);
+    overflow: hidden;
+  }
+
+  /* Background decorative rings */
+  .ring {
+    position: absolute;
+    border-radius: 50%;
+    border: 1px solid rgba(100, 160, 255, 0.07);
+  }
+  .ring-1 { width: 700px; height: 700px; top: 190px; left: 190px; }
+  .ring-2 { width: 500px; height: 500px; top: 290px; left: 290px; }
+  .ring-3 { width: 900px; height: 900px; top: 90px; left: 90px; border-color: rgba(100, 160, 255, 0.04); }
+
+  /* Accent line top */
+  .top-accent {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 5px;
+    background: linear-gradient(90deg, #1e5fa8, #4da3ff, #1e5fa8);
+  }
+
+  /* Badge */
+  .badge {
+    position: absolute;
+    top: 36px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(77, 163, 255, 0.12);
+    border: 1px solid rgba(77, 163, 255, 0.35);
+    border-radius: 30px;
+    padding: 6px 22px;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #7ec4ff;
+    white-space: nowrap;
+  }
+
+  /* Main title */
+  .main-title {
+    position: absolute;
+    top: 96px;
+    left: 0; right: 0;
+    text-align: center;
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 46px;
+    font-weight: 900;
+    color: #fff;
+    line-height: 1.15;
+    letter-spacing: -0.5px;
+  }
+  .main-title span { color: #4da3ff; }
+
+  /* Score row */
+  .score-row {
+    position: absolute;
+    top: 218px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 0;
+    width: 760px;
+  }
+
+  .score-box {
+    flex: 1;
+    border-radius: 20px;
+    padding: 28px 24px;
+    text-align: center;
+  }
+  .score-box.before {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.1);
+    margin-right: 10px;
+  }
+  .score-box.after {
+    background: rgba(77,163,255,0.1);
+    border: 1px solid rgba(77,163,255,0.35);
+    margin-left: 10px;
+  }
+
+  .score-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .before .score-label { color: #7a8fb5; }
+  .after .score-label { color: #7ec4ff; }
+
+  .score-number {
+    font-family: 'Playfair Display', serif;
+    font-size: 68px;
+    font-weight: 900;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .before .score-number { color: #a0b4d0; }
+  .after .score-number { color: #fff; }
+
+  .score-sub {
+    font-size: 12px;
+    font-weight: 400;
+    letter-spacing: 0.5px;
+  }
+  .before .score-sub { color: #6a7f9e; }
+  .after .score-sub { color: #7ec4ff; }
+
+  .arrow-center {
+    width: 60px;
+    text-align: center;
+    font-size: 30px;
+    color: #4da3ff;
+    flex-shrink: 0;
+  }
+
+  /* Main comparison cards */
+  .compare-row {
+    position: absolute;
+    top: 380px;
+    left: 60px;
+    right: 60px;
+    display: flex;
+    gap: 20px;
+  }
+
+  .compare-card {
+    flex: 1;
+    border-radius: 18px;
+    padding: 22px 22px 18px;
+  }
+  .compare-card.before-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.09);
+  }
+  .compare-card.after-card {
+    background: rgba(77,163,255,0.08);
+    border: 1px solid rgba(77,163,255,0.28);
+  }
+
+  .card-header {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+    padding-bottom: 10px;
+  }
+  .before-card .card-header { color: #6a7f9e; border-bottom: 1px solid rgba(255,255,255,0.07); }
+  .after-card .card-header { color: #4da3ff; border-bottom: 1px solid rgba(77,163,255,0.2); }
+
+  .compare-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 11px;
+  }
+  .ci-icon { font-size: 17px; flex-shrink: 0; margin-top: 1px; }
+  .ci-text { font-size: 14.5px; line-height: 1.35; }
+  .before-card .ci-text { color: #8090ae; }
+  .after-card .ci-text { color: #ddeeff; font-weight: 500; }
+
+  /* Quote banner */
+  .quote-banner {
+    position: absolute;
+    bottom: 100px;
+    left: 60px;
+    right: 60px;
+    background: rgba(77,163,255,0.08);
+    border: 1px solid rgba(77,163,255,0.22);
+    border-left: 4px solid #4da3ff;
+    border-radius: 14px;
+    padding: 18px 28px;
+    text-align: center;
+  }
+  .quote-text {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    font-style: italic;
+    color: #c8dff7;
+    line-height: 1.5;
+  }
+  .quote-text em { color: #4da3ff; font-style: normal; font-weight: 700; }
+
+  /* Footer */
+  .footer {
+    position: absolute;
+    bottom: 36px;
+    left: 60px;
+    right: 60px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .footer-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: #7ec4ff;
+    letter-spacing: 0.3px;
+  }
+  .footer-tags {
+    font-size: 12px;
+    color: #4a6080;
+    letter-spacing: 0.5px;
+  }
+  .footer-day {
+    font-size: 13px;
+    font-weight: 600;
+    color: #4a6080;
+    letter-spacing: 1px;
+  }
+</style>
+</head>
+<body>
+<div class="canvas">
+  <div class="ring ring-3"></div>
+  <div class="ring ring-1"></div>
+  <div class="ring ring-2"></div>
+  <div class="top-accent"></div>
+
+  <div class="badge">Day 6 · 60-Day Claude AI Challenge</div>
+
+  <div class="main-title">AI Resume <span>Optimization</span><br>Before vs. After</div>
+
+  <!-- Scores -->
+  <div class="score-row">
+    <div class="score-box before">
+      <div class="score-label">ATS Score Before</div>
+      <div class="score-number">82</div>
+      <div class="score-sub">out of 100</div>
+    </div>
+    <div class="arrow-center">→</div>
+    <div class="score-box after">
+      <div class="score-label">ATS Score After</div>
+      <div class="score-number">96</div>
+      <div class="score-sub">out of 100</div>
+    </div>
+  </div>
+
+  <!-- Compare cards -->
+  <div class="compare-row">
+    <div class="compare-card before-card">
+      <div class="card-header">⬜ Before</div>
+      <div class="compare-item">
+        <span class="ci-icon">📊</span>
+        <span class="ci-text">Analytics &amp; Informatics Leader</span>
+      </div>
+      <div class="compare-item">
+        <span class="ci-icon">📁</span>
+        <span class="ci-text">Three inconsistent resume versions</span>
+      </div>
+      <div class="compare-item">
+        <span class="ci-icon">🔍</span>
+        <span class="ci-text">Governance roles buried in body text</span>
+      </div>
+      <div class="compare-item">
+        <span class="ci-icon">🌍</span>
+        <span class="ci-text">GCC &amp; US context implicit</span>
+      </div>
+      <div class="compare-item">
+        <span class="ci-icon">📝</span>
+        <span class="ci-text">Technical/analytics-heavy framing</span>
+      </div>
+      <div class="compare-item">
+        <span class="ci-icon">⚠️</span>
+        <span class="ci-text">Redundant language across roles</span>
+      </div>
+    </div>
+
+    <div class="compare-card after-card">
+      <div class="card-header">✅ After</div>
+      <div class="compare-item">
+        <span class="ci-icon">🏥</span>
+        <span class="ci-text">Healthcare Executive, Transformation &amp; Governance Leader</span>
+      </div>
+      <div class="compare-item">
+        <span class="ci-icon">🎯</span>
+        <span class="ci-text">One unified executive narrative</span>
+      </div>
+      <div class="compare-item">
+        <span class="ci-icon">🏛️</span>
+        <span class="ci-text">Dedicated governance &amp; board section</span>
+      </div>
+      <div class="compare-item">
+        <span class="ci-icon">🌐</span>
+        <span class="ci-text">GCC, MENA, USA explicitly signaled</span>
+      </div>
+      <div class="compare-item">
+        <span class="ci-icon">💼</span>
+        <span class="ci-text">VP, CDO, ED, COO-adjacent positioning</span>
+      </div>
+      <div class="compare-item">
+        <span class="ci-icon">⚡</span>
+        <span class="ci-text">Strong executive verbs, no redundancy</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quote -->
+  <div class="quote-banner">
+    <div class="quote-text">"AI did not change my experience. It changed <em>how clearly</em> recruiters could understand it."</div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <div class="footer-name">Dr. Julia Rehman &nbsp;|&nbsp; FACHE · eFACHDM · DHA</div>
+    <div class="footer-tags">#60DayClaudeChallenge &nbsp;·&nbsp; #HealthcareLeadership</div>
+    <div class="footer-day">Day 6 / 60</div>
+  </div>
+</div>
+</body>
+</html>

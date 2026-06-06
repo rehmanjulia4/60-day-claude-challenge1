@@ -1,0 +1,59 @@
+Day 6 of the #60DayClaudeChallenge
+
+Today's challenge: AI-powered resume optimization.
+
+Everyone will do the same thing today. Upload a resume, get an ATS score, post a screenshot.
+
+Here is what I learned instead.
+
+I came in with a strong resume. 18+ years of leadership. Multiple graduate degrees. FACHE. Board roles. International executive credentials across the US, UAE, and Saudi Arabia.
+
+The ATS score was 82. After optimization: 96.
+
+But the score was not the lesson.
+
+The lesson was this:
+
+I had three different versions of my resume, each emphasizing a different part of my experience. One led with analytics. One led with association leadership. One led with transformation.
+
+All three were accurate. None of them were fully aligned.
+
+AI did not improve my resume by adding new experience.
+
+It showed me that I was diluting my own executive brand by telling three stories instead of one.
+
+Before:
+Analytics and Informatics Leader
+
+After:
+Healthcare Executive. Transformation and Governance Leader. VP and C-Suite candidate across GCC and US markets.
+
+No new achievements.
+No invented metrics.
+Just one clear story.
+
+The biggest shift was moving my board and governance roles (ACHE VP MENA, ACHDM International Chair, Because Organization Board, DIGIHEALTH Lab Advisory Board) out of body text and into a dedicated section, searchable by executive search firms and ATS systems.
+
+Executive search firms use the same keyword-matching logic as ATS systems. If your governance credentials are buried in paragraph text, they are invisible.
+
+One question worth asking yourself:
+
+If a recruiter at Korn Ferry or Spencer Stuart read your resume in 30 seconds, would they immediately know who you are as an executive?
+
+Not what you have done. Who you are.
+
+That is the real test.
+
+Thank you @Anthropic @ABTalksOnAI @AnilBajpai
+
+#60DayClaudeChallenge
+#HealthcareLeadership
+#ExecutiveLeadership
+#AI
+#DigitalHealth
+#HealthcareTransformation
+#CDO
+#HealthcareExecutive
+#AIGovernance
+#CareerDevelopment
+#GCCHealthcare
