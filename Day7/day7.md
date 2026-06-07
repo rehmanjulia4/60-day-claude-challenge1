@@ -252,7 +252,7 @@ The most effective workflow matches task complexity to the appropriate model and
 **Files:**
 - `day7.md` — this document
 - `screenshots/` — Claude-generated strategy screenshots
-- `infographic/` — LinkedIn infographic (1080x1080)
+- `infographic/` — LinkedIn infographic
 
 ---
 
