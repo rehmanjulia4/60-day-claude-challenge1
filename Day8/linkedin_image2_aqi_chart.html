@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Image 2 - AQI Chart</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { width: 1080px; height: 1080px; overflow: hidden; background: #060d1a; font-family: 'DM Sans', sans-serif; }
+
+.canvas {
+  width: 1080px; height: 1080px;
+  position: relative; overflow: hidden;
+  background: #060d1a;
+}
+
+.canvas::before {
+  content: '';
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 700px 500px at 50% 0%, rgba(56,199,245,0.07) 0%, transparent 65%),
+    radial-gradient(ellipse 400px 400px at 90% 90%, rgba(124,106,247,0.06) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+.inner {
+  position: relative; z-index: 2;
+  padding: 56px 64px 48px;
+  display: flex; flex-direction: column; height: 100%;
+}
+
+.top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 36px; }
+
+.title-block {}
+.eyebrow { font-size: 11px; text-transform: uppercase; letter-spacing: 0.12em; color: #38c7f5; font-weight: 500; margin-bottom: 10px; }
+.title { font-family: 'Syne', sans-serif; font-size: 40px; font-weight: 800; color: #e2eaf6; line-height: 1.05; letter-spacing: -0.02em; }
+.subtitle { font-size: 14px; color: #5a7a9a; margin-top: 10px; font-weight: 300; }
+
+.legend { display: flex; flex-direction: column; gap: 7px; align-items: flex-end; }
+.legend-item { display: flex; align-items: center; gap: 8px; font-size: 11px; color: #5a7a9a; }
+.legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+
+.chart { flex: 1; display: flex; flex-direction: column; justify-content: space-between; gap: 0; }
+
+.bar-row {
+  display: flex; align-items: center; gap: 0;
+  position: relative;
+}
+
+.city-col {
+  width: 148px; flex-shrink: 0;
+  display: flex; flex-direction: column; align-items: flex-end; padding-right: 16px;
+}
+.city-name { font-size: 13px; color: #c8d8ea; font-weight: 500; }
+.city-region { font-size: 10px; color: #3d5a78; text-transform: uppercase; letter-spacing: 0.06em; margin-top: 1px; }
+
+.bar-area { flex: 1; position: relative; }
+.bar-track { height: 36px; background: rgba(255,255,255,0.03); border-radius: 6px; overflow: hidden; position: relative; }
+.bar-fill { height: 100%; border-radius: 6px; display: flex; align-items: center; justify-content: flex-end; padding-right: 10px; transition: width 1s ease; }
+.bar-val { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; color: rgba(255,255,255,0.9); }
+.bar-label { position: absolute; right: -52px; top: 50%; transform: translateY(-50%); font-size: 10px; font-weight: 600; padding: 3px 7px; border-radius: 8px; white-space: nowrap; }
+
+.divider-line { width: 100%; height: 1px; background: rgba(56,139,253,0.1); margin: 6px 0; }
+
+.footer { display: flex; justify-content: space-between; align-items: center; margin-top: 28px; padding-top: 20px; border-top: 1px solid rgba(56,139,253,0.1); }
+.footer-left { font-size: 11px; color: #3d5a78; }
+.footer-name { font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 700; color: #6b87a8; }
+.footer-badge { padding: 5px 14px; border-radius: 16px; font-size: 10px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; background: rgba(56,199,245,0.1); border: 1px solid rgba(56,199,245,0.2); color: #38c7f5; }
+
+.who-line { font-size: 11px; color: #3a5570; margin-top: 4px; }
+</style>
+</head>
+<body>
+<div class="canvas">
+  <div class="inner">
+
+    <div class="top">
+      <div class="title-block">
+        <div class="eyebrow">Day 8 of 60 — Environmental Health Analyzer</div>
+        <div class="title">AQI across 10 cities<br>where I live and work</div>
+        <div class="subtitle">Air Quality Index — lower is better. WHO safe threshold: 50.</div>
+      </div>
+      <div class="legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#22c55e"></div> Good (0-50)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#84cc16"></div> Satisfactory (51-100)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#eab308"></div> Moderate (101-150)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#f97316"></div> Poor (151-200)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#ef4444"></div> Very Poor (200+)</div>
+      </div>
+    </div>
+
+    <div class="chart">
+
+      <!-- Albuquerque NM -->
+      <div class="bar-row">
+        <div class="city-col">
+          <div class="city-name">Albuquerque NM</div>
+          <div class="city-region">United States</div>
+        </div>
+        <div class="bar-area">
+          <div class="bar-track">
+            <div class="bar-fill" style="width:19%;background:linear-gradient(90deg,rgba(34,197,94,0.7),#22c55e)">
+              <span class="bar-val">38</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Denver -->
+      <div class="bar-row">
+        <div class="city-col">
+          <div class="city-name">Denver CO</div>
+          <div class="city-region">United States</div>
+        </div>
+        <div class="bar-area">
+          <div class="bar-track">
+            <div class="bar-fill" style="width:22.5%;background:linear-gradient(90deg,rgba(34,197,94,0.7),#22c55e)">
+              <span class="bar-val">45</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- St Louis -->
+      <div class="bar-row">
+        <div class="city-col">
+          <div class="city-name">St. Louis MO</div>
+          <div class="city-region">United States</div>
+        </div>
+        <div class="bar-area">
+          <div class="bar-track">
+            <div class="bar-fill" style="width:29%;background:linear-gradient(90deg,rgba(132,204,22,0.7),#84cc16)">
+              <span class="bar-val">58</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="divider-line"></div>
+
+      <!-- Riyadh -->
+      <div class="bar-row">
+        <div class="city-col">
+          <div class="city-name">Riyadh</div>
+          <div class="city-region">Saudi Arabia</div>
+        </div>
+        <div class="bar-area">
+          <div class="bar-track">
+            <div class="bar-fill" style="width:26%;background:linear-gradient(90deg,rgba(132,204,22,0.7),#84cc16)">
+              <span class="bar-val">52</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Doha -->
+      <div class="bar-row">
+        <div class="city-col">
+          <div class="city-name">Doha</div>
+          <div class="city-region">Qatar</div>
+        </div>
+        <div class="bar-area">
+          <div class="bar-track">
+            <div class="bar-fill" style="width:39%;background:linear-gradient(90deg,rgba(132,204,22,0.7),#84cc16)">
+              <span class="bar-val">78</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dubai -->
+      <div class="bar-row">
+        <div class="city-col">
+          <div class="city-name">Dubai</div>
+          <div class="city-region">UAE</div>
+        </div>
+        <div class="bar-area">
+          <div class="bar-track">
+            <div class="bar-fill" style="width:41%;background:linear-gradient(90deg,rgba(234,179,8,0.7),#eab308)">
+              <span class="bar-val">82</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Abu Dhabi -->
+      <div class="bar-row" style="position:relative">
+        <div class="city-col">
+          <div class="city-name" style="color:#38c7f5">Abu Dhabi</div>
+          <div class="city-region" style="color:#1a4060">UAE — current city</div>
+        </div>
+        <div class="bar-area">
+          <div class="bar-track" style="background:rgba(56,199,245,0.06);border:1px solid rgba(56,199,245,0.15)">
+            <div class="bar-fill" style="width:44.5%;background:linear-gradient(90deg,rgba(234,179,8,0.7),#eab308)">
+              <span class="bar-val">89</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="divider-line"></div>
+
+      <!-- Hyderabad -->
+      <div class="bar-row">
+        <div class="city-col">
+          <div class="city-name">Hyderabad</div>
+          <div class="city-region">India</div>
+        </div>
+        <div class="bar-area">
+          <div class="bar-track">
+            <div class="bar-fill" style="width:47%;background:linear-gradient(90deg,rgba(234,179,8,0.7),#eab308)">
+              <span class="bar-val">94</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mumbai -->
+      <div class="bar-row">
+        <div class="city-col">
+          <div class="city-name">Mumbai</div>
+          <div class="city-region">India</div>
+        </div>
+        <div class="bar-area">
+          <div class="bar-track">
+            <div class="bar-fill" style="width:61%;background:linear-gradient(90deg,rgba(249,115,22,0.7),#f97316)">
+              <span class="bar-val">122</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Delhi -->
+      <div class="bar-row">
+        <div class="city-col">
+          <div class="city-name">Delhi</div>
+          <div class="city-region">India</div>
+        </div>
+        <div class="bar-area">
+          <div class="bar-track">
+            <div class="bar-fill" style="width:84%;background:linear-gradient(90deg,rgba(239,68,68,0.7),#ef4444)">
+              <span class="bar-val">168</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="footer">
+      <div>
+        <div class="footer-name">Julia Rehman, DHA MBA MHA MPH FACHE eFACHDM</div>
+        <div class="who-line">Data: IQAir / WHO / UAE MOEI — 2024-25 annual averages</div>
+      </div>
+      <div class="footer-badge">60-Day Claude Challenge</div>
+    </div>
+
+  </div>
+</div>
+</body>
+</html>
