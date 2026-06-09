@@ -50,8 +50,7 @@
 
 ## Screenshots
 
-### MVP Version (Prompt 1)
-*[Add screenshot of `nutriscopedb_mvp.html` here]*
+
 
 **What Prompt 1 produced:**
 - Patient demographic inputs (age, gender, height, weight, activity, dietary preference)
@@ -65,7 +64,7 @@
 ---
 
 ### Enhanced Version (Prompt 2)
-*[Add screenshot of `nutriscopedb_enhanced.html` here]*
+
 
 **What Prompt 2 added:**
 - 60 foods across three food cultures (American, Indian/South Asian, Arabic/GCC)
@@ -82,13 +81,7 @@
 
 ---
 
-### Final Clinical Tool
-*[Add screenshot of `nutriscopedb_clinical_final.html` here]*
 
----
-
-### Final Patient App
-*[Add screenshot of `day9_patient_screenshot.html` here]*
 
 ---
 
