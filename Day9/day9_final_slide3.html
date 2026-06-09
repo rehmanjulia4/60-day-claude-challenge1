@@ -1,0 +1,50 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=390px"><title>Day 9 S3</title>
+<style>*{box-sizing:border-box;margin:0;padding:0;}html,body{width:390px;height:844px;overflow:hidden;}
+body{font-family:-apple-system,sans-serif;background:#f8fafc;}
+.hdr{background:linear-gradient(135deg,#0284c7,#0369a1);padding:36px 26px 24px;position:relative;overflow:hidden;}
+.hdr::before{content:'';position:absolute;top:-40px;right:-40px;width:140px;height:140px;border-radius:50%;background:rgba(255,255,255,.06);}
+.h-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;position:relative;z-index:2;}
+.h-tag{font-size:10px;font-weight:800;color:rgba(255,255,255,.7);text-transform:uppercase;letter-spacing:1.5px;}
+.h-num{font-size:11px;color:rgba(255,255,255,.5);}
+.h-title{font-size:24px;font-weight:900;color:#fff;line-height:1.15;position:relative;z-index:2;}
+.h-sub{font-size:12px;color:rgba(255,255,255,.8);margin-top:7px;position:relative;z-index:2;}
+.body{padding:18px 22px;display:flex;flex-direction:column;gap:11px;}
+.card{background:#fff;border:1px solid #e2e8f0;border-radius:11px;padding:13px 14px;display:flex;align-items:flex-start;gap:11px;box-shadow:0 1px 3px rgba(0,0,0,.06);}
+.ci{font-size:18px;flex-shrink:0;width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:7px;}
+.ct{font-size:12px;font-weight:700;color:#1e293b;margin-bottom:2px;}.cd{font-size:10.5px;color:#64748b;line-height:1.5;}
+.plate-row{display:flex;align-items:center;gap:12px;background:#fff;border:1px solid #e2e8f0;border-radius:11px;padding:12px 14px;}
+.plate{width:64px;height:64px;border-radius:50%;border:2.5px solid #e2e8f0;position:relative;overflow:hidden;flex-shrink:0;}
+.pv{position:absolute;top:0;left:0;width:50%;height:100%;background:#86efac;display:flex;align-items:center;justify-content:center;}
+.pp{position:absolute;top:0;right:0;width:50%;height:50%;background:#fda4af;display:flex;align-items:center;justify-content:center;}
+.pc{position:absolute;bottom:0;right:0;width:50%;height:50%;background:#fde68a;display:flex;align-items:center;justify-content:center;}
+.plbl{font-size:7px;font-weight:800;color:rgba(0,0,0,.45);text-align:center;line-height:1.2;}
+.swap-row{display:flex;align-items:center;gap:7px;padding:6px 0;border-bottom:1px solid #f1f5f9;font-size:12px;}
+.swap-row:last-child{border-bottom:none;}
+.sf{color:#dc2626;font-weight:700;}.st{color:#16a34a;font-weight:700;}.sw{font-size:10px;color:#94a3b8;margin-left:auto;}
+.lang-row{display:flex;gap:5px;flex-wrap:wrap;padding:10px 14px;background:#fff;border:1px solid #e2e8f0;border-radius:11px;}
+.lp{background:#e0f2fe;color:#0284c7;border-radius:20px;padding:3px 9px;font-size:10px;font-weight:800;}
+.footer{padding:0 22px 14px;font-size:10px;font-weight:600;color:#94a3b8;}</style></head>
+<body>
+<div class="hdr">
+  <div class="h-top"><div class="h-tag">Patient Tool</div><div class="h-num">3 / 5</div></div>
+  <div class="h-title">Same data.<br>Patient's language.</div>
+  <div class="h-sub">Score out of 100, smart swaps, plate method. Built for a 52-year-old in Abu Dhabi or Houston. Now in 8 languages.</div>
+</div>
+<div class="body">
+  <div class="card"><div class="ci" style="background:#dcfce7;">🎯</div><div><div class="ct">Nutrition Score / 100</div><div class="cd">One number, color-coded, friendly message. Fires alerts when glycemic load is high.</div></div></div>
+  <div class="plate-row">
+    <div class="plate"><div class="pv"><div class="plbl">🥦<br>Half</div></div><div class="pp"><div class="plbl">🍗<br>¼</div></div><div class="pc"><div class="plbl">🌾<br>¼</div></div></div>
+    <div><div class="ct">ADA Diabetes Plate Method</div><div class="cd">Visual guide built in. Every culture. All 8 languages.</div></div>
+  </div>
+  <div class="card" style="flex-direction:column;gap:0;padding:11px 13px;">
+    <div class="ct" style="margin-bottom:7px;font-size:11px;">Smart swaps by cuisine & GI</div>
+    <div class="swap-row"><span class="sf">Kabsa</span><span style="color:#94a3b8">→</span><span class="st">Freekeh</span><span class="sw">GI 65→43</span></div>
+    <div class="swap-row"><span class="sf">White roti</span><span style="color:#94a3b8">→</span><span class="st">Methi roti</span><span class="sw">Lowers GL</span></div>
+    <div class="swap-row"><span class="sf">White rice</span><span style="color:#94a3b8">→</span><span class="st">Brown rice</span><span class="sw">GI 73→50</span></div>
+  </div>
+  <div class="lang-row">
+    <span class="lp">🇬🇧 EN</span><span class="lp">🇺🇸 ES</span><span class="lp">🇸🇦 AR</span><span class="lp">🇮🇳 HI</span><span class="lp">🇧🇩 BN</span><span class="lp">🇮🇳 TA</span><span class="lp">🇮🇳 TE</span><span class="lp">🇵🇰 UR</span>
+  </div>
+</div>
+<div class="footer">Julia Rehman · ACHE VP MENA · ACHDM International Chair</div>
+</body></html>

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=390px">
+<title>NutriScope Patient — Screenshot</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{width:390px;height:844px;overflow:hidden;background:#f1f5f9;font-family:-apple-system,'Segoe UI',sans-serif;font-size:14px;color:#1e293b;}
+.hdr{background:#fff;border-bottom:1px solid #e2e8f0;padding:0 14px;display:flex;align-items:center;justify-content:space-between;height:56px;box-shadow:0 1px 3px rgba(0,0,0,.06);}
+.logo{font-size:17px;font-weight:800;color:#1e293b;}.logo span{color:#0284c7;}
+.hdr-r{display:flex;gap:5px;align-items:center;}
+.lang-pill{background:#f1f5f9;border:1.5px solid #cbd5e1;border-radius:20px;padding:3px 9px;font-size:11px;font-weight:700;color:#475569;}
+.badge{font-size:9px;font-weight:800;padding:3px 7px;border-radius:4px;text-transform:uppercase;}
+.b-usda{background:#e0f2fe;color:#0284c7;}.b-ck{background:#dcfce7;color:#16a34a;}
+.hdr-date{font-size:11px;color:#94a3b8;}
+.banner{background:linear-gradient(135deg,#0284c7,#0369a1);color:#fff;padding:12px 16px;text-align:center;}
+.banner h1{font-size:15px;font-weight:800;margin-bottom:2px;}
+.banner p{font-size:11px;opacity:.85;}
+.srow{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:10px 14px 0;}
+.sb{background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:9px 8px;text-align:center;box-shadow:0 1px 2px rgba(0,0,0,.04);}
+.sv{font-size:19px;font-weight:800;line-height:1.1;}.sl{font-size:9px;color:#94a3b8;margin-top:2px;}.ss{font-size:9px;font-weight:700;margin-top:1px;}
+.card{background:#fff;border:1px solid #e2e8f0;border-radius:11px;padding:12px 14px;margin:9px 14px 0;box-shadow:0 1px 3px rgba(0,0,0,.06);}
+.ch{display:flex;align-items:center;gap:8px;margin-bottom:10px;}
+.ci{width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
+.ct{font-size:13px;font-weight:700;}.cs{font-size:10px;color:#94a3b8;}
+.score-row{display:flex;align-items:center;gap:12px;}
+.score-ring{width:76px;height:76px;flex-shrink:0;position:relative;}
+.score-ring svg{transform:rotate(-90deg);}
+.score-val{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;}
+.score-val .n{font-size:21px;font-weight:900;color:#16a34a;line-height:1;}.score-val .l{font-size:8px;font-weight:800;color:#16a34a;}
+.score-info{flex:1;}
+.score-msg{font-size:12px;font-weight:700;color:#1e293b;margin-bottom:3px;}
+.score-sub{font-size:10px;color:#475569;line-height:1.5;}
+.alert-g{background:#dcfce7;border-left:3px solid #16a34a;border-radius:0 7px 7px 0;padding:7px 10px;font-size:10px;color:#15803d;margin-top:7px;font-weight:600;}
+.usda-card{background:#fff;border:1px solid #e2e8f0;border-radius:11px;padding:10px 13px;margin:9px 14px 0;box-shadow:0 1px 3px rgba(0,0,0,.06);}
+.search-bar{display:flex;gap:5px;margin-bottom:7px;}
+.si{flex:1;background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:6px;padding:7px 9px;font-size:12px;color:#94a3b8;}
+.sb2{background:#0284c7;color:#fff;border:none;border-radius:6px;padding:7px 11px;font-size:11px;font-weight:700;}
+.sr-item{display:flex;align-items:flex-start;gap:7px;padding:7px 9px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;margin-bottom:4px;}
+.sr-name{font-size:11px;font-weight:700;color:#1e293b;flex:1;line-height:1.3;}
+.sr-meta{font-size:9px;color:#94a3b8;margin-top:1px;}
+.sr-add{background:#16a34a;color:#fff;border:none;border-radius:5px;padding:4px 8px;font-size:10px;font-weight:700;flex-shrink:0;}
+.src{display:inline-block;font-size:8px;font-weight:800;padding:1px 4px;border-radius:3px;background:#e0f2fe;color:#0284c7;margin-left:3px;text-transform:uppercase;}
+.usda-note{font-size:9px;color:#94a3b8;margin-top:5px;}
+.log-card{background:#fff;border:1px solid #e2e8f0;border-radius:11px;padding:10px 13px;margin:9px 14px 0;box-shadow:0 1px 3px rgba(0,0,0,.06);}
+.li{display:flex;align-items:center;gap:7px;padding:5px 0;border-bottom:1px solid #f1f5f9;}
+.li:last-child{border-bottom:none;}
+.le{font-size:17px;flex-shrink:0;}.ln{font-size:11px;font-weight:700;flex:1;}
+.lm{font-size:9px;color:#94a3b8;}
+.eq{color:#0284c7;font-weight:700;border-bottom:1px dashed #0284c7;}
+.lcal{font-size:11px;font-weight:800;color:#0284c7;flex-shrink:0;}
+.lx{width:18px;height:18px;border-radius:50%;background:#fee2e2;border:none;font-size:9px;color:#dc2626;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+.log-tot{display:flex;justify-content:space-between;padding-top:6px;font-size:10px;color:#475569;border-top:1px solid #e2e8f0;margin-top:3px;}
+.log-tot strong{color:#0284c7;}
+.bnav{position:absolute;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #e2e8f0;display:flex;height:62px;box-shadow:0 -2px 8px rgba(0,0,0,.05);}
+.nb{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;}
+.nb .ni{font-size:19px;line-height:1;}
+.nb .nl{font-size:9px;font-weight:700;color:#94a3b8;}
+.nb.on .nl{color:#0284c7;}
+</style>
+</head>
+<body>
+<div class="hdr">
+  <div class="logo">Nutri<span>Scope</span> <span style="font-size:11px;font-weight:400;color:#94a3b8;">Patient</span></div>
+  <div class="hdr-r">
+    <div class="lang-pill">🇬🇧 EN ▾</div>
+    <span class="badge b-usda">USDA</span>
+    <span class="badge b-ck">CK</span>
+    <span class="hdr-date">Jun 9</span>
+  </div>
+</div>
+
+<div class="banner">
+  <h1>Good morning, Amira! 👋</h1>
+  <p>You've logged 4 items. Score: 82/100. Glycemic load: Low.</p>
+</div>
+
+<div class="srow">
+  <div class="sb"><div class="sv" style="color:#0284c7;">1,240</div><div class="sl">Calories</div><div class="ss" style="color:#94a3b8;">of 1,540</div></div>
+  <div class="sb"><div class="sv" style="color:#d97706;">118g</div><div class="sl">Carbs</div><div class="ss" style="color:#94a3b8;">of 162g</div></div>
+  <div class="sb"><div class="sv" style="color:#16a34a;">87</div><div class="sl">GL Score</div><div class="ss" style="color:#16a34a;">Low ✓</div></div>
+</div>
+
+<div class="card">
+  <div class="ch"><div class="ci" style="background:#e0f2fe;">🎯</div><div><div class="ct">Today's Nutrition Score</div><div class="cs">Based on your logged meals</div></div></div>
+  <div class="score-row">
+    <div class="score-ring">
+      <svg width="76" height="76" viewBox="0 0 76 76">
+        <circle cx="38" cy="38" r="31" fill="none" stroke="#f1f5f9" stroke-width="8"/>
+        <circle cx="38" cy="38" r="31" fill="none" stroke="#16a34a" stroke-width="8" stroke-dasharray="194.8" stroke-dashoffset="35" stroke-linecap="round"/>
+      </svg>
+      <div class="score-val"><div class="n">82</div><div class="l">Good</div></div>
+    </div>
+    <div class="score-info">
+      <div class="score-msg">You're doing well today.</div>
+      <div class="score-sub">Low glycemic load. Good fiber. Add more vegetables to dinner for a perfect score.</div>
+    </div>
+  </div>
+  <div class="alert-g">✅ Great glycemic load — meals unlikely to spike blood sugar.</div>
+</div>
+
+<div class="usda-card">
+  <div class="ch" style="margin-bottom:8px;"><div class="ci" style="background:#e0f2fe;">🔍</div><div><div class="ct">Search any food</div><div class="cs">USDA FoodData Central · 300,000+ foods · Same data as MyPlate.gov</div></div></div>
+  <div class="search-bar">
+    <div class="si">labneh</div>
+    <div class="sb2">Search</div>
+  </div>
+  <div class="sr-item">
+    <div style="flex:1;"><div class="sr-name">Labneh, strained yogurt cheese<span class="src">USDA</span></div><div class="sr-meta">100 kcal/100g · 9g protein · 4.5g carbs · GI Low</div></div>
+    <button class="sr-add">+ Add</button>
+  </div>
+  <div class="sr-item">
+    <div style="flex:1;"><div class="sr-name">Yogurt, strained, whole milk<span class="src">USDA</span></div><div class="sr-meta">97 kcal/100g · 8.5g protein · 5g carbs · GI Low</div></div>
+    <button class="sr-add">+ Add</button>
+  </div>
+  <div class="usda-note">api.nal.usda.gov · DEMO_KEY (30 req/hr) · Upgrade free at fdc.nal.usda.gov/api-key-signup</div>
+</div>
+
+<div class="log-card">
+  <div class="ch" style="margin-bottom:7px;"><div class="ci" style="background:#dcfce7;">✅</div><div><div class="ct">Logged today · 4 items</div><div class="cs">Tap quantity to edit inline</div></div></div>
+  <div class="li"><div class="le">🌿</div><div style="flex:1;"><div class="ln">Methi Roti</div><div class="lm">Breakfast · <span class="eq">80</span>g · 26g carbs · GI 48</div></div><div class="lcal">135</div><div class="lx">✕</div></div>
+  <div class="li"><div class="le">🍲</div><div style="flex:1;"><div class="ln">Moong Dal</div><div class="lm">Breakfast · <span class="eq">150</span>g · 27g carbs · GI 31</div></div><div class="lcal">158</div><div class="lx">✕</div></div>
+  <div class="li"><div class="le">🐠</div><div style="flex:1;"><div class="ln">Grilled Hamour</div><div class="lm">Lunch · <span class="eq">150</span>g · 0g carbs · GI —</div></div><div class="lcal">177</div><div class="lx">✕</div></div>
+  <div class="li"><div class="le">🥗</div><div style="flex:1;"><div class="ln">Fattoush Salad</div><div class="lm">Lunch · <span class="eq">120</span>g · 10g carbs · GI 20</div></div><div class="lcal">66</div><div class="lx">✕</div></div>
+  <div class="log-tot"><span>Total</span><strong>536 kcal · 63g carbs</strong></div>
+</div>
+
+<div class="bnav">
+  <div class="nb on"><div class="ni">🏠</div><div class="nl" style="color:#0284c7;">Home</div></div>
+  <div class="nb"><div class="ni">➕</div><div class="nl">Log Food</div></div>
+  <div class="nb"><div class="ni">📊</div><div class="nl">Progress</div></div>
+  <div class="nb"><div class="ni">💡</div><div class="nl">Learn</div></div>
+</div>
+</body>
+</html>

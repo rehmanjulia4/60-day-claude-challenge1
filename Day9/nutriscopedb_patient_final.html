@@ -1,0 +1,1502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NutriScope — Your Daily Diabetes Nutrition Companion</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+:root{--bg:#f1f5f9;--bg2:#ffffff;--bg3:#f8fafc;--border:#e2e8f0;--border2:#cbd5e1;--text:#1e293b;--text2:#475569;--text3:#94a3b8;--teal:#0284c7;--teal-l:#e0f2fe;--green:#16a34a;--green-l:#dcfce7;--amber:#d97706;--amber-l:#fef3c7;--red:#dc2626;--red-l:#fee2e2;--purple:#7c3aed;--purple-l:#ede9fe;--radius:12px;--sm:8px;--shadow:0 1px 3px rgba(0,0,0,0.07),0 1px 2px rgba(0,0,0,0.04);}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,'Segoe UI',sans-serif;font-size:15px;line-height:1.6;}
+/* Header */
+.hdr{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 16px;display:flex;align-items:center;justify-content:space-between;height:58px;position:sticky;top:0;z-index:100;box-shadow:var(--shadow);}
+.logo{font-size:19px;font-weight:800;color:var(--text);}.logo span{color:var(--teal);}
+/* Banner */
+.banner{background:linear-gradient(135deg,#0284c7,#0369a1);color:#fff;padding:24px 16px;text-align:center;}
+.banner h1{font-size:21px;font-weight:800;margin-bottom:5px;}
+.banner p{font-size:13px;opacity:.88;max-width:440px;margin:0 auto;}
+/* Container */
+.wrap{max-width:680px;margin:0 auto;padding:16px 14px 86px;}
+/* Card */
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow);margin-bottom:14px;}
+.ch{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+.ci{width:34px;height:34px;border-radius:var(--sm);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;}
+.ct{font-size:14px;font-weight:700;}.cs{font-size:11px;color:var(--text3);}
+/* Stats */
+.srow{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px;}
+.sb{background:var(--bg3);border-radius:var(--sm);padding:13px 10px;text-align:center;border:1px solid var(--border);}
+.sb .val{font-size:22px;font-weight:800;line-height:1.1;}.sb .lbl{font-size:10px;color:var(--text3);margin-top:2px;}.sb .sub{font-size:10px;font-weight:600;margin-top:2px;}
+/* Score */
+.score-c{width:110px;height:110px;border-radius:50%;border:8px solid;display:flex;align-items:center;justify-content:center;flex-direction:column;margin:0 auto 10px;}
+.score-n{font-size:30px;font-weight:900;line-height:1;}.score-l{font-size:10px;font-weight:700;}
+/* Progress */
+.pi{margin-bottom:13px;}.pt{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;}.pn{font-size:13px;font-weight:600;}.pm{font-size:11px;color:var(--text2);}
+.pb{height:8px;background:var(--bg3);border-radius:4px;overflow:hidden;border:1px solid var(--border);}.pf{height:100%;border-radius:4px;transition:width .5s;}
+.ptip{font-size:11px;color:var(--text3);margin-top:2px;}
+/* Food grid */
+.fg{display:grid;grid-template-columns:repeat(auto-fill,minmax(105px,1fr));gap:7px;}
+.fb{background:var(--bg3);border:1.5px solid var(--border);border-radius:var(--sm);padding:9px 6px;text-align:center;cursor:pointer;transition:all .15s;}
+.fb:hover{border-color:var(--teal);background:var(--teal-l);}
+.fb .fe{font-size:21px;display:block;margin-bottom:2px;}.fb .fn{font-size:10px;font-weight:700;color:var(--text2);line-height:1.2;}
+.fb .fc{font-size:10px;color:var(--text3);}
+/* Region tabs */
+.rtabs{display:flex;gap:5px;margin-bottom:12px;overflow-x:auto;padding-bottom:2px;}
+.rt{padding:5px 14px;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;border:1.5px solid var(--border);background:var(--bg3);color:var(--text2);white-space:nowrap;transition:all .15s;}
+.rt.on{background:var(--teal);border-color:var(--teal);color:#fff;}
+/* Meal chips */
+.mchips{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:11px;}
+.mc{padding:5px 13px;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;border:1.5px solid var(--border);background:var(--bg3);color:var(--text2);transition:all .15s;}
+.mc.on{background:var(--teal);border-color:var(--teal);color:#fff;}
+/* Log items */
+.li{display:flex;align-items:center;gap:9px;padding:9px 0;border-bottom:1px solid var(--border);}
+.li:last-child{border-bottom:none;}
+.le{font-size:21px;flex-shrink:0;}.linfo{flex:1;}.ln{font-size:13px;font-weight:700;}.lm{font-size:11px;color:var(--text3);}
+.lc{font-size:13px;font-weight:800;color:var(--teal);flex-shrink:0;}
+.lx{width:26px;height:26px;border-radius:50%;background:var(--red-l);border:none;cursor:pointer;color:var(--red);font-size:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+/* Alerts */
+.al{padding:12px 14px;border-radius:var(--sm);font-size:13px;margin-bottom:9px;display:flex;align-items:flex-start;gap:9px;border-left:4px solid;}
+.al .ai{font-size:17px;flex-shrink:0;margin-top:1px;}.al .at{flex:1;}.al .atl{font-weight:700;margin-bottom:1px;}
+.al-g{background:var(--green-l);border-color:var(--green);}.al-g .atl{color:var(--green);}
+.al-w{background:var(--amber-l);border-color:var(--amber);}.al-w .atl{color:var(--amber);}
+.al-i{background:var(--teal-l);border-color:var(--teal);}.al-i .atl{color:var(--teal);}
+.al-r{background:var(--red-l);border-color:var(--red);}.al-r .atl{color:var(--red);}
+.al-p{background:var(--purple-l);border-color:var(--purple);}.al-p .atl{color:var(--purple);}
+/* GI pills */
+.gi-l{background:var(--green-l);color:var(--green);padding:2px 7px;border-radius:10px;font-size:10px;font-weight:700;}
+.gi-m{background:var(--amber-l);color:var(--amber);padding:2px 7px;border-radius:10px;font-size:10px;font-weight:700;}
+.gi-h{background:var(--red-l);color:var(--red);padding:2px 7px;border-radius:10px;font-size:10px;font-weight:700;}
+/* Plate */
+.plate{width:200px;height:200px;border-radius:50%;border:3px solid #e2e8f0;position:relative;overflow:hidden;background:#f8fafc;margin:0 auto;}
+.pv{position:absolute;top:0;left:0;width:50%;height:100%;background:#86efac;display:flex;align-items:center;justify-content:center;flex-direction:column;border-right:2px solid #fff;}
+.pp{position:absolute;top:0;right:0;width:50%;height:50%;background:#fda4af;display:flex;align-items:center;justify-content:center;flex-direction:column;border-bottom:2px solid #fff;}
+.pc{position:absolute;bottom:0;right:0;width:50%;height:50%;background:#fde68a;display:flex;align-items:center;justify-content:center;flex-direction:column;}
+.plbl{font-size:10px;font-weight:700;color:rgba(0,0,0,.5);text-align:center;line-height:1.3;}
+/* Swap */
+.sw-row{display:flex;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px;flex-wrap:wrap;gap:4px;}
+.sw-row:last-child{border-bottom:none;}
+.sf{color:var(--red);font-weight:700;}.st{color:var(--green);font-weight:700;}.sw{font-size:11px;color:var(--text3);flex:1;min-width:100px;}
+/* Custom inputs */
+.inp{width:100%;background:var(--bg3);border:1.5px solid var(--border2);border-radius:var(--sm);padding:9px 13px;font-size:14px;color:var(--text);outline:none;transition:border-color .15s;}
+.inp:focus{border-color:var(--teal);}
+/* Sections */
+.sec{display:none;}.sec.on{display:block;}
+/* Bottom nav */
+.bnav{position:fixed;bottom:0;left:0;right:0;background:var(--bg2);border-top:1px solid var(--border);display:flex;z-index:100;box-shadow:0 -3px 10px rgba(0,0,0,.06);}
+.nb{flex:1;padding:9px 4px 13px;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;border:none;background:none;transition:all .15s;}
+.nb .ni{font-size:21px;line-height:1;}.nb .nl{font-size:10px;font-weight:700;color:var(--text3);}
+.nb.on .nl{color:var(--teal);}
+/* Chart */
+.cw{position:relative;height:190px;margin-top:10px;}
+/* Tip box */
+.tip{background:var(--purple-l);border:1px solid #c4b5fd;border-radius:var(--sm);padding:11px 13px;font-size:12px;color:#4c1d95;margin-top:10px;}
+.tip strong{color:var(--purple);}
+/* Streak */
+.streak{display:flex;gap:4px;flex-wrap:wrap;}
+.sd{width:30px;height:30px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;}
+.s-on{background:var(--green);color:#fff;}.s-off{background:var(--bg3);color:var(--text3);border:1px solid var(--border);}.s-now{background:var(--teal);color:#fff;}
+/* GI table row */
+.gi-row{display:flex;align-items:center;gap:9px;padding:7px 0;border-bottom:1px solid var(--border);}
+.gi-row:last-child{border-bottom:none;}
+/* CSV upload */
+.csv-btn{display:inline-flex;align-items:center;gap:6px;background:var(--bg3);border:1.5px dashed var(--border2);border-radius:var(--sm);padding:10px 16px;cursor:pointer;font-size:13px;font-weight:600;color:var(--text2);transition:all .15s;}
+.csv-btn:hover{border-color:var(--teal);color:var(--teal);}
+/* Editable qty */
+.eq{border-bottom:1.5px dashed var(--teal);min-width:32px;outline:none;padding:1px 3px;border-radius:3px;color:var(--teal);font-weight:700;}
+.eq:focus{background:var(--teal-l);}
+/* USDA / CalorieKing search */
+.search-bar{display:flex;gap:8px;margin-bottom:10px;}
+.search-bar input{flex:1;background:var(--bg3);border:1.5px solid var(--border2);border-radius:var(--sm);padding:10px 13px;font-size:14px;color:var(--text);outline:none;transition:border-color .15s;}
+.search-bar input:focus{border-color:var(--teal);}
+.search-bar button{background:var(--teal);color:#fff;border:none;border-radius:var(--sm);padding:10px 16px;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;}
+.search-bar button:disabled{opacity:0.5;cursor:not-allowed;}
+.search-results{display:flex;flex-direction:column;gap:6px;max-height:300px;overflow-y:auto;}
+.sr-item{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--sm);}
+.sr-name{font-size:13px;font-weight:600;color:var(--text);flex:1;line-height:1.3;}
+.sr-meta{font-size:11px;color:var(--text3);margin-top:2px;}
+.sr-cal{font-size:12px;font-weight:800;color:var(--teal);white-space:nowrap;}
+.sr-add{background:var(--green);color:#fff;border:none;border-radius:6px;padding:5px 11px;font-size:12px;font-weight:700;cursor:pointer;flex-shrink:0;margin-top:2px;}
+.sr-add:hover{background:#15803d;}
+.src-badge{display:inline-block;font-size:9px;font-weight:800;padding:2px 6px;border-radius:4px;text-transform:uppercase;letter-spacing:0.3px;margin-left:4px;}
+.src-usda{background:#e0f2fe;color:#0284c7;}
+.src-ck{background:#dcfce7;color:#16a34a;}
+.search-msg{font-size:13px;color:var(--text3);text-align:center;padding:14px;}
+.ck-link{display:flex;align-items:center;gap:8px;padding:10px 12px;background:var(--green-l);border:1px solid #bbf7d0;border-radius:var(--sm);font-size:13px;font-weight:600;color:var(--green);text-decoration:none;}
+.ck-link:hover{background:#bbf7d0;}
+/* Def/exc split */
+.de-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+@media(max-width:500px){.de-grid{grid-template-columns:1fr;}}
+/* Risk section */
+.risk-score{text-align:center;padding:12px 0;}
+.risk-n{font-size:50px;font-weight:900;line-height:1;}.risk-l{display:inline-block;padding:4px 14px;border-radius:20px;font-size:13px;font-weight:700;margin-top:6px;}
+.rl{background:var(--green-l);color:var(--green);}.rm{background:var(--amber-l);color:var(--amber);}.rh{background:var(--red-l);color:var(--red);}
+@media(max-width:400px){.srow{grid-template-columns:repeat(2,1fr);}.fg{grid-template-columns:repeat(3,1fr);}}
+@keyframes pop{0%{opacity:0;transform:translateX(-50%) translateY(8px)}70%{opacity:1}100%{opacity:0;transform:translateX(-50%) translateY(-10px)}}
+/* RTL */
+[dir="rtl"]{direction:rtl;text-align:right;}
+[dir="rtl"] .al{border-left:none;border-right:4px solid;}
+[dir="rtl"] .al-g{border-right-color:var(--green);} [dir="rtl"] .al-w{border-right-color:var(--amber);}
+[dir="rtl"] .al-i{border-right-color:var(--teal);} [dir="rtl"] .al-r{border-right-color:var(--red);}
+[dir="rtl"] .mchips,[dir="rtl"] .rtabs{flex-direction:row-reverse;}
+[dir="rtl"] .sw-row{flex-direction:row-reverse;}
+[dir="rtl"] .bnav{flex-direction:row-reverse;}
+[lang="ar"],[lang="ur"]{font-family:'Segoe UI','Noto Naskh Arabic',Tahoma,Arial,sans-serif;}
+[lang="hi"],[lang="bn"],[lang="mr"]{font-family:'Segoe UI','Noto Sans Devanagari',Arial,sans-serif;}
+[lang="ta"]{font-family:'Segoe UI','Noto Sans Tamil',Arial,sans-serif;}
+[lang="te"]{font-family:'Segoe UI','Noto Sans Telugu',Arial,sans-serif;}
+.lang-pill{background:var(--bg3);border:1.5px solid var(--border2);border-radius:20px;padding:4px 10px;font-size:11px;font-weight:700;cursor:pointer;color:var(--text2);outline:none;}
+</style>
+</head>
+<body>
+<header class="hdr">
+  <div class="logo">Nutri<span>Scope</span> <span style="font-size:12px;font-weight:400;color:var(--text3);" id="patSubtitle">Patient</span></div>
+  <div style="display:flex;gap:5px;align-items:center;">
+    <select class="lang-pill" id="patLangSel" onchange="setPatLang(this.value)" aria-label="Language">
+      <option value="en">🇬🇧 EN</option>
+      <option value="es">🇺🇸 ES</option>
+      <option value="ar">🇸🇦 AR</option>
+      <option value="hi">🇮🇳 HI</option>
+      <option value="bn">🇧🇩 BN</option>
+      <option value="ta">🇮🇳 TA</option>
+      <option value="te">🇮🇳 TE</option>
+      <option value="ur">🇵🇰 UR</option>
+    </select>
+    <span style="font-size:9px;font-weight:800;padding:3px 7px;border-radius:4px;background:#e0f2fe;color:#0284c7;text-transform:uppercase;">USDA</span>
+    <span style="font-size:9px;font-weight:800;padding:3px 7px;border-radius:4px;background:#dcfce7;color:#16a34a;text-transform:uppercase;">CK</span>
+    <div style="font-size:11px;color:var(--text3);" id="hdDate"></div>
+  </div>
+</header>
+<div class="banner" id="bnr">
+  <h1 id="greet">Good morning! 👋</h1>
+  <p id="bnrMsg">Track your food, manage your blood sugar, and understand what you eat.</p>
+</div>
+<div class="wrap">
+
+<!-- HOME -->
+<div class="sec on" id="s-home">
+  <div class="srow">
+    <div class="sb"><div class="val" id="h-cal" style="color:var(--teal);">0</div><div class="lbl">Calories</div><div class="sub" id="h-calsub" style="color:var(--text3);">of — goal</div></div>
+    <div class="sb"><div class="val" id="h-carb" style="color:var(--amber);">0g</div><div class="lbl">Carbs today</div><div class="sub" id="h-carbsub" style="color:var(--text3);">of —g target</div></div>
+    <div class="sb"><div class="val" id="h-gl" style="color:var(--green);">0</div><div class="lbl">Glycemic load</div><div class="sub" id="h-glsub" style="color:var(--green);">Low</div></div>
+  </div>
+
+  <div class="card">
+    <div class="ch"><div class="ci" style="background:var(--teal-l);">🎯</div><div><div class="ct">Today's Nutrition Score</div><div class="cs">Based on your logged meals</div></div></div>
+    <div style="text-align:center;padding:4px 0 14px;">
+      <div id="scoreC" class="score-c" style="border-color:var(--teal);">
+        <div class="score-n" id="scoreN" style="color:var(--teal);">—</div>
+        <div class="score-l" id="scoreLb" style="color:var(--teal);">Log food first</div>
+      </div>
+      <div id="scoreMsg" style="font-size:13px;color:var(--text2);max-width:300px;margin:0 auto;"></div>
+    </div>
+    <div id="homeAlerts"></div>
+  </div>
+
+  <!-- Your Profile (compact) -->
+  <div class="card" id="profileCard">
+    <div class="ch"><div class="ci" style="background:var(--purple-l);">👤</div><div><div class="ct">Your Profile</div><div class="cs">Set once — used for your targets</div></div></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px;">
+      <div><label style="font-size:11px;color:var(--text2);font-weight:700;display:block;margin-bottom:3px;">Age</label><input class="inp" type="number" id="p-age" value="48" min="18" max="100"></div>
+      <div><label style="font-size:11px;color:var(--text2);font-weight:700;display:block;margin-bottom:3px;">Gender</label>
+        <select class="inp" id="p-gender"><option value="female">Female</option><option value="male">Male</option></select>
+      </div>
+      <div><label style="font-size:11px;color:var(--text2);font-weight:700;display:block;margin-bottom:3px;">Weight (kg)</label><input class="inp" type="number" id="p-wt" value="78" min="30" max="250"></div>
+      <div><label style="font-size:11px;color:var(--text2);font-weight:700;display:block;margin-bottom:3px;">Height (cm)</label><input class="inp" type="number" id="p-ht" value="162" min="100" max="220"></div>
+      <div><label style="font-size:11px;color:var(--text2);font-weight:700;display:block;margin-bottom:3px;">I eat</label>
+        <select class="inp" id="p-diet"><option value="nonveg">Meat &amp; fish</option><option value="vegetarian">Vegetarian</option><option value="eggetarian">Eggetarian</option><option value="vegan">Vegan</option><option value="halal">Halal only</option></select>
+      </div>
+      <div><label style="font-size:11px;color:var(--text2);font-weight:700;display:block;margin-bottom:3px;">Food culture</label>
+        <select class="inp" id="p-cuisine"><option value="mixed">Mixed / All</option><option value="american">American</option><option value="indian">Indian</option><option value="arabic">Arabic / GCC</option></select>
+      </div>
+    </div>
+    <div style="margin-top:9px;"><label style="font-size:11px;color:var(--text2);font-weight:700;display:block;margin-bottom:3px;">My goal</label>
+      <select class="inp" id="p-goal" style="width:100%;"><option value="lose10">Lose weight to help my diabetes</option><option value="maintain">Maintain weight, improve blood sugar</option><option value="lose5">Lose a little weight</option></select>
+    </div>
+    <button class="inp" id="saveBtn" style="background:var(--teal);color:#fff;border:none;cursor:pointer;font-weight:800;margin-top:10px;font-size:14px;" onclick="saveProfile()">Save My Profile →</button>
+  </div>
+
+  <!-- Plate method -->
+  <div class="card">
+    <div class="ch"><div class="ci" style="background:#dcfce7;">🍽</div><div><div class="ct">The Diabetes Plate Method</div><div class="cs">Build every single meal this way</div></div></div>
+    <div style="display:flex;justify-content:center;margin:12px 0 8px;">
+      <div class="plate"><div class="pv"><div class="plbl">🥦 Half plate<br>Non-starchy<br>vegetables</div></div><div class="pp"><div class="plbl">🍗 Quarter<br>Lean protein</div></div><div class="pc"><div class="plbl">🌾 Quarter<br>Complex carbs</div></div></div>
+    </div>
+    <div style="font-size:11px;color:var(--text3);text-align:center;">Recommended by the American Diabetes Association (ADA 2024)</div>
+    <div class="tip"><strong>Every meal:</strong> start with vegetables, add protein, then add a small portion of complex carbs like whole wheat roti, brown rice, or freekeh.</div>
+  </div>
+
+  <!-- Streak -->
+  <div class="card">
+    <div class="ch"><div class="ci" style="background:var(--amber-l);">🔥</div><div><div class="ct">Logging Streak</div><div class="cs" id="streakSub">Keep going!</div></div></div>
+    <div class="streak" id="streakDots"></div>
+  </div>
+</div>
+
+<!-- LOG FOOD -->
+<div class="sec" id="s-log">
+
+  <!-- USDA FoodData Central live search -->
+  <div class="card">
+    <div class="ch"><div class="ci" style="background:#e0f2fe;">🔍</div><div><div class="ct">Search any food</div><div class="cs">Live search via USDA FoodData Central (300,000+ foods)</div></div></div>
+    <div class="search-bar">
+      <input type="text" id="usdaQuery" placeholder="e.g. grilled chicken, brown rice, labneh…" onkeydown="if(event.key==='Enter')searchUSDA()">
+      <button id="usdaBtn" onclick="searchUSDA()">Search</button>
+    </div>
+    <div id="usdaResults"><div class="search-msg">Type a food name and tap Search. Results come from the USDA database — the same data behind MyPlate.gov.</div></div>
+    <div style="font-size:10px;color:var(--text3);margin-top:8px;">Data: USDA FoodData Central · api.nal.usda.gov · Free public API · No account needed</div>
+  </div>
+
+  <!-- CalorieKing lookup -->
+  <div class="card">
+    <div class="ch"><div class="ci" style="background:#dcfce7;">🟢</div><div><div class="ct">Look up on CalorieKing</div><div class="cs">Branded foods, restaurant items, packaged products</div></div></div>
+    <div class="search-bar">
+      <input type="text" id="ckQuery" placeholder="e.g. McDonald's Big Mac, Kellogg's corn flakes…" onkeydown="if(event.key==='Enter')searchCK()">
+      <button onclick="searchCK()" style="background:var(--green);">Search</button>
+    </div>
+    <div id="ckResults"><div class="search-msg">CalorieKing is best for branded and restaurant foods. Tap Search to open results in CalorieKing's website.</div></div>
+    <div style="font-size:10px;color:var(--text3);margin-top:8px;">Opens calorieking.com · US food database · Includes fast food, packaged products, restaurant items</div>
+  </div>
+  <div class="card">
+    <div class="ch"><div class="ci" style="background:var(--green-l);">🍽</div><div><div class="ct">Which meal?</div></div></div>
+    <div class="mchips">
+      <div class="mc on" onclick="setMeal(this,'breakfast')">🌅 Breakfast</div>
+      <div class="mc" onclick="setMeal(this,'snack1')">🫐 Morning snack</div>
+      <div class="mc" onclick="setMeal(this,'lunch')">☀ Lunch</div>
+      <div class="mc" onclick="setMeal(this,'snack2')">🍎 Afternoon snack</div>
+      <div class="mc" onclick="setMeal(this,'dinner')">🌙 Dinner</div>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+      <div class="rtabs" style="margin:0;">
+        <div class="rt on" onclick="setReg(this,'all')">All</div>
+        <div class="rt" onclick="setReg(this,'american')">🇺🇸 American</div>
+        <div class="rt" onclick="setReg(this,'indian')">🇮🇳 Indian</div>
+        <div class="rt" onclick="setReg(this,'arabic')">🌙 Arabic/GCC</div>
+      </div>
+      <label class="csv-btn" style="margin-left:8px;">📂 CSV<input type="file" accept=".csv" id="csvPat" style="display:none" onchange="loadCSVp(event)"></label>
+    </div>
+    <div class="fg" id="fgrid"></div>
+  </div>
+
+  <!-- Manual quantity entry -->
+  <div class="card">
+    <div class="ch"><div class="ci" style="background:var(--teal-l);">✏</div><div><div class="ct">Adjust portion size</div><div class="cs">Tap a food above, then change quantity here</div></div></div>
+    <div style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:8px;margin-bottom:10px;">
+      <div><label style="font-size:11px;color:var(--text2);font-weight:700;display:block;margin-bottom:3px;">Food</label><select class="inp" id="pf-sel" style="font-size:12px;"></select></div>
+      <div><label style="font-size:11px;color:var(--text2);font-weight:700;display:block;margin-bottom:3px;">Qty</label><input class="inp" type="number" id="pf-qty" value="100" min="1"></div>
+      <div><label style="font-size:11px;color:var(--text2);font-weight:700;display:block;margin-bottom:3px;">Unit</label>
+        <select class="inp" id="pf-unit"><option value="g">g</option><option value="ml">ml</option><option value="pcs">pcs</option><option value="tbsp">tbsp</option></select>
+      </div>
+    </div>
+    <button class="inp" style="background:var(--teal);color:#fff;border:none;cursor:pointer;font-weight:800;font-size:14px;" onclick="addManual()">Add to Log →</button>
+    <div style="font-size:11px;color:var(--text3);margin-top:7px;">CSV format: food_key,quantity_g,meal · <a href="#" onclick="dlSample()" style="color:var(--teal);">Download sample</a></div>
+  </div>
+
+  <!-- Log list -->
+  <div class="card" id="logCard" style="display:none;">
+    <div class="ch"><div class="ci" style="background:var(--green-l);">✅</div><div><div class="ct">Logged today</div><div class="cs" id="logCount">0 items</div></div></div>
+    <div id="logList"></div>
+    <div style="margin-top:11px;padding-top:11px;border-top:1px solid var(--border);display:flex;justify-content:space-between;font-size:13px;">
+      <span style="color:var(--text2);">Total calories</span><span style="font-weight:800;color:var(--teal);" id="ltotCal">0 kcal</span>
+    </div>
+    <div style="display:flex;justify-content:space-between;font-size:13px;margin-top:5px;">
+      <span style="color:var(--text2);">Total carbs</span><span style="font-weight:800;color:var(--amber);" id="ltotCarb">0g</span>
+    </div>
+  </div>
+</div>
+
+<!-- PROGRESS -->
+<div class="sec" id="s-prog">
+  <div class="card">
+    <div class="ch"><div class="ci" style="background:var(--teal-l);">📊</div><div><div class="ct">Your nutrition today</div><div class="cs">How you're tracking against your targets</div></div></div>
+    <div id="progBars"></div>
+  </div>
+
+  <div class="card">
+    <div class="ch"><div class="ci" style="background:var(--amber-l);">🩸</div><div><div class="ct">Carbs by meal</div><div class="cs">Aim for 45–60g per meal, spread evenly</div></div></div>
+    <div class="cw"><canvas id="carbChart" role="img" aria-label="Carb intake by meal">Your carbs per meal.</canvas></div>
+  </div>
+
+  <div class="card">
+    <div class="ch"><div class="ci" style="background:var(--green-l);">🌡</div><div><div class="ct">Blood sugar impact</div><div class="cs">Glycemic index of what you ate</div></div></div>
+    <div id="giList"><div style="color:var(--text3);font-size:13px;text-align:center;padding:16px;">Log foods to see blood sugar impact.</div></div>
+  </div>
+
+  <div class="card">
+    <div class="ch"><div class="ci" style="background:var(--purple-l);">🔬</div><div><div class="ct">Full nutrient report</div><div class="cs">All tracked nutrients vs. your targets</div></div></div>
+    <div id="fullNutReport"></div>
+    <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--border);">
+      <div style="font-size:13px;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:6px;">⚠ Top deficiencies</div>
+      <div id="patDefList"><div style="color:var(--text3);font-size:13px;">Log foods to see deficiencies.</div></div>
+      <div style="font-size:13px;font-weight:700;margin:14px 0 10px;display:flex;align-items:center;gap:6px;">📈 Top excesses</div>
+      <div id="patExcList"><div style="color:var(--text3);font-size:13px;">Log foods to see excesses.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- LEARN -->
+<div class="sec" id="s-learn">
+  <!-- My Risk (patient FINDRISC) -->
+  <div class="card">
+    <div class="ch"><div class="ci" style="background:var(--red-l);">🔍</div><div><div class="ct">Check my diabetes risk</div><div class="cs">Takes 30 seconds. Results are for information only.</div></div></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
+      <div><label style="font-size:11px;color:var(--text2);font-weight:700;display:block;margin-bottom:3px;">Family member with diabetes?</label>
+        <select class="inp" id="r-fh" style="font-size:12px;"><option value="0">No</option><option value="3">Grandparent/aunt/uncle</option><option value="5">Parent or sibling</option></select>
+      </div>
+      <div><label style="font-size:11px;color:var(--text2);font-weight:700;display:block;margin-bottom:3px;">Exercise 30 min/day?</label>
+        <select class="inp" id="r-pa" style="font-size:12px;"><option value="0">Yes</option><option value="2">No</option></select>
+      </div>
+      <div><label style="font-size:11px;color:var(--text2);font-weight:700;display:block;margin-bottom:3px;">Vegetables/fruit daily?</label>
+        <select class="inp" id="r-veg" style="font-size:12px;"><option value="0">Yes</option><option value="1">Not always</option></select>
+      </div>
+      <div><label style="font-size:11px;color:var(--text2);font-weight:700;display:block;margin-bottom:3px;">BP medication?</label>
+        <select class="inp" id="r-bp" style="font-size:12px;"><option value="0">No</option><option value="2">Yes</option></select>
+      </div>
+    </div>
+    <button class="inp" style="background:var(--teal);color:#fff;border:none;cursor:pointer;font-weight:800;font-size:14px;" onclick="patRisk()">Check My Risk →</button>
+    <div id="riskOut"></div>
+  </div>
+
+  <!-- 2-day meal plan -->
+  <div class="card">
+    <div class="ch"><div class="ci" style="background:var(--green-l);">📅</div><div><div class="ct">2-Day Meal Plan for You</div><div class="cs">Based on your profile and food preferences</div></div></div>
+    <button class="inp" style="background:var(--green);color:#fff;border:none;cursor:pointer;font-weight:800;font-size:14px;margin-bottom:12px;" onclick="genPlan()">Generate My Meal Plan →</button>
+    <div id="planOut"></div>
+  </div>
+
+  <!-- Swaps -->
+  <div class="card">
+    <div class="ch"><div class="ci" style="background:var(--red-l);">🔄</div><div><div class="ct">Smart food swaps</div><div class="cs">Small changes, big difference on blood sugar</div></div></div>
+    <div class="rtabs">
+      <div class="rt on" onclick="setSwap(this,'american')">🇺🇸 American</div>
+      <div class="rt" onclick="setSwap(this,'indian')">🇮🇳 Indian</div>
+      <div class="rt" onclick="setSwap(this,'arabic')">🌙 Arabic/GCC</div>
+    </div>
+    <div id="swapList"></div>
+  </div>
+
+  <!-- GI explainer -->
+  <div class="card">
+    <div class="ch"><div class="ci" style="background:var(--purple-l);">❓</div><div><div class="ct">What is glycemic index?</div></div></div>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:12px;">Glycemic index (GI) tells you how fast a food raises your blood sugar. For diabetes, lower is always better.</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;text-align:center;margin-bottom:12px;">
+      <div style="background:var(--green-l);border-radius:var(--sm);padding:12px 6px;"><div style="font-size:20px;font-weight:900;color:var(--green);">≤55</div><div style="font-size:11px;font-weight:700;color:var(--green);">Low GI</div><div style="font-size:10px;color:var(--text3);margin-top:3px;">Slow, gentle blood sugar rise. Best choice.</div></div>
+      <div style="background:var(--amber-l);border-radius:var(--sm);padding:12px 6px;"><div style="font-size:20px;font-weight:900;color:var(--amber);">56–70</div><div style="font-size:11px;font-weight:700;color:var(--amber);">Medium GI</div><div style="font-size:10px;color:var(--text3);margin-top:3px;">OK in smaller portions. Pair with protein.</div></div>
+      <div style="background:var(--red-l);border-radius:var(--sm);padding:12px 6px;"><div style="font-size:20px;font-weight:900;color:var(--red);">71+</div><div style="font-size:11px;font-weight:700;color:var(--red);">High GI</div><div style="font-size:10px;color:var(--text3);margin-top:3px;">Spikes blood sugar fast. Limit or swap.</div></div>
+    </div>
+    <div class="tip"><strong>Pairing tip:</strong> Eating a high-GI food with protein or fat slows the sugar rise. Dates + almonds is a great example. Kabsa rice + grilled fish is better than kabsa rice alone.</div>
+  </div>
+
+  <!-- Key tips -->
+  <div class="card">
+    <div class="ch"><div class="ci" style="background:var(--amber-l);">💡</div><div><div class="ct">Important tips for your health</div></div></div>
+    <div class="al al-w"><div class="ai">💊</div><div class="at"><div class="atl">If you take Metformin: get your B12 checked</div>Long-term metformin can reduce Vitamin B12 in your blood. Ask your doctor to test it every year. Eat fish, eggs, labneh, and low-fat curd to support B12 naturally.</div></div>
+    <div class="al al-i"><div class="ai">🥒</div><div class="at"><div class="atl">Karela (bitter gourd) is your friend</div>Research supports karela as a natural food that helps manage blood sugar. Add it as a sabzi, stir-fry, or juice. Popular in Indian and some Arabic cooking.</div></div>
+    <div class="al al-w"><div class="ai">☀</div><div class="at"><div class="atl">Check your Vitamin D</div>Very common deficiency in the GCC and South Asia, and it makes diabetes harder to control. Ask your doctor. Food sources: hamour, salmon, fortified milk, eggs.</div></div>
+    <div class="al al-g"><div class="ai">🚶</div><div class="at"><div class="atl">Walk after meals</div>A 10–15 minute walk after eating can reduce blood sugar by 10–30%. This is one of the most effective, simple strategies for T2DM management.</div></div>
+    <div style="font-size:11px;color:var(--text3);margin-top:12px;padding-top:10px;border-top:1px solid var(--border);">⚕ This app provides general nutrition information only. Always follow the advice of your doctor, dietitian, or diabetes care team. Data sources: ADA Standards 2024 · USDA FoodData Central · NIN India · GCC Food Composition Tables.</div>
+  </div>
+</div>
+
+</div><!-- /wrap -->
+
+<nav class="bnav">
+  <button class="nb on" onclick="go('home',this)"><span class="ni">🏠</span><span class="nl">Home</span></button>
+  <button class="nb" onclick="go('log',this)"><span class="ni">➕</span><span class="nl">Log Food</span></button>
+  <button class="nb" onclick="go('prog',this)"><span class="ni">📊</span><span class="nl">Progress</span></button>
+  <button class="nb" onclick="go('learn',this)"><span class="ni">💡</span><span class="nl">Learn</span></button>
+</nav>
+
+<script>
+const FDB={
+  oatmeal:{n:'Oatmeal',e:'🥣',cal:71,prot:2.5,carb:12,fat:1.5,fiber:1.7,iron:1.0,calcium:10,vitC:0,vitD:0,vitB12:0,gi:55,r:'american'},
+  egg_white:{n:'Egg White',e:'🥚',cal:52,prot:11,carb:0.7,fat:0.2,fiber:0,iron:0.1,calcium:7,vitC:0,vitD:0,vitB12:0.09,gi:0,r:'american'},
+  grilled_chicken:{n:'Grilled Chicken',e:'🍗',cal:165,prot:31,carb:0,fat:3.6,fiber:0,iron:1.0,calcium:15,vitC:0,vitD:0.1,vitB12:0.3,gi:0,r:'american'},
+  sweet_potato:{n:'Sweet Potato',e:'🍠',cal:86,prot:1.6,carb:20,fat:0.1,fiber:3,iron:0.6,calcium:30,vitC:19,vitD:0,vitB12:0,gi:63,r:'american'},
+  salad_greens:{n:'Salad Greens',e:'🥗',cal:17,prot:1.5,carb:2.2,fat:0.3,fiber:1.3,iron:1.5,calcium:77,vitC:28,vitD:0,vitB12:0,gi:15,r:'american'},
+  greek_yogurt:{n:'Greek Yogurt',e:'🫙',cal:59,prot:10,carb:3.6,fat:0.4,fiber:0,iron:0.1,calcium:111,vitC:0,vitD:0.5,vitB12:0.75,gi:11,r:'american'},
+  salmon:{n:'Salmon',e:'🐟',cal:208,prot:20,carb:0,fat:13,fiber:0,iron:0.3,calcium:12,vitC:0,vitD:11.1,vitB12:3.2,gi:0,r:'american'},
+  black_beans:{n:'Black Beans',e:'🫘',cal:132,prot:8.9,carb:24,fat:0.5,fiber:8.7,iron:2.1,calcium:27,vitC:0,vitD:0,vitB12:0,gi:30,r:'american'},
+  blueberries:{n:'Blueberries',e:'🫐',cal:57,prot:0.7,carb:14,fat:0.3,fiber:2.4,iron:0.3,calcium:6,vitC:9.7,vitD:0,vitB12:0,gi:53,r:'american'},
+  almonds:{n:'Almonds',e:'🌰',cal:164,prot:6,carb:6.1,fat:14.2,fiber:3.5,iron:1.1,calcium:76,vitC:0,vitD:0,vitB12:0,gi:0,r:'american'},
+  avocado:{n:'Avocado',e:'🥑',cal:160,prot:2,carb:9,fat:15,fiber:6.7,iron:0.6,calcium:12,vitC:10,vitD:0,vitB12:0,gi:15,r:'american'},
+  broccoli:{n:'Broccoli',e:'🥦',cal:35,prot:2.4,carb:7,fat:0.4,fiber:2.6,iron:0.7,calcium:47,vitC:89,vitD:0,vitB12:0,gi:15,r:'american'},
+  brown_rice:{n:'Brown Rice',e:'🍚',cal:112,prot:2.6,carb:24,fat:0.9,fiber:1.8,iron:0.4,calcium:10,vitC:0,vitD:0,vitB12:0,gi:50,r:'american'},
+  turkey_breast:{n:'Turkey Breast',e:'🦃',cal:135,prot:30,carb:0,fat:1,fiber:0,iron:1.4,calcium:19,vitC:0,vitD:0.1,vitB12:0.4,gi:0,r:'american'},
+  quinoa:{n:'Quinoa',e:'🌾',cal:120,prot:4.4,carb:22,fat:1.9,fiber:2.8,iron:1.5,calcium:17,vitC:0,vitD:0,vitB12:0,gi:53,r:'american'},
+  rice:{n:'White Rice',e:'🍚',cal:130,prot:2.7,carb:28,fat:0.3,fiber:0.4,iron:0.2,calcium:10,vitC:0,vitD:0,vitB12:0,gi:73,r:'indian'},
+  roti_wheat:{n:'Wheat Roti',e:'🫓',cal:71,prot:2.7,carb:14,fat:0.9,fiber:2,iron:1.2,calcium:21,vitC:0,vitD:0,vitB12:0,gi:62,r:'indian'},
+  methi_roti:{n:'Methi Roti',e:'🌿',cal:68,prot:2.9,carb:12,fat:1.2,fiber:2.5,iron:2.0,calcium:25,vitC:3,vitD:0,vitB12:0,gi:48,r:'indian'},
+  dal_moong:{n:'Moong Dal',e:'🍲',cal:105,prot:7.6,carb:18,fat:0.4,fiber:3.9,iron:1.4,calcium:27,vitC:3,vitD:0,vitB12:0,gi:31,r:'indian'},
+  dal_masoor:{n:'Masoor Dal',e:'🍲',cal:116,prot:9,carb:20,fat:0.4,fiber:7.9,iron:3.3,calcium:19,vitC:1.5,vitD:0,vitB12:0,gi:32,r:'indian'},
+  paneer:{n:'Paneer (low-fat)',e:'🧀',cal:180,prot:18,carb:3.6,fat:10,fiber:0,iron:0.5,calcium:480,vitC:0,vitD:0.2,vitB12:0.3,gi:27,r:'indian'},
+  curd_low:{n:'Low-fat Curd',e:'🥛',cal:63,prot:5,carb:7,fat:1.7,fiber:0,iron:0.1,calcium:183,vitC:1,vitD:0,vitB12:0.5,gi:36,r:'indian'},
+  chana:{n:'Chana',e:'🟡',cal:164,prot:8.9,carb:27,fat:2.6,fiber:7.6,iron:2.9,calcium:49,vitC:1.3,vitD:0,vitB12:0,gi:28,r:'indian'},
+  rajma:{n:'Rajma',e:'🫘',cal:127,prot:8.7,carb:22,fat:0.5,fiber:7.4,iron:2.9,calcium:50,vitC:2,vitD:0,vitB12:0,gi:29,r:'indian'},
+  banana:{n:'Banana',e:'🍌',cal:89,prot:1.1,carb:23,fat:0.3,fiber:2.6,iron:0.3,calcium:5,vitC:8.7,vitD:0,vitB12:0,gi:51,r:'indian'},
+  apple:{n:'Apple',e:'🍎',cal:52,prot:0.3,carb:14,fat:0.2,fiber:2.4,iron:0.1,calcium:6,vitC:4.6,vitD:0,vitB12:0,gi:36,r:'indian'},
+  milk:{n:'Low-fat Milk',e:'🥛',cal:46,prot:3.4,carb:4.8,fat:1,fiber:0,iron:0.05,calcium:125,vitC:0.5,vitD:1.3,vitB12:0.45,gi:32,r:'indian'},
+  oats:{n:'Oats',e:'🥣',cal:71,prot:2.5,carb:12,fat:1.5,fiber:1.7,iron:1.0,calcium:10,vitC:0,vitD:0,vitB12:0,gi:55,r:'indian'},
+  bread:{n:'WW Bread',e:'🍞',cal:247,prot:13,carb:41,fat:4.2,fiber:7,iron:3.6,calcium:107,vitC:0,vitD:0,vitB12:0,gi:69,r:'indian'},
+  egg:{n:'Whole Egg',e:'🥚',cal:155,prot:13,carb:1.1,fat:11,fiber:0,iron:1.8,calcium:56,vitC:0,vitD:2.0,vitB12:1.1,gi:0,r:'indian'},
+  chicken:{n:'Chicken',e:'🍗',cal:165,prot:31,carb:0,fat:3.6,fiber:0,iron:1.0,calcium:15,vitC:0,vitD:0.1,vitB12:0.3,gi:0,r:'indian'},
+  fish:{n:'Fish',e:'🐟',cal:136,prot:28,carb:0,fat:2.9,fiber:0,iron:0.4,calcium:20,vitC:0,vitD:5.0,vitB12:2.0,gi:0,r:'indian'},
+  potato:{n:'Potato (boiled)',e:'🥔',cal:87,prot:1.9,carb:20,fat:0.1,fiber:1.8,iron:0.3,calcium:5,vitC:19,vitD:0,vitB12:0,gi:78,r:'indian'},
+  poha:{n:'Poha',e:'🍽',cal:110,prot:2.4,carb:24,fat:0.5,fiber:0.6,iron:0.4,calcium:7,vitC:0,vitD:0,vitB12:0,gi:72,r:'indian'},
+  idli:{n:'Idli (2 pcs)',e:'⚪',cal:130,prot:5,carb:28,fat:0.4,fiber:2,iron:0.6,calcium:18,vitC:0,vitD:0,vitB12:0,gi:46,r:'indian'},
+  dosa:{n:'Dosa',e:'🟤',cal:133,prot:3.5,carb:26,fat:2,fiber:0.8,iron:0.5,calcium:16,vitC:0,vitD:0,vitB12:0,gi:69,r:'indian'},
+  spinach:{n:'Palak / Spinach',e:'🥬',cal:23,prot:2.9,carb:3.6,fat:0.4,fiber:2.4,iron:3.6,calcium:136,vitC:28,vitD:0,vitB12:0,gi:15,r:'indian'},
+  bitter_gourd:{n:'Karela',e:'🥒',cal:17,prot:1,carb:3.7,fat:0.2,fiber:2.8,iron:0.4,calcium:20,vitC:84,vitD:0,vitB12:0,gi:25,r:'indian'},
+  amla:{n:'Amla',e:'🟢',cal:44,prot:0.9,carb:10,fat:0.6,fiber:4.3,iron:0.3,calcium:25,vitC:478,vitD:0,vitB12:0,gi:30,r:'indian'},
+  hummus:{n:'Hummus',e:'🫙',cal:166,prot:8,carb:14,fat:10,fiber:6,iron:2.4,calcium:49,vitC:5,vitD:0,vitB12:0,gi:28,r:'arabic'},
+  labneh:{n:'Labneh',e:'🥛',cal:100,prot:9,carb:4.5,fat:5,fiber:0,iron:0.1,calcium:320,vitC:0,vitD:0.2,vitB12:0.8,gi:30,r:'arabic'},
+  grilled_fish:{n:'Grilled Hamour',e:'🐠',cal:118,prot:24,carb:0,fat:1.5,fiber:0,iron:0.4,calcium:18,vitC:0,vitD:7.0,vitB12:1.2,gi:0,r:'arabic'},
+  lentil_soup:{n:'Lentil Soup',e:'🍜',cal:99,prot:6,carb:16,fat:1.5,fiber:5.3,iron:2.5,calcium:20,vitC:4,vitD:0,vitB12:0,gi:30,r:'arabic'},
+  fattoush:{n:'Fattoush',e:'🥗',cal:55,prot:1.5,carb:8,fat:2.5,fiber:2.2,iron:1.2,calcium:55,vitC:30,vitD:0,vitB12:0,gi:20,r:'arabic'},
+  khubz_ww:{n:'WW Khubz',e:'🫓',cal:250,prot:9,carb:50,fat:2,fiber:5,iron:2.5,calcium:40,vitC:0,vitD:0,vitB12:0,gi:57,r:'arabic'},
+  foul_medames:{n:'Foul Medames',e:'🫘',cal:110,prot:7.6,carb:18,fat:0.5,fiber:5.4,iron:2.2,calcium:36,vitC:0,vitD:0,vitB12:0,gi:40,r:'arabic'},
+  tabbouleh:{n:'Tabbouleh',e:'🌿',cal:78,prot:2.5,carb:11,fat:3,fiber:3.5,iron:2.4,calcium:50,vitC:45,vitD:0,vitB12:0,gi:30,r:'arabic'},
+  freekeh:{n:'Freekeh',e:'🌾',cal:130,prot:5,carb:28,fat:0.8,fiber:4.5,iron:1.5,calcium:22,vitC:0,vitD:0,vitB12:0,gi:43,r:'arabic'},
+  grilled_lamb:{n:'Grilled Lamb',e:'🥩',cal:258,prot:26,carb:0,fat:17,fiber:0,iron:2.5,calcium:18,vitC:0,vitD:0.5,vitB12:2.4,gi:0,r:'arabic'},
+  dates_2:{n:'2 Dates + Almonds',e:'🌴',cal:133,prot:1.5,carb:36,fat:2.5,fiber:3.5,iron:0.5,calcium:32,vitC:0,vitD:0,vitB12:0,gi:42,r:'arabic'},
+  zaatar:{n:"Za'atar Salad",e:'🌿',cal:45,prot:2,carb:5,fat:2,fiber:2,iron:2.0,calcium:80,vitC:8,vitD:0,vitB12:0,gi:15,r:'arabic'},
+  kabsa:{n:'Kabsa Rice',e:'🍚',cal:180,prot:4,carb:38,fat:2.5,fiber:1.2,iron:0.5,calcium:15,vitC:0,vitD:0,vitB12:0,gi:65,r:'arabic'},
+  grape_leaves:{n:'Grape Leaves',e:'🍃',cal:130,prot:4,carb:18,fat:5,fiber:2,iron:1.0,calcium:35,vitC:5,vitD:0,vitB12:0,gi:45,r:'arabic'},
+};
+
+const SWAPS={
+  american:[{f:'White bread',t:'Whole grain bread',fe:'🍞',te:'🌾',w:'GI 75→50. More fiber, slower sugar rise.'},
+    {f:'Instant oatmeal',t:'Steel-cut oats',fe:'⚡',te:'🥣',w:'GI 83→55. Less processed = slower absorption.'},
+    {f:'White potato',t:'Sweet potato',fe:'🥔',te:'🍠',w:'GI 78→63. More fiber and vitamins.'},
+    {f:'Regular yogurt',t:'Greek yogurt (plain)',fe:'🍦',te:'🫙',w:'Half the carbs, double the protein.'},
+    {f:'Fruit juice',t:'Whole fruit',fe:'🧃',te:'🍎',w:'Juice spikes blood sugar fast. Whole fruit has fiber.'},
+    {f:'White rice',t:'Brown rice or quinoa',fe:'🍚',te:'🌾',w:'GI 73→50–53. Meaningful difference over time.'}],
+  indian:[{f:'Plain white roti',t:'Methi roti',fe:'🫓',te:'🌿',w:'Fenugreek reduces post-meal glucose.'},
+    {f:'White rice',t:'Brown rice or millet',fe:'🍚',te:'🌾',w:'GI 73→50. Better blood sugar control.'},
+    {f:'Poha',t:'Idli with sambar',fe:'🍽',te:'⚪',w:'GI 72→46. Fermented = gentler on blood sugar.'},
+    {f:'Mango or banana',t:'Apple or amla',fe:'🥭',te:'🟢',w:'Much lower GI. Amla also very high in Vitamin C.'},
+    {f:'Fried pakora snack',t:'Roasted chana',fe:'🍤',te:'🟡',w:'Same satisfaction, far less fat and a very low GI.'},
+    {f:'Full-fat paneer',t:'Low-fat paneer',fe:'🧀',te:'🥛',w:'Same protein and calcium, less saturated fat.'}],
+  arabic:[{f:'Kabsa rice',t:'Freekeh',fe:'🍚',te:'🌾',w:'GI 65→43. Much better for diabetes.'},
+    {f:'White khubz',t:'Whole wheat khubz',fe:'🫓',te:'🌾',w:'Double the fiber. Slower glucose release.'},
+    {f:'Dates (3–4 pcs)',t:'2 dates + almonds',fe:'🌴',te:'🌴',w:'The fat slows down sugar absorption.'},
+    {f:'Fried samboosa',t:'Foul medames',fe:'🍤',te:'🫘',w:'Traditional high-fiber legume breakfast.'},
+    {f:'Shawarma wrap (white)',t:'Grilled protein + fattoush',fe:'🌯',te:'🥗',w:'Remove the high-GI bread entirely.'},
+    {f:'Full-fat labneh',t:'Low-fat labneh',fe:'🥛',te:'🥛',w:'Same calcium and probiotics, less fat.'}]
+};
+
+// Populate select
+const pfsel=document.getElementById('pf-sel');
+[['american','🇺🇸 American'],['indian','🇮🇳 Indian'],['arabic','🌙 Arabic/GCC']].forEach(([r,l])=>{
+  const og=document.createElement('optgroup');og.label=l;
+  Object.entries(FDB).filter(([k,v])=>v.r===r).forEach(([k,v])=>{const o=document.createElement('option');o.value=k;o.text=v.e+' '+v.n;og.appendChild(o);});
+  pfsel.appendChild(og);
+});
+
+let log2=[],curMeal='breakfast',curReg='all',curChart=null;
+
+// ============================================================
+// USDA FoodData Central — live food search
+// Uses the free public API with DEMO_KEY (30 req/hr).
+// Users can get a free key at fdc.nal.usda.gov/api-key-signup
+// and replace DEMO_KEY below for 1,000 req/hr.
+// ============================================================
+const USDA_KEY = 'DEMO_KEY';
+const USDA_BASE = 'https://api.nal.usda.gov/fdc/v1';
+
+// Nutrient ID mapping in FoodData Central
+const NID = { cal:1008, prot:1003, fat:1004, carb:1005, fiber:1079,
+               iron:1089, calcium:1087, vitC:1162, vitD:1114, vitB12:1178,
+               zinc:1095, magnesium:1090, potassium:1092 };
+
+async function searchUSDA(){
+  const q = document.getElementById('usdaQuery').value.trim();
+  if(!q) return;
+  const btn = document.getElementById('usdaBtn');
+  const resEl = document.getElementById('usdaResults');
+  btn.disabled = true; btn.textContent = 'Searching…';
+  resEl.innerHTML = '<div class="search-msg">⏳ Searching USDA database…</div>';
+
+  try {
+    const url = `${USDA_BASE}/foods/search?api_key=${USDA_KEY}&query=${encodeURIComponent(q)}&dataType=Foundation,SR+Legacy&pageSize=12`;
+    const res = await fetch(url);
+    if(!res.ok) throw new Error('API error ' + res.status);
+    const data = await res.json();
+    const foods = data.foods || [];
+
+    if(!foods.length){
+      resEl.innerHTML = '<div class="search-msg">No results found. Try a simpler search term.</div>';
+      return;
+    }
+
+    resEl.innerHTML = '<div class="search-results" id="usdaList"></div>';
+    const list = document.getElementById('usdaList');
+
+    foods.forEach(f => {
+      const getNut = (id) => {
+        const n = (f.foodNutrients||[]).find(n=>n.nutrientId===id);
+        return n ? n.value : 0;
+      };
+      const cal100 = getNut(NID.cal);
+      const prot100 = getNut(NID.prot);
+      const carb100 = getNut(NID.carb);
+      const fat100 = getNut(NID.fat);
+      const fiber100 = getNut(NID.fiber);
+      const iron100 = getNut(NID.iron);
+      const calcium100 = getNut(NID.calcium);
+      const vitC100 = getNut(NID.vitC);
+      const vitD100 = getNut(NID.vitD);
+      const vitB12100 = getNut(NID.vitB12);
+      const zinc100 = getNut(NID.zinc);
+      const mag100 = getNut(NID.magnesium);
+      const pot100 = getNut(NID.potassium);
+
+      const shortName = f.description.length > 50 ? f.description.slice(0,47)+'…' : f.description;
+
+      const div = document.createElement('div');
+      div.className = 'sr-item';
+      div.innerHTML = `
+        <div style="flex:1;">
+          <div class="sr-name">${shortName}<span class="src-badge src-usda">USDA</span></div>
+          <div class="sr-meta">${cal100 ? Math.round(cal100)+' kcal/100g' : ''} · ${prot100?prot100.toFixed(1)+'g prot':''} · ${carb100?carb100.toFixed(1)+'g carbs':''}</div>
+        </div>
+        <button class="sr-add" onclick="addUSDAFood(${JSON.stringify({name:f.description.slice(0,45),cal:cal100,prot:prot100,carb:carb100,fat:fat100,fiber:fiber100,iron:iron100,calcium:calcium100,vitC:vitC100,vitD:vitD100,vitB12:vitB12100,zinc:zinc100,magnesium:mag100,potassium:pot100}).replace(/"/g,'&quot;')})">+ Add</button>`;
+      list.appendChild(div);
+    });
+  } catch(err) {
+    if(err.message.includes('429')){
+      resEl.innerHTML = `<div class="search-msg">⚠ Rate limit reached (DEMO_KEY allows 30 searches/hour). <a href="https://fdc.nal.usda.gov/api-key-signup/" target="_blank" style="color:var(--teal);">Get your free key</a> for 1,000/hour, then replace DEMO_KEY in the app.</div>`;
+    } else {
+      resEl.innerHTML = `<div class="search-msg">⚠ Search unavailable. Check your connection and try again. (${err.message})</div>`;
+    }
+  } finally {
+    btn.disabled = false; btn.textContent = 'Search';
+  }
+}
+
+function addUSDAFood(f){
+  const x = 1; // values are already per 100g, added as 100g default
+  const id = Date.now() + Math.random();
+  log2.push({
+    id, k:'usda_'+id, meal:curMeal,
+    cal:f.cal*x, carb:f.carb*x, prot:f.prot*x, fat:f.fat*x,
+    fiber:f.fiber*x, iron:f.iron*x, calcium:f.calcium*x,
+    vitC:f.vitC*x, vitD:f.vitD*x, vitB12:f.vitB12*x,
+    zinc:(f.zinc||0)*x, magnesium:(f.magnesium||0)*x, potassium:(f.potassium||0)*x,
+    gi:55, n:f.name.slice(0,40), e:'🥘', qty:100
+  });
+  renderLog2(); updDash();
+  // Flash feedback
+  const el=document.createElement('div');
+  el.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:var(--teal);color:#fff;padding:7px 18px;border-radius:20px;font-size:13px;font-weight:800;z-index:999;animation:pop 1.6s forwards;';
+  el.textContent='🥘 '+f.name.slice(0,30)+' added!';
+  document.body.appendChild(el);setTimeout(()=>el.remove(),1700);
+}
+
+// ============================================================
+// CalorieKing — deep-link search (no CORS-compatible API key needed)
+// Their API requires a commercial key and server-side proxy.
+// We open their website search directly — users see full nutrition
+// data there and can note what to add manually, or copy the item.
+// ============================================================
+function searchCK(){
+  const q = document.getElementById('ckQuery').value.trim();
+  if(!q) return;
+  const resEl = document.getElementById('ckResults');
+  const ckUrl = `https://www.calorieking.com/us/en/foods/search?keywords=${encodeURIComponent(q)}`;
+
+  resEl.innerHTML = `
+    <div style="margin-bottom:8px;font-size:12px;color:var(--text2);">CalorieKing found results for <strong>${q}</strong>. Tap to view full nutrition data:</div>
+    <a href="${ckUrl}" target="_blank" class="ck-link">
+      🟢 View "${q}" on CalorieKing →
+    </a>
+    <div style="margin-top:10px;font-size:11px;color:var(--text3);">
+      Find the food on CalorieKing, note the calories and serving size, then add it manually below using the portion entry form.
+    </div>
+    <div style="margin-top:8px;padding:10px;background:var(--bg3);border-radius:var(--sm);font-size:12px;">
+      <strong>Quick add from CalorieKing data:</strong>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;margin-top:8px;">
+        <div><label style="font-size:10px;color:var(--text3);display:block;margin-bottom:2px;">Food name</label>
+          <input class="inp" id="ck-name" placeholder="e.g. Big Mac" style="font-size:12px;padding:7px 9px;"></div>
+        <div><label style="font-size:10px;color:var(--text3);display:block;margin-bottom:2px;">Cal/100g</label>
+          <input class="inp" id="ck-cal" type="number" placeholder="257" style="font-size:12px;padding:7px 9px;"></div>
+        <div><label style="font-size:10px;color:var(--text3);display:block;margin-bottom:2px;">Protein g</label>
+          <input class="inp" id="ck-prot" type="number" placeholder="13" style="font-size:12px;padding:7px 9px;"></div>
+        <div><label style="font-size:10px;color:var(--text3);display:block;margin-bottom:2px;">Carbs g</label>
+          <input class="inp" id="ck-carb" type="number" placeholder="24" style="font-size:12px;padding:7px 9px;"></div>
+        <div><label style="font-size:10px;color:var(--text3);display:block;margin-bottom:2px;">Fat g</label>
+          <input class="inp" id="ck-fat" type="number" placeholder="10" style="font-size:12px;padding:7px 9px;"></div>
+        <div><label style="font-size:10px;color:var(--text3);display:block;margin-bottom:2px;">Fiber g</label>
+          <input class="inp" id="ck-fiber" type="number" placeholder="2" style="font-size:12px;padding:7px 9px;"></div>
+      </div>
+      <button class="inp" style="background:var(--green);color:#fff;border:none;cursor:pointer;font-weight:700;font-size:13px;margin-top:8px;" onclick="addCKFood()">Add CalorieKing Item to Log →</button>
+    </div>`;
+}
+
+function addCKFood(){
+  const name = document.getElementById('ck-name').value.trim() || 'CalorieKing food';
+  const cal = parseFloat(document.getElementById('ck-cal').value) || 0;
+  const prot = parseFloat(document.getElementById('ck-prot').value) || 0;
+  const carb = parseFloat(document.getElementById('ck-carb').value) || 0;
+  const fat = parseFloat(document.getElementById('ck-fat').value) || 0;
+  const fiber = parseFloat(document.getElementById('ck-fiber').value) || 0;
+  const id = Date.now() + Math.random();
+  log2.push({
+    id, k:'ck_'+id, meal:curMeal,
+    cal, carb, prot, fat, fiber,
+    iron:0, calcium:0, vitC:0, vitD:0, vitB12:0, zinc:0, magnesium:0, potassium:0,
+    gi:55, n:name.slice(0,40), e:'🟢', qty:100
+  });
+  renderLog2(); updDash();
+  const el=document.createElement('div');
+  el.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:var(--green);color:#fff;padding:7px 18px;border-radius:20px;font-size:13px;font-weight:800;z-index:999;animation:pop 1.6s forwards;';
+  el.textContent='🟢 '+name.slice(0,30)+' added!';
+  document.body.appendChild(el);setTimeout(()=>el.remove(),1700);
+  document.getElementById('ck-name').value='';
+  document.getElementById('ck-cal').value='';
+  document.getElementById('ck-prot').value='';
+  document.getElementById('ck-carb').value='';
+  document.getElementById('ck-fat').value='';
+  document.getElementById('ck-fiber').value='';
+}
+
+function init(){
+  const d=new Date(),h=d.getHours();
+  document.getElementById('greet').textContent=(h<12?'Good morning':h<17?'Good afternoon':'Good evening')+' 👋';
+  document.getElementById('hdDate').textContent=d.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
+  renderGrid();renderSwaps('american');renderStreak();updDash();
+}
+
+function go(s,btn){
+  document.querySelectorAll('.sec').forEach(e=>e.classList.remove('on'));
+  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('on'));
+  document.getElementById('s-'+s).classList.add('on');btn.classList.add('on');
+  if(s==='prog')renderProg();
+}
+
+function saveProfile(){
+  updDash();
+  document.getElementById('saveBtn').textContent='Saved ✓';
+  document.getElementById('saveBtn').style.background='var(--green)';
+}
+
+function prof(){
+  return{age:parseInt(document.getElementById('p-age').value)||48,
+    gender:document.getElementById('p-gender').value,
+    wt:parseFloat(document.getElementById('p-wt').value)||78,
+    ht:parseFloat(document.getElementById('p-ht').value)||162,
+    diet:document.getElementById('p-diet').value,
+    cuisine:document.getElementById('p-cuisine').value,
+    goal:document.getElementById('p-goal').value};
+}
+
+function calTgt(){
+  const p=prof();
+  let bmr=p.gender==='male'?10*p.wt+6.25*p.ht-5*p.age+5:10*p.wt+6.25*p.ht-5*p.age-161;
+  let tdee=bmr*1.375;
+  return Math.max(1200,Math.round(tdee-(p.goal==='lose10'?500:p.goal==='lose5'?300:0)));
+}
+function carbTgt(){return Math.round((calTgt()*0.42)/4);}
+function protTgt(){return Math.round(prof().wt*1.4);}
+function fiberTgt(){return 30;}
+
+function setMeal(el,m){document.querySelectorAll('.mc').forEach(c=>c.classList.remove('on'));el.classList.add('on');curMeal=m;}
+function setReg(el,r){document.querySelectorAll('.rtabs .rt').forEach(t=>t.classList.remove('on'));el.classList.add('on');curReg=r;renderGrid();}
+
+function renderGrid(){
+  const g=document.getElementById('fgrid');g.innerHTML='';
+  Object.entries(FDB).filter(([k,f])=>curReg==='all'||f.r===curReg).forEach(([k,f])=>{
+    const gc=f.gi===0?'gi-l':f.gi<=55?'gi-l':f.gi<=70?'gi-m':'gi-h';
+    const d=document.createElement('div');d.className='fb';
+    d.innerHTML=`<span class="fe">${f.e}</span><span class="fn">${f.n}</span><span class="fc">${f.cal} kcal · <span class="${gc}">${f.gi||'—'}</span></span>`;
+    d.onclick=()=>{logFood(k);document.getElementById('pf-sel').value=k;};
+    g.appendChild(d);
+  });
+}
+
+// Enrich FDB with zinc/magnesium/potassium
+const PAT_MICRO={
+  oatmeal:{zinc:0.9,magnesium:26,potassium:61},egg_white:{zinc:0,magnesium:11,potassium:163},
+  grilled_chicken:{zinc:3.0,magnesium:29,potassium:256},sweet_potato:{zinc:0.3,magnesium:25,potassium:337},
+  salad_greens:{zinc:0.2,magnesium:14,potassium:194},greek_yogurt:{zinc:0.6,magnesium:11,potassium:141},
+  salmon:{zinc:0.6,magnesium:30,potassium:363},black_beans:{zinc:1.0,magnesium:60,potassium:355},
+  blueberries:{zinc:0.2,magnesium:6,potassium:77},almonds:{zinc:3.1,magnesium:270,potassium:733},
+  avocado:{zinc:0.6,magnesium:29,potassium:485},broccoli:{zinc:0.4,magnesium:21,potassium:316},
+  brown_rice:{zinc:0.6,magnesium:44,potassium:79},turkey_breast:{zinc:1.9,magnesium:26,potassium:298},
+  quinoa:{zinc:1.1,magnesium:64,potassium:172},rice:{zinc:0.5,magnesium:12,potassium:35},
+  roti_wheat:{zinc:0.7,magnesium:25,potassium:90},methi_roti:{zinc:0.8,magnesium:28,potassium:95},
+  dal_moong:{zinc:1.0,magnesium:48,potassium:266},dal_masoor:{zinc:1.3,magnesium:36,potassium:369},
+  paneer:{zinc:2.7,magnesium:8,potassium:72},curd_low:{zinc:0.6,magnesium:11,potassium:141},
+  chana:{zinc:2.5,magnesium:48,potassium:291},rajma:{zinc:1.1,magnesium:45,potassium:403},
+  banana:{zinc:0.2,magnesium:27,potassium:358},apple:{zinc:0.04,magnesium:5,potassium:107},
+  milk:{zinc:0.4,magnesium:11,potassium:152},oats:{zinc:1.0,magnesium:52,potassium:61},
+  bread:{zinc:1.5,magnesium:30,potassium:179},egg:{zinc:1.3,magnesium:12,potassium:138},
+  chicken:{zinc:3.0,magnesium:29,potassium:256},fish:{zinc:0.6,magnesium:32,potassium:384},
+  potato:{zinc:0.3,magnesium:23,potassium:421},poha:{zinc:0.5,magnesium:20,potassium:55},
+  idli:{zinc:0.4,magnesium:14,potassium:60},dosa:{zinc:0.5,magnesium:18,potassium:68},
+  spinach:{zinc:0.5,magnesium:79,potassium:558},bitter_gourd:{zinc:0.8,magnesium:17,potassium:296},
+  amla:{zinc:0.1,magnesium:10,potassium:198},hummus:{zinc:1.6,magnesium:72,potassium:228},
+  labneh:{zinc:1.0,magnesium:14,potassium:180},grilled_fish:{zinc:0.5,magnesium:28,potassium:290},
+  lentil_soup:{zinc:0.9,magnesium:36,potassium:280},fattoush:{zinc:0.3,magnesium:18,potassium:210},
+  khubz_ww:{zinc:1.1,magnesium:40,potassium:220},foul_medames:{zinc:1.2,magnesium:40,potassium:340},
+  tabbouleh:{zinc:0.5,magnesium:28,potassium:200},freekeh:{zinc:1.5,magnesium:78,potassium:190},
+  grilled_lamb:{zinc:4.5,magnesium:26,potassium:310},dates_2:{zinc:0.4,magnesium:54,potassium:696},
+  zaatar:{zinc:1.2,magnesium:48,potassium:185},kabsa:{zinc:0.8,magnesium:22,potassium:110},
+  grape_leaves:{zinc:0.6,magnesium:22,potassium:160},
+};
+Object.entries(PAT_MICRO).forEach(([k,v])=>{if(FDB[k])Object.assign(FDB[k],v);});
+Object.values(FDB).forEach(f=>{if(!f.zinc)f.zinc=0;if(!f.magnesium)f.magnesium=0;if(!f.potassium)f.potassium=0;});
+
+function makeEntry2(k,qty,meal){
+  const f=FDB[k];if(!f)return null;
+  const x=qty/100;
+  return{id:Date.now()+Math.random(),k,meal,cal:f.cal*x,carb:f.carb*x,prot:f.prot*x,fat:f.fat*x,fiber:f.fiber*x,iron:f.iron*x,calcium:f.calcium*x,vitC:f.vitC*x,vitD:f.vitD*x,vitB12:f.vitB12*x,zinc:(f.zinc||0)*x,magnesium:(f.magnesium||0)*x,potassium:(f.potassium||0)*x,gi:f.gi,n:f.n,e:f.e,qty};
+}
+
+function logFood(k){
+  const e=makeEntry2(k,100,curMeal);if(!e)return;
+  log2.push(e);renderLog2();updDash();
+  const el=document.createElement('div');
+  el.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:var(--green);color:#fff;padding:7px 18px;border-radius:20px;font-size:13px;font-weight:800;z-index:999;animation:pop 1.6s forwards;';
+  el.textContent=FDB[k].e+' '+FDB[k].n+' added!';document.body.appendChild(el);setTimeout(()=>el.remove(),1700);
+}
+
+function addManual(){
+  const k=document.getElementById('pf-sel').value;if(!k)return;
+  const qty=parseFloat(document.getElementById('pf-qty').value)||100;
+  const e=makeEntry2(k,qty,curMeal);if(e){log2.push(e);renderLog2();updDash();}
+}
+
+function updLog2(id,newQty){
+  const entry=log2.find(e=>e.id===id);if(!entry)return;
+  const f=FDB[entry.k];if(!f)return;
+  const q=Math.max(1,parseFloat(newQty)||entry.qty),x=q/100;
+  entry.qty=q;entry.cal=f.cal*x;entry.carb=f.carb*x;entry.prot=f.prot*x;entry.fat=f.fat*x;
+  entry.fiber=f.fiber*x;entry.iron=f.iron*x;entry.calcium=f.calcium*x;entry.vitC=f.vitC*x;
+  entry.vitD=f.vitD*x;entry.vitB12=f.vitB12*x;entry.zinc=(f.zinc||0)*x;
+  entry.magnesium=(f.magnesium||0)*x;entry.potassium=(f.potassium||0)*x;
+  renderLog2();updDash();
+}
+
+function rmLog(id){log2=log2.filter(e=>e.id!==id);renderLog2();updDash();}
+
+function renderLog2(){
+  const lc=document.getElementById('logCard');
+  if(!log2.length){lc.style.display='none';return;}
+  lc.style.display='block';
+  document.getElementById('logCount').textContent=log2.length+' item'+(log2.length>1?'s':'');
+  document.getElementById('logList').innerHTML=log2.map(e=>`
+    <div class="li"><div class="le">${e.e}</div><div class="linfo">
+    <div class="ln">${e.n}</div>
+    <div class="lm">${e.meal} · <span class="eq" contenteditable="true" onblur="updLog2(${e.id},this.textContent)" onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur();}">${Math.round(e.qty)}</span>g · ${e.carb.toFixed(0)}g carbs · GI ${e.gi||'—'}</div>
+    </div><div class="lc">${Math.round(e.cal)}</div><button class="lx" onclick="rmLog(${e.id})">✕</button></div>`).join('');
+  const t=tots2();
+  document.getElementById('ltotCal').textContent=Math.round(t.cal)+' kcal';
+  document.getElementById('ltotCarb').textContent=t.carb.toFixed(0)+'g';
+}
+
+function tots2(){return log2.reduce((a,e)=>({cal:a.cal+e.cal,carb:a.carb+e.carb,prot:a.prot+e.prot,fat:a.fat+e.fat,fiber:a.fiber+e.fiber,iron:a.iron+e.iron,calcium:a.calcium+e.calcium,vitC:a.vitC+e.vitC,vitD:a.vitD+e.vitD,vitB12:a.vitB12+e.vitB12,zinc:a.zinc+(e.zinc||0),magnesium:a.magnesium+(e.magnesium||0),potassium:a.potassium+(e.potassium||0)}),{cal:0,carb:0,prot:0,fat:0,fiber:0,iron:0,calcium:0,vitC:0,vitD:0,vitB12:0,zinc:0,magnesium:0,potassium:0});}
+
+function glP(){return log2.reduce((s,e)=>s+(e.gi*e.carb/100),0);}
+
+function updDash(){
+  const t=tots2(),ct=calTgt(),cbt=carbTgt(),gl=glP();
+  document.getElementById('h-cal').textContent=Math.round(t.cal);document.getElementById('h-calsub').textContent='of '+ct+' goal';
+  document.getElementById('h-carb').textContent=t.carb.toFixed(0)+'g';document.getElementById('h-carbsub').textContent='of '+cbt+'g target';
+  const glC=gl<=100?'var(--green)':gl<=150?'var(--amber)':'var(--red)';
+  document.getElementById('h-gl').textContent=Math.round(gl);document.getElementById('h-gl').style.color=glC;
+  document.getElementById('h-glsub').textContent=gl<=100?'Low ✓':gl<=150?'Moderate':'High ⚠';document.getElementById('h-glsub').style.color=glC;
+  document.getElementById('bnrMsg').textContent=log2.length?`You've logged ${log2.length} food item${log2.length>1?'s':''}. Keep it up!`:'Track your food, manage your blood sugar, and understand what you eat.';
+  if(!log2.length){document.getElementById('scoreN').textContent='—';document.getElementById('scoreLb').textContent='Log food first';document.getElementById('scoreMsg').textContent='';document.getElementById('homeAlerts').innerHTML='';return;}
+  let sc=100;
+  if(t.cal/ct>1.1)sc-=15;if(t.carb/cbt>1.15)sc-=20;if(gl>150)sc-=15;if(t.fiber<15)sc-=10;
+  const avgGi=log2.filter(e=>e.gi>0).reduce((s,e)=>s+e.gi,0)/(log2.filter(e=>e.gi>0).length||1);
+  if(avgGi>70)sc-=10;sc=Math.max(20,Math.min(100,sc));
+  const sEl=document.getElementById('scoreN'),slEl=document.getElementById('scoreLb'),sCEl=document.getElementById('scoreC'),sMEl=document.getElementById('scoreMsg');
+  let sC,sL,sM;
+  if(sc>=85){sC='var(--green)';sL='Excellent!';sM='Your meals are well-balanced for blood sugar control. Keep it up!';}
+  else if(sc>=70){sC='var(--teal)';sL='Good';sM='You\'re doing well. A few small tweaks could help even more.';}
+  else if(sc>=55){sC='var(--amber)';sL='Needs work';sM='Some of today\'s meals may be affecting blood sugar. Check the Learn tab for easy swaps.';}
+  else{sC='var(--red)';sL='Review meals';sM='Today\'s eating pattern may raise blood sugar. Focus on more vegetables and lower-GI choices.';}
+  sEl.textContent=sc;sEl.style.color=sC;slEl.textContent=sL;slEl.style.color=sC;sCEl.style.borderColor=sC;
+  const alerts2=[];
+  if(gl>150)alerts2.push({c:'al-w',i:'⚠',t:'High glycemic load today',b:'Some meals may be causing blood sugar spikes. Add more vegetables or swap a high-GI food at dinner.'});
+  else if(gl<=100&&log2.length>=2)alerts2.push({c:'al-g',i:'✅',t:'Great glycemic load!',b:'Your meals are unlikely to cause major blood sugar spikes. Well done.'});
+  if(t.fiber<15&&log2.length>=2)alerts2.push({c:'al-i',i:'💡',t:'Add more fiber',b:'Fiber slows sugar absorption. Add karela, spinach, rajma, fattoush, or almonds to your next meal.'});
+  if(t.cal>ct*1.15)alerts2.push({c:'al-w',i:'⚠',t:'Over calorie goal',b:`You've had ${Math.round(t.cal-ct)} kcal more than your goal. Consider a lighter dinner.`});
+  document.getElementById('homeAlerts').innerHTML=alerts2.map(a=>`<div class="al ${a.c}"><div class="ai">${a.i}</div><div class="at"><div class="atl">${a.t}</div>${a.b}</div></div>`).join('');
+}
+
+function renderProg(){
+  const t=tots2(),ct=calTgt(),cbt=carbTgt(),pt=protTgt(),ft=fiberTgt();
+  const items=[
+    {l:'Calories',v:Math.round(t.cal),tg:ct,u:'kcal',c:'#0284c7',tip:'Based on your weight goal from your profile.'},
+    {l:'Carbohydrates',v:+t.carb.toFixed(0),tg:cbt,u:'g',c:'#d97706',tip:'ADA recommends 45–60g carbs per meal for T2DM.'},
+    {l:'Protein',v:+t.prot.toFixed(0),tg:pt,u:'g',c:'#16a34a',tip:'Protein keeps you full and doesn\'t raise blood sugar.'},
+    {l:'Fiber',v:+t.fiber.toFixed(1),tg:ft,u:'g',c:'#7c3aed',tip:'30g fiber/day slows sugar absorption and improves satiety.'}];
+  document.getElementById('progBars').innerHTML=items.map(m=>{
+    const p=Math.min(120,Math.round((m.v/m.tg)*100));
+    const fc=p>115?'#dc2626':p<60?'#dc2626':m.c;
+    const sl=p>115?'⚠ Over target':p<60?'⚠ Under target':'✓ On track';
+    const sc=p>115||p<60?'var(--red)':'var(--green)';
+    return`<div class="pi"><div class="pt"><span class="pn">${m.l}</span><span class="pm">${m.v} / ${m.tg} ${m.u} · <span style="color:${sc};font-weight:700;">${sl}</span></span></div><div class="pb"><div class="pf" style="width:${p}%;background:${fc};"></div></div><div class="ptip">${m.tip}</div></div>`;
+  }).join('');
+  // Carb chart
+  const mo=['breakfast','snack1','lunch','snack2','dinner'],ml=['Breakfast','AM Snack','Lunch','PM Snack','Dinner'];
+  const md=mo.map(m=>+log2.filter(e=>e.meal===m).reduce((s,e)=>s+e.carb,0).toFixed(0));
+  if(curChart)curChart.destroy();
+  curChart=new Chart(document.getElementById('carbChart').getContext('2d'),{type:'bar',data:{labels:ml,datasets:[{label:'Carbs (g)',data:md,backgroundColor:md.map(v=>v>60?'#fca5a5':v>45?'#fde68a':'#86efac'),borderRadius:6}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#475569',font:{size:11}},grid:{display:false}},y:{ticks:{color:'#475569',font:{size:11}},grid:{color:'#f1f5f9'}}}}});
+  // GI list
+  const gis=log2.filter(e=>e.gi>0).sort((a,b)=>b.gi-a.gi);
+  document.getElementById('giList').innerHTML=gis.length?gis.map(e=>{
+    const gc=e.gi<=55?'gi-l':e.gi<=70?'gi-m':'gi-h';
+    const gm=e.gi<=55?'Gentle on blood sugar':e.gi<=70?'Moderate — watch portions':'Can raise blood sugar quickly';
+    return`<div class="gi-row"><span style="font-size:20px;">${e.e}</span><div style="flex:1;"><div style="font-size:13px;font-weight:700;">${e.n}</div><div style="font-size:11px;color:var(--text3);">${gm}</div></div><span class="${gc}">${e.gi}</span></div>`;
+  }).join(''):'<div style="color:var(--text3);font-size:13px;text-align:center;padding:14px;">Log foods to see blood sugar impact.</div>';
+  // Full nutrient report — 12 nutrients including zinc/mg/potassium
+  const p2=prof();
+  const nuts=[
+    {n:'Calories',v:Math.round(t.cal),tg:ct,u:'kcal'},
+    {n:'Carbohydrates',v:+t.carb.toFixed(0),tg:cbt,u:'g'},
+    {n:'Protein',v:+t.prot.toFixed(0),tg:pt,u:'g'},
+    {n:'Fiber',v:+t.fiber.toFixed(1),tg:30,u:'g'},
+    {n:'Iron',v:+t.iron.toFixed(1),tg:p2.gender==='female'?18:8,u:'mg'},
+    {n:'Calcium',v:Math.round(t.calcium),tg:1000,u:'mg'},
+    {n:'Vitamin C',v:Math.round(t.vitC),tg:80,u:'mg'},
+    {n:'Vitamin D',v:+t.vitD.toFixed(1),tg:15,u:'mcg'},
+    {n:'Vitamin B12',v:+t.vitB12.toFixed(2),tg:2.4,u:'mcg'},
+    {n:'Zinc',v:+t.zinc.toFixed(1),tg:p2.gender==='female'?8:11,u:'mg'},
+    {n:'Magnesium',v:Math.round(t.magnesium),tg:p2.gender==='female'?310:400,u:'mg'},
+    {n:'Potassium',v:Math.round(t.potassium),tg:3500,u:'mg'}];
+  document.getElementById('fullNutReport').innerHTML=nuts.map(m=>{
+    const p=Math.min(130,Math.round((m.v/m.tg)*100));
+    const fc=p<70?'var(--red)':p<=110?'var(--green)':'var(--amber)';
+    const lbl=p<50?'⚠ Very low':p<75?'Low':p<=110?'✓ Good':'Over';
+    return`<div class="pi"><div class="pt"><span class="pn">${m.n}</span><span class="pm">${m.v} / ${m.tg} ${m.u} — <span style="color:${fc};font-weight:700;">${lbl}</span></span></div><div class="pb"><div class="pf" style="width:${Math.min(100,p)}%;background:${fc};"></div></div></div>`;
+  }).join('');
+  // Top deficiencies
+  const defChecks=[
+    {l:'Fiber',v:t.fiber,tg:30,note:'Add karela, methi roti, rajma, or almonds to your meals. Aim for 30g every day.'},
+    {l:'Vitamin D',v:t.vitD,tg:15,note:'Add salmon, grilled fish, or fortified milk. Ask your doctor about a Vitamin D supplement.'},
+    {l:'Vitamin B12',v:t.vitB12,tg:2.4,note:'If you take Metformin, ask your doctor to check your B12 level. Add fish, eggs, labneh.'},
+    {l:'Calcium',v:t.calcium,tg:1000,note:'Add labneh, low-fat paneer, or low-fat milk.'},
+    {l:'Magnesium',v:t.magnesium,tg:300,note:'Add spinach, almonds, or freekeh. Magnesium helps your body use insulin properly.'},
+    {l:'Zinc',v:t.zinc,tg:9,note:'Add lean meat, legumes, or almonds.'},
+  ];
+  const defs=defChecks.filter(n=>(n.v/n.tg)*100<75).slice(0,3);
+  document.getElementById('patDefList').innerHTML=defs.length
+    ?defs.map(n=>{const p=Math.round((n.v/n.tg)*100);return`<div class="al ${p<50?'al-r':'al-w'}" style="font-size:12px;"><div class="ai">${p<50?'🔴':'🟡'}</div><div class="at"><div class="atl">${n.l} (${p}% of target)</div>${n.note}</div></div>`;}).join('')
+    :'<div style="color:var(--green);font-size:13px;font-weight:600;">✓ No major nutrient gaps detected today.</div>';
+  const excChecks=[
+    {l:'Calories',v:t.cal,tg:ct,note:'Try a lighter dinner. Focus on vegetables and lean protein rather than adding more carbs.'},
+    {l:'Carbohydrates',v:t.carb,tg:cbt,note:'Too many carbs can raise blood sugar. Swap kabsa/white rice for freekeh, or white roti for methi roti.'},
+    {l:'Fat',v:t.fat,tg:Math.round((ct*0.3)/9),note:'Limit fried foods and full-fat dairy. Choose grilled, baked, or steamed instead.'},
+  ];
+  const excs=excChecks.filter(n=>(n.v/n.tg)*100>115).slice(0,2);
+  document.getElementById('patExcList').innerHTML=excs.length
+    ?excs.map(n=>{const p=Math.round((n.v/n.tg)*100);return`<div class="al al-w" style="font-size:12px;"><div class="ai">📈</div><div class="at"><div class="atl">${n.l} (${p}% of target)</div>${n.note}</div></div>`;}).join('')
+    :'<div style="color:var(--green);font-size:13px;font-weight:600;">✓ No major excesses detected today.</div>';
+}
+
+function setSwap(el,r){document.querySelectorAll('.rtabs .rt').forEach(t=>t.classList.remove('on'));el.classList.add('on');renderSwaps(r);}
+function renderSwaps(r){
+  document.getElementById('swapList').innerHTML=(SWAPS[r]||[]).map(s=>`<div class="sw-row"><span class="sf">${s.fe} ${s.f}</span><span style="margin:0 4px;color:var(--text3);">→</span><span class="st">${s.te} ${s.t}</span><span class="sw">${s.w}</span></div>`).join('');
+}
+
+function patRisk(){
+  const p=prof();const bmi=p.wt/(p.ht/100)**2;
+  const g=p.gender;
+  const bmiSc=bmi>=30?3:bmi>=25?1:0;
+  const wSc=0; // waist not collected in patient profile — note this
+  const ageSc=p.age>=65?4:p.age>=55?3:p.age>=45?2:0;
+  const fh=parseInt(document.getElementById('r-fh').value)||0;
+  const pa=parseInt(document.getElementById('r-pa').value)||0;
+  const veg=parseInt(document.getElementById('r-veg').value)||0;
+  const bp=parseInt(document.getElementById('r-bp').value)||0;
+  const total=bmiSc+ageSc+fh+pa+veg+bp;
+  let rC,rN,rCl,rL;
+  if(total<7){rC='rl';rN=total;rL='Lower Risk';rCl='var(--green)';rN=total;}
+  else if(total<12){rC='rl';rL='Slightly Elevated';rCl='var(--teal)';}
+  else if(total<15){rC='rm';rL='Moderate Risk';rCl='var(--amber)';}
+  else{rC='rh';rL='High Risk';rCl='var(--red)';}
+  let advice='';
+  if(total<7)advice='Your risk appears lower. Keep up a healthy diet and regular exercise.';
+  else if(total<12)advice='Some risk factors present. Lifestyle improvements can significantly reduce your risk.';
+  else if(total<15)advice='Moderate risk detected. Please discuss this with your doctor and request a blood glucose test.';
+  else advice='Higher risk detected. Please see your doctor soon for a diabetes screening test (fasting glucose or HbA1c).';
+  document.getElementById('riskOut').innerHTML=`
+    <div class="risk-score" style="margin-top:14px;">
+      <div class="risk-n" style="color:${rCl};">${total}</div>
+      <div><span class="risk-l ${rC}">${rL}</span></div>
+    </div>
+    <div class="al al-i" style="margin-top:12px;"><div class="ai">💬</div><div class="at"><div class="atl">What this means</div>${advice}</div></div>
+    <div style="font-size:11px;color:var(--text3);margin-top:8px;">Score based on FINDRISC (Finnish Diabetes Risk Score). For information only — not a medical diagnosis. Always consult your doctor.</div>`;
+}
+
+function genPlan(){
+  const p=prof(),c=p.cuisine;
+  const d1={
+    breakfast:c==='arabic'?'Labneh (100g) + Za\'atar salad + 2 boiled eggs + small WW khubz':c==='indian'?'2 Methi rotis + Moong dal (150g) + Low-fat curd + Amla (1 piece)':'Steel-cut oats (120g) + Greek yogurt (100g) + 15 almonds + blueberries (½ cup)',
+    snack1:c==='arabic'?'Hummus (50g) + raw cucumber & carrot':c==='indian'?'Roasted chana (40g) + amla or karela juice':'15 almonds + 1 small apple',
+    lunch:c==='arabic'?'Grilled hamour (150g) + Fattoush (150g) + Lentil soup (200ml) + WW khubz':c==='indian'?'Rajma (150g) + 2 wheat rotis + Palak sabzi + Low-fat curd':'Grilled chicken (150g) + Quinoa (120g) + Steamed broccoli + Avocado (50g)',
+    snack2:c==='arabic'?'Labneh (80g) + cucumber sticks':c==='indian'?'Low-fat curd (120g) with karela pieces':'Greek yogurt (150g)',
+    dinner:c==='arabic'?'Foul medames (150g) + Tabbouleh (100g) + Grilled fish (100g)':c==='indian'?'Masoor dal (150g) + 1 methi roti + Mixed sabzi + Karela side':'Black beans (150g) + Salmon (150g) + Salad greens'};
+  const d2={
+    breakfast:c==='arabic'?'Foul medames (150g) + 1 boiled egg + small WW khubz + tomato salad':c==='indian'?'2 Idlis + Sambar (200ml) + Low-fat curd':'Egg white omelette (3 whites + 1 yolk) + sautéed spinach + WW toast',
+    snack1:c==='arabic'?'Hummus (50g) + raw veg':c==='indian'?'Amla + handful roasted chana':'Hummus (50g) + carrot sticks',
+    lunch:c==='arabic'?'Grilled lamb (120g lean) + Freekeh (120g) + Fattoush':c==='indian'?'Chana masala (150g) + Brown rice (120g) + Spinach sabzi':'Turkey (130g) + Brown rice (120g) + Broccoli + Avocado salad',
+    snack2:c==='arabic'?'2 dates + 15 almonds':c==='indian'?'Low-fat curd (100g)':'Blueberries (100g) + almonds',
+    dinner:c==='arabic'?'Lentil soup (200ml) + Tabbouleh (100g) + Grilled hamour (120g)':c==='indian'?'Mixed dal (150g) + 2 methi rotis + Karela sabzi':'Black beans (120g) + Grilled chicken (120g) + Salad greens'};
+  const renderDay=(data,label)=>`
+    <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--sm);padding:12px;margin-bottom:10px;">
+      <div style="font-size:12px;font-weight:800;color:var(--teal);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;">${label}</div>
+      ${['breakfast','snack1','lunch','snack2','dinner'].map(m=>`
+        <div style="margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid var(--border);">
+          <div style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;margin-bottom:3px;">${m.replace('snack1','Morning Snack').replace('snack2','Evening Snack').replace(/^\w/,ch=>ch.toUpperCase())}</div>
+          <div style="font-size:13px;color:var(--text);">${data[m]}</div>
+        </div>`).join('')}
+    </div>`;
+  document.getElementById('planOut').innerHTML=renderDay(d1,'Day 1')+renderDay(d2,'Day 2')+'<div style="font-size:11px;color:var(--text3);margin-top:4px;">Plans follow ADA 2024 Diabetes Plate Method. All portions are approximate — adjust based on your hunger and blood sugar response.</div>';
+}
+
+function loadCSVp(e){
+  const f=e.target.files[0];if(!f)return;
+  const r=new FileReader();
+  r.onload=ev=>{
+    let added=0;
+    ev.target.result.split('\n').slice(1).forEach(line=>{
+      const[k,qty,meal]=line.split(',').map(s=>s?.trim());
+      if(FDB[k]){const entry=makeEntry2(k,parseFloat(qty)||100,meal||'lunch');if(entry){log2.push(entry);added++;}}
+    });
+    renderLog2();updDash();alert(`Added ${added} food items.`);
+  };r.readAsText(f);
+}
+
+function dlSample(){
+  const csv='food_key,quantity_g,meal\nbrown_rice,150,lunch\ngrilled_chicken,120,lunch\nspinach,80,lunch\nmoong dal,150,dinner\nmethi_roti,80,dinner';
+  const a=document.createElement('a');a.href='data:text/csv,'+encodeURIComponent(csv);a.download='sample_log.csv';a.click();
+}
+
+function renderStreak(){
+  const days=['Mo','Tu','We','Th','Fr','Sa','Su'];const td=new Date().getDay();
+  document.getElementById('streakDots').innerHTML=days.map((d,i)=>{const cls=(i+1)%7===td%7?'s-now':'s-off';return`<div class="sd ${cls}">${d}</div>`;}).join('');
+  document.getElementById('streakSub').textContent='Log every day to track your progress';
+}
+
+// ============================================================
+// PATIENT MULTILINGUAL ENGINE — 8 languages
+// ============================================================
+const PTR={
+  en:{dir:'ltr',lang:'en',subtitle:'Patient',
+    greetMorning:'Good morning!',greetAfternoon:'Good afternoon!',greetEvening:'Good evening!',
+    bannerDefault:'Track your food, manage your blood sugar, and understand what you eat.',
+    score:'Today\'s Nutrition Score',scoreSub:'Based on your logged meals',logFirst:'Log food first',
+    plateTitle:'The Diabetes Plate Method',plateSub:'Build every single meal this way',
+    plateADA:'Recommended by the American Diabetes Association (ADA 2024)',
+    plateTip:'Every meal: start with vegetables, add protein, then add a small portion of complex carbs like whole wheat roti, brown rice, or freekeh.',
+    profileTitle:'Your Profile',profileSub:'Set once — used for your targets',
+    ageL:'Age',genderL:'Gender',female:'Female',male:'Male',
+    wtL:'Weight (kg)',htL:'Height (cm)',
+    dietL:'I eat',nonveg:'Meat & fish',veg:'Vegetarian',egg:'Eggetarian',vegan:'Vegan',halal:'Halal only',
+    cuisineL:'Food culture',mixed:'Mixed / All',american:'American',indian:'Indian',arabic:'Arabic / GCC',
+    goalL:'My goal',lose10:'Lose weight to help my diabetes',maintain:'Maintain weight, improve blood sugar',lose5:'Lose a little weight',
+    saveBtn:'Save My Profile →',saved:'Saved ✓',
+    streakTitle:'Logging Streak',streakSub:'Log every day to track your progress',
+    mealQ:'Which meal?',breakfast:'🌅 Breakfast',snack1:'🫐 Morning snack',lunch:'☀ Lunch',snack2:'🍎 Afternoon snack',dinner:'🌙 Dinner',
+    allR:'All',americanR:'🇺🇸 American',indianR:'🇮🇳 Indian',arabicR:'🌙 Arabic/GCC',
+    adjustTitle:'Adjust portion size',adjustSub:'Tap a food above, then change quantity here',
+    foodSel:'Food',qtyL:'Qty',unitL:'Unit',addManBtn:'Add to Log →',
+    loggedTitle:'Logged today',loggedSub:' item',loggedSubP:' items',
+    totCal:'Total calories',totCarb:'Total carbs',
+    progTitle:'Your nutrition today',progSub:'How you\'re tracking against your targets',
+    carbTitle:'Carbs by meal',carbSub:'Aim for 45–60g per meal, spread evenly',
+    giTitle:'Blood sugar impact',giSub:'Glycemic index of what you ate',
+    fullNutTitle:'Full nutrient report',fullNutSub:'All tracked nutrients vs. your targets',
+    topDefTitle:'⚠ Top deficiencies',topExcTitle:'📈 Top excesses',
+    noDefMsg:'✓ No major nutrient gaps detected today.',noExcMsg:'✓ No major excesses detected today.',
+    riskTitle:'Check my diabetes risk',riskSub:'Takes 30 seconds. Results are for information only.',
+    famH:'Family member with diabetes?',noFam:'No',grandFam:'Grandparent/aunt/uncle',closeFam:'Parent or sibling',
+    paL:'Exercise 30 min/day?',paY:'Yes',paNo:'No',
+    vegFL:'Vegetables/fruit daily?',vegY:'Yes',vegNo:'Not always',
+    bpL:'BP medication?',bpN:'No',bpY:'Yes',
+    checkRiskBtn:'Check My Risk →',
+    planTitle:'2-Day Meal Plan for You',planSub:'Based on your profile and food preferences',
+    genPlanBtn:'Generate My Meal Plan →',
+    swapsTitle:'Smart food swaps',swapsSub:'Small changes, big difference on blood sugar',
+    americanSW:'🇺🇸 American',indianSW:'🇮🇳 Indian',arabicSW:'🌙 Arabic/GCC',
+    giExplainTitle:'What is glycemic index?',
+    giExplainBody:'Glycemic index (GI) tells you how fast a food raises your blood sugar. For diabetes, lower is always better.',
+    giLow:'Low GI',giMed:'Medium GI',giHigh:'High GI',
+    giLowDesc:'Slow, gentle blood sugar rise. Best choice.',giMedDesc:'OK in smaller portions. Pair with protein.',giHighDesc:'Spikes blood sugar fast. Limit or swap.',
+    giTip:'Eating a high-GI food with protein or fat slows the sugar rise. Dates + almonds is a great example.',
+    tipsTitle:'Important tips for your health',
+    metforminTitle:'If you take Metformin: get your B12 checked',
+    metforminBody:'Long-term metformin can reduce Vitamin B12 in your blood. Ask your doctor to test it every year.',
+    karelaTitle:'Karela (bitter gourd) is your friend',
+    karelaBody:'Research supports karela as a natural food that helps manage blood sugar. Add it as a sabzi, stir-fry, or juice.',
+    vitDTitle:'Check your Vitamin D',
+    vitDBody:'Very common deficiency in the GCC and South Asia, and it makes diabetes harder to control. Ask your doctor.',
+    walkTitle:'Walk after meals',
+    walkBody:'A 10–15 minute walk after eating can reduce blood sugar by 10–30%.',
+    navHome:'Home',navLog:'Log Food',navProg:'Progress',navLearn:'Learn',
+    csvFormat:'CSV format: food_key,quantity_g,meal',dlSample:'Download sample',
+    usdaTitle:'Search any food',usdaSub:'Live search via USDA FoodData Central (300,000+ foods)',
+    usdaPlaceholder:'e.g. grilled chicken, brown rice, labneh…',usdaBtn:'Search',
+    ckTitle:'Look up on CalorieKing',ckSub:'Branded foods, restaurant items, packaged products',
+    ckPlaceholder:'e.g. McDonald\'s Big Mac, Kellogg\'s corn flakes…',ckBtn:'Search',
+    disclaimer:'⚕ This app provides general nutrition information only. Always follow the advice of your doctor, dietitian, or diabetes care team.',
+  },
+  es:{dir:'ltr',lang:'es',subtitle:'Paciente',
+    greetMorning:'¡Buenos días!',greetAfternoon:'¡Buenas tardes!',greetEvening:'¡Buenas noches!',
+    bannerDefault:'Registra tu comida, controla tu azúcar en sangre y entiende lo que comes.',
+    score:'Puntuación Nutricional de Hoy',scoreSub:'Basado en tus comidas registradas',logFirst:'Registra comida primero',
+    plateTitle:'El Método del Plato para Diabetes',plateSub:'Construye cada comida así',
+    plateADA:'Recomendado por la Asociación Americana de Diabetes (ADA 2024)',
+    plateTip:'Cada comida: empieza con verduras, agrega proteína, luego agrega una pequeña porción de carbohidratos complejos.',
+    profileTitle:'Tu Perfil',profileSub:'Configúralo una vez',
+    ageL:'Edad',genderL:'Género',female:'Femenino',male:'Masculino',
+    wtL:'Peso (kg)',htL:'Altura (cm)',
+    dietL:'Como',nonveg:'Carne y pescado',veg:'Vegetariano',egg:'Ovo-vegetariano',vegan:'Vegano',halal:'Solo halal',
+    cuisineL:'Tipo de cocina',mixed:'Mixta / Todas',american:'Americana',indian:'India',arabic:'Árabe / CCG',
+    goalL:'Mi objetivo',lose10:'Bajar de peso para ayudar mi diabetes',maintain:'Mantener peso, mejorar azúcar',lose5:'Bajar un poco de peso',
+    saveBtn:'Guardar Mi Perfil →',saved:'Guardado ✓',
+    streakTitle:'Racha de Registros',streakSub:'Registra cada día para seguir tu progreso',
+    mealQ:'¿Qué comida?',breakfast:'🌅 Desayuno',snack1:'🫐 Merienda mañana',lunch:'☀ Almuerzo',snack2:'🍎 Merienda tarde',dinner:'🌙 Cena',
+    allR:'Todos',americanR:'🇺🇸 Americana',indianR:'🇮🇳 India',arabicR:'🌙 Árabe/CCG',
+    adjustTitle:'Ajustar porción',adjustSub:'Toca un alimento arriba, luego cambia la cantidad aquí',
+    foodSel:'Alimento',qtyL:'Cantidad',unitL:'Unidad',addManBtn:'Agregar al Registro →',
+    loggedTitle:'Registrado hoy',loggedSub:' elemento',loggedSubP:' elementos',
+    totCal:'Calorías totales',totCarb:'Carbohidratos totales',
+    progTitle:'Tu nutrición hoy',progSub:'Cómo vas con tus metas',
+    carbTitle:'Carbos por comida',carbSub:'Busca 45–60g por comida, distribuidos uniformemente',
+    giTitle:'Impacto en azúcar en sangre',giSub:'Índice glucémico de lo que comiste',
+    fullNutTitle:'Informe nutricional completo',fullNutSub:'Todos los nutrientes vs. tus metas',
+    topDefTitle:'⚠ Principales deficiencias',topExcTitle:'📈 Principales excesos',
+    noDefMsg:'✓ Sin deficiencias importantes detectadas hoy.',noExcMsg:'✓ Sin excesos importantes detectados hoy.',
+    riskTitle:'Verificar mi riesgo de diabetes',riskSub:'Toma 30 segundos. Solo informativo.',
+    famH:'¿Familiar con diabetes?',noFam:'No',grandFam:'Abuelo/tío/tía',closeFam:'Padre/madre o hermano/a',
+    paL:'¿Ejercicio 30 min/día?',paY:'Sí',paNo:'No',
+    vegFL:'¿Verduras/frutas diariamente?',vegY:'Sí',vegNo:'No siempre',
+    bpL:'¿Medicamento para la presión?',bpN:'No',bpY:'Sí',
+    checkRiskBtn:'Verificar Mi Riesgo →',
+    planTitle:'Plan de Comidas de 2 Días',planSub:'Basado en tu perfil y preferencias',
+    genPlanBtn:'Generar Mi Plan de Comidas →',
+    swapsTitle:'Intercambios inteligentes',swapsSub:'Pequeños cambios, gran diferencia en el azúcar',
+    americanSW:'🇺🇸 Americana',indianSW:'🇮🇳 India',arabicSW:'🌙 Árabe/CCG',
+    giExplainTitle:'¿Qué es el índice glucémico?',
+    giExplainBody:'El índice glucémico (IG) te dice qué tan rápido un alimento sube tu azúcar en sangre. Para diabetes, menor es siempre mejor.',
+    giLow:'IG Bajo',giMed:'IG Medio',giHigh:'IG Alto',
+    giLowDesc:'Sube el azúcar lentamente. Mejor opción.',giMedDesc:'OK en porciones pequeñas.',giHighDesc:'Dispara el azúcar rápido. Limitar.',
+    giTip:'Combinar un alimento de IG alto con proteína o grasa ralentiza la subida de azúcar.',
+    tipsTitle:'Consejos importantes para tu salud',
+    metforminTitle:'Si tomas Metformina: revisa tu B12',
+    metforminBody:'El uso prolongado de metformina puede reducir la Vitamina B12. Pide a tu médico que la revise anualmente.',
+    karelaTitle:'El karela (calabaza amarga) es tu amigo',
+    karelaBody:'La investigación respalda el karela como alimento natural que ayuda a controlar el azúcar en sangre.',
+    vitDTitle:'Revisa tu Vitamina D',
+    vitDBody:'Deficiencia muy común en el CCG y el sur de Asia, y hace más difícil controlar la diabetes.',
+    walkTitle:'Camina después de comer',
+    walkBody:'Una caminata de 10–15 minutos después de comer puede reducir el azúcar en un 10–30%.',
+    navHome:'Inicio',navLog:'Registrar',navProg:'Progreso',navLearn:'Aprender',
+    csvFormat:'Formato CSV: food_key,quantity_g,meal',dlSample:'Descargar muestra',
+    usdaTitle:'Buscar cualquier alimento',usdaSub:'Búsqueda en vivo via USDA FoodData Central',
+    usdaPlaceholder:'ej. pollo a la plancha, arroz integral, labneh…',usdaBtn:'Buscar',
+    ckTitle:'Buscar en CalorieKing',ckSub:'Alimentos de marca, restaurantes, productos envasados',
+    ckPlaceholder:'ej. Big Mac de McDonald\'s, cereales Kellogg\'s…',ckBtn:'Buscar',
+    disclaimer:'⚕ Esta aplicación proporciona información nutricional general. Sigue siempre el consejo de tu médico o dietista.',
+  },
+  ar:{dir:'rtl',lang:'ar',subtitle:'المريض',
+    greetMorning:'صباح الخير!',greetAfternoon:'مساء الخير!',greetEvening:'مساء النور!',
+    bannerDefault:'تتبع طعامك، تحكم في سكر دمك، وافهم ما تأكله.',
+    score:'نقاط التغذية اليوم',scoreSub:'بناءً على وجباتك المسجلة',logFirst:'سجل طعامك أولاً',
+    plateTitle:'طريقة طبق السكري',plateSub:'ابنِ كل وجبة بهذه الطريقة',
+    plateADA:'موصى به من قِبل الجمعية الأمريكية للسكري (ADA 2024)',
+    plateTip:'كل وجبة: ابدأ بالخضروات، أضف البروتين، ثم أضف كمية صغيرة من الكربوهيدرات المعقدة.',
+    profileTitle:'ملفك الشخصي',profileSub:'اضبطه مرة واحدة',
+    ageL:'العمر',genderL:'الجنس',female:'أنثى',male:'ذكر',
+    wtL:'الوزن (كغ)',htL:'الطول (سم)',
+    dietL:'أنا آكل',nonveg:'لحوم وأسماك',veg:'نباتي',egg:'بيضي نباتي',vegan:'نباتي صرف',halal:'حلال فقط',
+    cuisineL:'نمط الطعام',mixed:'متنوع / الكل',american:'أمريكي',indian:'هندي',arabic:'عربي / خليجي',
+    goalL:'هدفي',lose10:'إنقاص الوزن لمساعدة مرض السكري',maintain:'الحفاظ على الوزن وتحسين السكر',lose5:'إنقاص قليل من الوزن',
+    saveBtn:'حفظ ملفي الشخصي →',saved:'تم الحفظ ✓',
+    streakTitle:'سلسلة التسجيل',streakSub:'سجل كل يوم لتتبع تقدمك',
+    mealQ:'أي وجبة؟',breakfast:'🌅 الإفطار',snack1:'🫐 وجبة خفيفة صباحية',lunch:'☀ الغداء',snack2:'🍎 وجبة خفيفة مسائية',dinner:'🌙 العشاء',
+    allR:'الكل',americanR:'🇺🇸 أمريكي',indianR:'🇮🇳 هندي',arabicR:'🌙 عربي/خليجي',
+    adjustTitle:'تعديل حجم الحصة',adjustSub:'انقر على طعام أعلاه ثم غير الكمية هنا',
+    foodSel:'الطعام',qtyL:'الكمية',unitL:'الوحدة',addManBtn:'إضافة إلى السجل →',
+    loggedTitle:'المسجل اليوم',loggedSub:' عنصر',loggedSubP:' عناصر',
+    totCal:'إجمالي السعرات',totCarb:'إجمالي الكربوهيدرات',
+    progTitle:'تغذيتك اليوم',progSub:'كيف تسير مقارنة بأهدافك',
+    carbTitle:'الكربوهيدرات لكل وجبة',carbSub:'استهدف 45–60 غراماً لكل وجبة',
+    giTitle:'تأثير على سكر الدم',giSub:'مؤشر جلايسيمي لما أكلته',
+    fullNutTitle:'تقرير مغذيات كامل',fullNutSub:'جميع المغذيات مقابل أهدافك',
+    topDefTitle:'⚠ أبرز النقائص',topExcTitle:'📈 أبرز الزيادات',
+    noDefMsg:'✓ لا نقائص غذائية مهمة اليوم.',noExcMsg:'✓ لا زيادات مهمة اليوم.',
+    riskTitle:'فحص خطر الإصابة بالسكري',riskSub:'يستغرق 30 ثانية. للأغراض المعلوماتية فقط.',
+    famH:'هل يعاني أحد من العائلة من السكري؟',noFam:'لا',grandFam:'جد/جدة، عم/خال',closeFam:'أحد الوالدين أو أخ/أخت',
+    paL:'هل تمارس رياضة 30 دقيقة/يوم؟',paY:'نعم',paNo:'لا',
+    vegFL:'خضروات/فواكه يومياً؟',vegY:'نعم',vegNo:'ليس دائماً',
+    bpL:'دواء ضغط الدم؟',bpN:'لا',bpY:'نعم',
+    checkRiskBtn:'فحص مخاطري →',
+    planTitle:'خطة وجبات ليومين',planSub:'بناءً على ملفك وتفضيلاتك الغذائية',
+    genPlanBtn:'إنشاء خطة الوجبات →',
+    swapsTitle:'بدائل غذائية ذكية',swapsSub:'تغييرات صغيرة، فرق كبير على سكر الدم',
+    americanSW:'🇺🇸 أمريكي',indianSW:'🇮🇳 هندي',arabicSW:'🌙 عربي/خليجي',
+    giExplainTitle:'ما هو المؤشر الجلايسيمي؟',
+    giExplainBody:'يخبرك المؤشر الجلايسيمي بمدى سرعة رفع الطعام لسكر دمك. للسكري، الأقل دائماً أفضل.',
+    giLow:'GI منخفض',giMed:'GI متوسط',giHigh:'GI مرتفع',
+    giLowDesc:'ارتفاع بطيء وهادئ. الخيار الأفضل.',giMedDesc:'مقبول بكميات صغيرة.',giHighDesc:'يرفع السكر بسرعة. قلل منه.',
+    giTip:'إقران طعام عالي المؤشر بالبروتين أو الدهن يبطئ ارتفاع السكر.',
+    tipsTitle:'نصائح مهمة لصحتك',
+    metforminTitle:'إذا كنت تأخذ ميتفورمين: افحص B12',
+    metforminBody:'الاستخدام طويل الأمد لميتفورمين قد يخفض B12 في الدم. اطلب من طبيبك فحصه سنوياً.',
+    karelaTitle:'الكارِيلا (القرع المر) صديقك',
+    karelaBody:'تدعم الأبحاث الكارِيلا كغذاء طبيعي يساعد في التحكم بسكر الدم.',
+    vitDTitle:'افحص فيتامين D',
+    vitDBody:'نقص شائع جداً في دول الخليج وجنوب آسيا، ويصعّب التحكم في السكري.',
+    walkTitle:'امشِ بعد الوجبات',
+    walkBody:'المشي 10–15 دقيقة بعد الأكل يمكنه تقليل سكر الدم بنسبة 10–30٪.',
+    navHome:'الرئيسية',navLog:'تسجيل الطعام',navProg:'التقدم',navLearn:'تعلم',
+    csvFormat:'تنسيق CSV: food_key,quantity_g,meal',dlSample:'تنزيل نموذج',
+    usdaTitle:'البحث عن أي طعام',usdaSub:'بحث مباشر عبر USDA FoodData Central',
+    usdaPlaceholder:'مثل: دجاج مشوي، أرز بني، لبنة…',usdaBtn:'بحث',
+    ckTitle:'البحث في CalorieKing',ckSub:'أطعمة الماركات والمطاعم',
+    ckPlaceholder:'مثل: بيغ ماك ماكدونالدز…',ckBtn:'بحث',
+    disclaimer:'⚕ هذا التطبيق يقدم معلومات تغذوية عامة فقط. اتبع دائماً نصيحة طبيبك.',
+  },
+  hi:{dir:'ltr',lang:'hi',subtitle:'रोगी',
+    greetMorning:'सुप्रभात!',greetAfternoon:'नमस्ते!',greetEvening:'शुभ संध्या!',
+    bannerDefault:'अपना भोजन ट्रैक करें, रक्त शर्करा प्रबंधित करें, और समझें कि आप क्या खाते हैं।',
+    score:'आज का पोषण स्कोर',scoreSub:'आपके दर्ज भोजन के आधार पर',logFirst:'पहले भोजन दर्ज करें',
+    plateTitle:'डायबिटीज प्लेट विधि',plateSub:'हर भोजन इस तरह बनाएं',
+    plateADA:'अमेरिकन डायबिटीज एसोसिएशन (ADA 2024) द्वारा अनुशंसित',
+    plateTip:'हर भोजन: सब्जियों से शुरू करें, प्रोटीन जोड़ें, फिर जटिल कार्बोहाइड्रेट की थोड़ी मात्रा जोड़ें।',
+    profileTitle:'आपकी प्रोफ़ाइल',profileSub:'एक बार सेट करें',
+    ageL:'आयु',genderL:'लिंग',female:'महिला',male:'पुरुष',
+    wtL:'वजन (किग्रा)',htL:'ऊंचाई (सेमी)',
+    dietL:'मैं खाता/खाती हूं',nonveg:'मांस और मछली',veg:'शाकाहारी',egg:'एगेटेरियन',vegan:'वीगन',halal:'केवल हलाल',
+    cuisineL:'खाने की शैली',mixed:'मिश्रित / सभी',american:'अमेरिकी',indian:'भारतीय',arabic:'अरबी / GCC',
+    goalL:'मेरा लक्ष्य',lose10:'मधुमेह में मदद के लिए वजन कम करें',maintain:'वजन बनाए रखें, रक्त शर्करा सुधारें',lose5:'थोड़ा वजन कम करें',
+    saveBtn:'मेरी प्रोफ़ाइल सेव करें →',saved:'सेव किया ✓',
+    streakTitle:'लॉगिंग स्ट्रीक',streakSub:'अपनी प्रगति ट्रैक करने के लिए रोज लॉग करें',
+    mealQ:'कौन सा भोजन?',breakfast:'🌅 नाश्ता',snack1:'🫐 सुबह का स्नैक',lunch:'☀ दोपहर का खाना',snack2:'🍎 शाम का स्नैक',dinner:'🌙 रात का खाना',
+    allR:'सभी',americanR:'🇺🇸 अमेरिकी',indianR:'🇮🇳 भारतीय',arabicR:'🌙 अरबी/GCC',
+    adjustTitle:'मात्रा समायोजित करें',adjustSub:'ऊपर कोई खाना टैप करें, फिर यहां मात्रा बदलें',
+    foodSel:'खाना',qtyL:'मात्रा',unitL:'इकाई',addManBtn:'लॉग में जोड़ें →',
+    loggedTitle:'आज दर्ज किया',loggedSub:' आइटम',loggedSubP:' आइटम',
+    totCal:'कुल कैलोरी',totCarb:'कुल कार्बोहाइड्रेट',
+    progTitle:'आज आपका पोषण',progSub:'आप अपने लक्ष्यों की तुलना में कैसे हैं',
+    carbTitle:'भोजन के अनुसार कार्ब्स',carbSub:'प्रति भोजन 45–60 ग्राम का लक्ष्य रखें',
+    giTitle:'रक्त शर्करा पर प्रभाव',giSub:'आपने जो खाया उसका ग्लाइसेमिक इंडेक्स',
+    fullNutTitle:'पूर्ण पोषक तत्व रिपोर्ट',fullNutSub:'सभी पोषक तत्व बनाम आपके लक्ष्य',
+    topDefTitle:'⚠ प्रमुख कमियां',topExcTitle:'📈 प्रमुख अधिकता',
+    noDefMsg:'✓ आज कोई प्रमुख पोषक तत्व की कमी नहीं।',noExcMsg:'✓ आज कोई प्रमुख अधिकता नहीं।',
+    riskTitle:'मेरा मधुमेह जोखिम जांचें',riskSub:'30 सेकंड लगते हैं। केवल जानकारी के लिए।',
+    famH:'परिवार में किसी को मधुमेह?',noFam:'नहीं',grandFam:'दादा-दादी/चाचा-चाची',closeFam:'माता-पिता या भाई-बहन',
+    paL:'रोज 30 मिनट व्यायाम?',paY:'हां',paNo:'नहीं',
+    vegFL:'रोज सब्जियां/फल?',vegY:'हां',vegNo:'हमेशा नहीं',
+    bpL:'रक्तचाप दवा?',bpN:'नहीं',bpY:'हां',
+    checkRiskBtn:'मेरा जोखिम जांचें →',
+    planTitle:'2-दिन की भोजन योजना',planSub:'आपकी प्रोफ़ाइल और पसंद के आधार पर',
+    genPlanBtn:'मेरी भोजन योजना बनाएं →',
+    swapsTitle:'स्मार्ट खाद्य विकल्प',swapsSub:'छोटे बदलाव, रक्त शर्करा पर बड़ा फर्क',
+    americanSW:'🇺🇸 अमेरिकी',indianSW:'🇮🇳 भारतीय',arabicSW:'🌙 अरबी/GCC',
+    giExplainTitle:'ग्लाइसेमिक इंडेक्स क्या है?',
+    giExplainBody:'ग्लाइसेमिक इंडेक्स (GI) बताता है कि कोई भोजन कितनी तेजी से रक्त शर्करा बढ़ाता है। मधुमेह के लिए, कम हमेशा बेहतर है।',
+    giLow:'कम GI',giMed:'मध्यम GI',giHigh:'उच्च GI',
+    giLowDesc:'धीमी, सौम्य रक्त शर्करा वृद्धि। सर्वोत्तम विकल्प।',giMedDesc:'छोटी मात्रा में ठीक है।',giHighDesc:'रक्त शर्करा तेजी से बढ़ाता है।',
+    giTip:'उच्च GI भोजन को प्रोटीन या वसा के साथ खाने से शर्करा वृद्धि धीमी होती है।',
+    tipsTitle:'आपके स्वास्थ्य के लिए महत्वपूर्ण सुझाव',
+    metforminTitle:'यदि आप मेटफॉर्मिन लेते हैं: B12 जांचाएं',
+    metforminBody:'मेटफॉर्मिन का लंबे समय तक उपयोग विटामिन B12 को कम कर सकता है।',
+    karelaTitle:'करेला आपका मित्र है',
+    karelaBody:'शोध करेले को एक प्राकृतिक भोजन के रूप में समर्थित करता है जो रक्त शर्करा नियंत्रित करने में मदद करता है।',
+    vitDTitle:'अपना विटामिन D जांचाएं',
+    vitDBody:'GCC और दक्षिण एशिया में बहुत सामान्य कमी, और यह मधुमेह नियंत्रण को कठिन बनाती है।',
+    walkTitle:'खाने के बाद चलें',
+    walkBody:'खाने के बाद 10–15 मिनट की सैर रक्त शर्करा को 10–30% कम कर सकती है।',
+    navHome:'होम',navLog:'खाना दर्ज करें',navProg:'प्रगति',navLearn:'जानें',
+    csvFormat:'CSV प्रारूप: food_key,quantity_g,meal',dlSample:'नमूना डाउनलोड करें',
+    usdaTitle:'कोई भी खाना खोजें',usdaSub:'USDA FoodData Central के माध्यम से लाइव खोज',
+    usdaPlaceholder:'जैसे: ग्रिल्ड चिकन, ब्राउन राइस, लाबनेह…',usdaBtn:'खोजें',
+    ckTitle:'CalorieKing पर देखें',ckSub:'ब्रांडेड खाद्य पदार्थ, रेस्तरां आइटम',
+    ckPlaceholder:'जैसे: मैकडोनाल्ड्स बिग मैक…',ckBtn:'खोजें',
+    disclaimer:'⚕ यह ऐप केवल सामान्य पोषण जानकारी प्रदान करता है। हमेशा अपने डॉक्टर की सलाह का पालन करें।',
+  },
+  bn:{dir:'ltr',lang:'bn',subtitle:'রোগী',
+    greetMorning:'শুভ সকাল!',greetAfternoon:'শুভ দুপুর!',greetEvening:'শুভ সন্ধ্যা!',
+    bannerDefault:'আপনার খাবার ট্র্যাক করুন, রক্তের শর্করা নিয়ন্ত্রণ করুন।',
+    score:'আজকের পুষ্টি স্কোর',scoreSub:'লগ করা খাবারের উপর ভিত্তি করে',logFirst:'প্রথমে খাবার লগ করুন',
+    plateTitle:'ডায়াবেটিস প্লেট পদ্ধতি',plateSub:'প্রতিটি খাবার এভাবে তৈরি করুন',
+    plateADA:'আমেরিকান ডায়াবেটিস অ্যাসোসিয়েশন (ADA 2024) কর্তৃক প্রস্তাবিত',
+    plateTip:'প্রতিটি খাবার: শাকসবজি দিয়ে শুরু করুন, প্রোটিন যোগ করুন, তারপর জটিল কার্বোহাইড্রেটের একটি ছোট অংশ যোগ করুন।',
+    profileTitle:'আপনার প্রোফাইল',profileSub:'একবার সেট করুন',
+    ageL:'বয়স',genderL:'লিঙ্গ',female:'মহিলা',male:'পুরুষ',
+    wtL:'ওজন (কেজি)',htL:'উচ্চতা (সেমি)',
+    dietL:'আমি খাই',nonveg:'মাংস ও মাছ',veg:'নিরামিষ',egg:'ডিম-সহ',vegan:'ভেগান',halal:'শুধু হালাল',
+    cuisineL:'খাদ্য সংস্কৃতি',mixed:'মিশ্র / সব',american:'আমেরিকান',indian:'ভারতীয়',arabic:'আরবি / GCC',
+    goalL:'আমার লক্ষ্য',lose10:'ডায়াবেটিসে সাহায্যের জন্য ওজন কমান',maintain:'ওজন বজায় রাখুন',lose5:'একটু ওজন কমান',
+    saveBtn:'আমার প্রোফাইল সেভ করুন →',saved:'সেভ হয়েছে ✓',
+    streakTitle:'লগিং ধারা',streakSub:'প্রতিদিন লগ করুন',
+    mealQ:'কোন খাবার?',breakfast:'🌅 সকালের নাস্তা',snack1:'🫐 সকালের স্ন্যাক',lunch:'☀ দুপুরের খাবার',snack2:'🍎 বিকালের স্ন্যাক',dinner:'🌙 রাতের খাবার',
+    allR:'সব',americanR:'🇺🇸 আমেরিকান',indianR:'🇮🇳 ভারতীয়',arabicR:'🌙 আরবি/GCC',
+    adjustTitle:'পরিমাণ সামঞ্জস্য করুন',adjustSub:'উপরে একটি খাবার ট্যাপ করুন, তারপর এখানে পরিমাণ পরিবর্তন করুন',
+    foodSel:'খাবার',qtyL:'পরিমাণ',unitL:'একক',addManBtn:'লগে যোগ করুন →',
+    loggedTitle:'আজ লগ করা',loggedSub:' আইটেম',loggedSubP:' আইটেম',
+    totCal:'মোট ক্যালোরি',totCarb:'মোট কার্বোহাইড্রেট',
+    progTitle:'আজকের পুষ্টি',progSub:'আপনার লক্ষ্যের বিপরীতে কীভাবে যাচ্ছেন',
+    carbTitle:'খাবার অনুযায়ী কার্ব',carbSub:'প্রতি খাবারে 45–60g লক্ষ্য রাখুন',
+    giTitle:'রক্তের শর্করায় প্রভাব',giSub:'আপনার খাওয়া খাবারের গ্লাইসেমিক ইনডেক্স',
+    fullNutTitle:'সম্পূর্ণ পুষ্টি রিপোর্ট',fullNutSub:'সব পুষ্টি বনাম আপনার লক্ষ্য',
+    topDefTitle:'⚠ শীর্ষ ঘাটতি',topExcTitle:'📈 শীর্ষ আধিক্য',
+    noDefMsg:'✓ আজ কোনো উল্লেখযোগ্য ঘাটতি নেই।',noExcMsg:'✓ আজ কোনো উল্লেখযোগ্য আধিক্য নেই।',
+    riskTitle:'আমার ডায়াবেটিস ঝুঁকি পরীক্ষা',riskSub:'৩০ সেকেন্ড লাগে। শুধু তথ্যের জন্য।',
+    famH:'পরিবারে কারো ডায়াবেটিস?',noFam:'না',grandFam:'দাদা/নানা, চাচা/মামা',closeFam:'বাবা-মা বা ভাই-বোন',
+    paL:'প্রতিদিন ৩০ মিনিট ব্যায়াম?',paY:'হ্যাঁ',paNo:'না',
+    vegFL:'প্রতিদিন সবজি/ফল?',vegY:'হ্যাঁ',vegNo:'সবসময় নয়',
+    bpL:'রক্তচাপের ওষুধ?',bpN:'না',bpY:'হ্যাঁ',
+    checkRiskBtn:'আমার ঝুঁকি পরীক্ষা করুন →',
+    planTitle:'২-দিনের খাবার পরিকল্পনা',planSub:'আপনার প্রোফাইল ও পছন্দ অনুযায়ী',
+    genPlanBtn:'আমার খাবার পরিকল্পনা তৈরি করুন →',
+    swapsTitle:'স্মার্ট খাবার বিনিময়',swapsSub:'ছোট পরিবর্তন, রক্তে শর্করায় বড় পার্থক্য',
+    americanSW:'🇺🇸 আমেরিকান',indianSW:'🇮🇳 ভারতীয়',arabicSW:'🌙 আরবি/GCC',
+    giExplainTitle:'গ্লাইসেমিক ইনডেক্স কী?',
+    giExplainBody:'গ্লাইসেমিক ইনডেক্স (GI) বলে কোনো খাবার কত দ্রুত রক্তের শর্করা বাড়ায়।',
+    giLow:'কম GI',giMed:'মাঝারি GI',giHigh:'উচ্চ GI',
+    giLowDesc:'ধীরে শর্করা বাড়ায়। সেরা পছন্দ।',giMedDesc:'ছোট অংশে ঠিক আছে।',giHighDesc:'দ্রুত শর্করা বাড়ায়।',
+    giTip:'উচ্চ GI খাবার প্রোটিনের সাথে খেলে শর্করা বৃদ্ধি ধীর হয়।',
+    tipsTitle:'আপনার স্বাস্থ্যের জন্য গুরুত্বপূর্ণ টিপস',
+    metforminTitle:'মেটফর্মিন নিলে: B12 পরীক্ষা করুন',
+    metforminBody:'দীর্ঘমেয়াদী মেটফর্মিন ব্যবহার রক্তে Vitamin B12 কমাতে পারে।',
+    karelaTitle:'করলা আপনার বন্ধু',
+    karelaBody:'গবেষণা করলাকে রক্তের শর্করা নিয়ন্ত্রণে সাহায্যকারী প্রাকৃতিক খাবার হিসেবে সমর্থন করে।',
+    vitDTitle:'আপনার ভিটামিন D পরীক্ষা করুন',
+    vitDBody:'GCC ও দক্ষিণ এশিয়ায় খুব সাধারণ ঘাটতি, এবং এটি ডায়াবেটিস নিয়ন্ত্রণ কঠিন করে।',
+    walkTitle:'খাওয়ার পর হাঁটুন',
+    walkBody:'খাওয়ার পর ১০–১৫ মিনিট হাঁটলে রক্তের শর্করা ১০–৩০% কমতে পারে।',
+    navHome:'হোম',navLog:'খাবার লগ',navProg:'অগ্রগতি',navLearn:'জানুন',
+    csvFormat:'CSV ফর্ম্যাট: food_key,quantity_g,meal',dlSample:'নমূনা ডাউনলোড',
+    usdaTitle:'যেকোনো খাবার খুঁজুন',usdaSub:'USDA FoodData Central এর মাধ্যমে লাইভ সার্চ',
+    usdaPlaceholder:'যেমন: গ্রিলড চিকেন, ব্রাউন রাইস…',usdaBtn:'খুঁজুন',
+    ckTitle:'CalorieKing-এ দেখুন',ckSub:'ব্র্যান্ডেড খাবার, রেস্তোরাঁ আইটেম',
+    ckPlaceholder:'যেমন: ম্যাকডোনাল্ডস বিগ ম্যাক…',ckBtn:'খুঁজুন',
+    disclaimer:'⚕ এই অ্যাপটি শুধুমাত্র সাধারণ পুষ্টি তথ্য প্রদান করে। সবসময় আপনার ডাক্তারের পরামর্শ অনুসরণ করুন।',
+  },
+  ta:{dir:'ltr',lang:'ta',subtitle:'நோயாளி',
+    greetMorning:'காலை வணக்கம்!',greetAfternoon:'மதிய வணக்கம்!',greetEvening:'மாலை வணக்கம்!',
+    bannerDefault:'உங்கள் உணவை கண்காணியுங்கள், இரத்த சர்க்கரையை கட்டுப்படுத்துங்கள்.',
+    score:'இன்றைய ஊட்டச்சத்து மதிப்பெண்',scoreSub:'பதிவு செய்த உணவின் அடிப்படையில்',logFirst:'முதலில் உணவை பதிவு செய்யுங்கள்',
+    plateTitle:'நீரிழிவுக்கான தட்டு முறை',plateSub:'ஒவ்வொரு வேளையும் இவ்வாறு உருவாக்கவும்',
+    plateADA:'அமெரிக்க நீரிழிவு சங்கம் (ADA 2024) பரிந்துரைக்கப்பட்டது',
+    plateTip:'ஒவ்வொரு வேளையும்: காய்கறிகளில் தொடங்கவும், புரதம் சேர்க்கவும், பின்பு சிறிய அளவு கார்போஹைட்ரேட் சேர்க்கவும்.',
+    profileTitle:'உங்கள் சுயவிவரம்',profileSub:'ஒரு முறை அமைக்கவும்',
+    ageL:'வயது',genderL:'பாலினம்',female:'பெண்',male:'ஆண்',
+    wtL:'எடை (கிகி)',htL:'உயரம் (செமீ)',
+    dietL:'நான் சாப்பிடுகிறேன்',nonveg:'இறைச்சி & மீன்',veg:'சைவம்',egg:'முட்டை சைவம்',vegan:'வீகன்',halal:'ஹலால் மட்டும்',
+    cuisineL:'உணவு கலாச்சாரம்',mixed:'கலப்பு / அனைத்தும்',american:'அமெரிக்கன்',indian:'இந்திய',arabic:'அரபிக் / GCC',
+    goalL:'என் இலக்கு',lose10:'நீரிழிவுக்கு உதவ எடை குறைக்க',maintain:'எடையை பராமரிக்க',lose5:'கொஞ்சம் எடை குறைக்க',
+    saveBtn:'என் சுயவிவரத்தை சேமிக்க →',saved:'சேமிக்கப்பட்டது ✓',
+    streakTitle:'பதிவு தொடர்',streakSub:'உங்கள் முன்னேற்றத்தை கண்காணிக்க தினமும் பதிவு செய்யுங்கள்',
+    mealQ:'எந்த வேளை?',breakfast:'🌅 காலை உணவு',snack1:'🫐 காலை சிற்றுண்டி',lunch:'☀ மதிய உணவு',snack2:'🍎 மாலை சிற்றுண்டி',dinner:'🌙 இரவு உணவு',
+    allR:'அனைத்தும்',americanR:'🇺🇸 அமெரிக்கன்',indianR:'🇮🇳 இந்திய',arabicR:'🌙 அரபிக்/GCC',
+    adjustTitle:'பகுதி அளவை சரிசெய்யவும்',adjustSub:'மேலே ஒரு உணவை தட்டவும், பின்பு இங்கே அளவை மாற்றவும்',
+    foodSel:'உணவு',qtyL:'அளவு',unitL:'அலகு',addManBtn:'பதிவில் சேர்க்கவும் →',
+    loggedTitle:'இன்று பதிவு செய்தது',loggedSub:' உருப்படி',loggedSubP:' உருப்படிகள்',
+    totCal:'மொத்த கலோரி',totCarb:'மொத்த கார்போஹைட்ரேட்',
+    progTitle:'இன்றைய ஊட்டச்சத்து',progSub:'உங்கள் இலக்குகளுக்கு எதிராக நீங்கள் எப்படி செல்கிறீர்கள்',
+    carbTitle:'வேளையின்படி கார்ப்ஸ்',carbSub:'ஒவ்வொரு வேளையும் 45–60g இலக்கு வைக்கவும்',
+    giTitle:'இரத்த சர்க்கரையில் தாக்கம்',giSub:'நீங்கள் சாப்பிட்ட உணவின் கிளைசெமிக் குறியீடு',
+    fullNutTitle:'முழு ஊட்டச்சத்து அறிக்கை',fullNutSub:'உங்கள் இலக்குகளுக்கு எதிரான அனைத்து ஊட்டச்சத்துக்களும்',
+    topDefTitle:'⚠ முக்கிய குறைபாடுகள்',topExcTitle:'📈 முக்கிய அதிகப்படிகள்',
+    noDefMsg:'✓ இன்று குறிப்பிடத்தக்க ஊட்டச்சத்து இடைவெளி இல்லை.',noExcMsg:'✓ இன்று குறிப்பிடத்தக்க அதிகப்படி இல்லை.',
+    riskTitle:'என் நீரிழிவு ஆபத்தை சரிபார்க்கவும்',riskSub:'30 வினாடிகள் ஆகும். தகவல் நோக்கங்களுக்கு மட்டுமே.',
+    famH:'குடும்பத்தில் யாருக்காவது நீரிழிவு?',noFam:'இல்லை',grandFam:'தாத்தா/பாட்டி, மாமா/மாமி',closeFam:'பெற்றோர் அல்லது சகோதரர்-சகோதரி',
+    paL:'தினமும் 30 நிமிட உடற்பயிற்சி?',paY:'ஆம்',paNo:'இல்லை',
+    vegFL:'தினமும் காய்கறி/பழங்கள்?',vegY:'ஆம்',vegNo:'எப்போதும் இல்லை',
+    bpL:'இரத்த அழுத்த மருந்து?',bpN:'இல்லை',bpY:'ஆம்',
+    checkRiskBtn:'என் ஆபத்தை சரிபார்க்கவும் →',
+    planTitle:'2-நாள் உணவு திட்டம்',planSub:'உங்கள் சுயவிவரம் மற்றும் விருப்பங்களின் அடிப்படையில்',
+    genPlanBtn:'என் உணவு திட்டத்தை உருவாக்கவும் →',
+    swapsTitle:'புத்திசாலி உணவு மாற்றங்கள்',swapsSub:'சிறிய மாற்றங்கள், இரத்த சர்க்கரையில் பெரிய வித்தியாசம்',
+    americanSW:'🇺🇸 அமெரிக்கன்',indianSW:'🇮🇳 இந்திய',arabicSW:'🌙 அரபிக்/GCC',
+    giExplainTitle:'கிளைசெமிக் குறியீடு என்றால் என்ன?',
+    giExplainBody:'கிளைசெமிக் குறியீடு (GI) ஒரு உணவு எவ்வளவு விரைவாக இரத்த சர்க்கரையை உயர்த்துகிறது என்று சொல்கிறது.',
+    giLow:'குறைந்த GI',giMed:'நடுத்தர GI',giHigh:'அதிக GI',
+    giLowDesc:'மெதுவான, மென்மையான உயர்வு. சிறந்த தேர்வு.',giMedDesc:'சிறிய பகுதிகளில் சரி.',giHighDesc:'விரைவாக சர்க்கரையை உயர்த்துகிறது.',
+    giTip:'அதிக GI உணவை புரதத்துடன் சாப்பிட்டால் சர்க்கரை உயர்வு குறையும்.',
+    tipsTitle:'உங்கள் ஆரோக்கியத்துக்கான முக்கிய குறிப்புகள்',
+    metforminTitle:'மெட்ஃபார்மின் எடுத்தால்: B12 சோதிக்கவும்',
+    metforminBody:'நீண்டகால மெட்ஃபார்மின் பயன்பாடு இரத்தத்தில் B12 ஐ குறைக்கலாம்.',
+    karelaTitle:'பாகற்காய் உங்கள் நண்பர்',
+    karelaBody:'இரத்த சர்க்கரையை கட்டுப்படுத்த உதவும் இயற்கை உணவாக ஆராய்ச்சி பாகற்காயை ஆதரிக்கிறது.',
+    vitDTitle:'உங்கள் வைட்டமின் D சோதிக்கவும்',
+    vitDBody:'GCC மற்றும் தென் ஆசியாவில் மிகவும் பொதுவான குறைபாடு.',
+    walkTitle:'சாப்பிட்ட பின் நடக்கவும்',
+    walkBody:'சாப்பிட்ட பிறகு 10–15 நிமிட நடை இரத்த சர்க்கரையை 10–30% குறைக்கலாம்.',
+    navHome:'முகப்பு',navLog:'உணவு பதிவு',navProg:'முன்னேற்றம்',navLearn:'அறிக',
+    csvFormat:'CSV வடிவம்: food_key,quantity_g,meal',dlSample:'மாதிரி பதிவிறக்கம்',
+    usdaTitle:'எந்த உணவையும் தேடுங்கள்',usdaSub:'USDA FoodData Central மூலம் நேரடி தேடல்',
+    usdaPlaceholder:'எ.கா: கிரில்ட் சிக்கன், பிரவுன் ரைஸ்…',usdaBtn:'தேடு',
+    ckTitle:'CalorieKing-ல் பார்க்கவும்',ckSub:'பிராண்டட் உணவுகள், உணவகம்',
+    ckPlaceholder:'எ.கா: மக்டொனால்டு பிக் மேக்…',ckBtn:'தேடு',
+    disclaimer:'⚕ இந்த பயன்பாடு பொதுவான ஊட்டச்சத்து தகவல்களை மட்டுமே வழங்குகிறது.',
+  },
+  te:{dir:'ltr',lang:'te',subtitle:'రోగి',
+    greetMorning:'శుభోదయం!',greetAfternoon:'శుభ మధ్యాహ్నం!',greetEvening:'శుభ సాయంత్రం!',
+    bannerDefault:'మీ ఆహారాన్ని ట్రాక్ చేయండి, రక్తంలో చక్కెరను నిర్వహించండి.',
+    score:'నేటి పోషకాహార స్కోర్',scoreSub:'లాగ్ చేసిన ఆహారం ఆధారంగా',logFirst:'మొదట ఆహారం లాగ్ చేయండి',
+    plateTitle:'డయాబెటిస్ ప్లేట్ పద్ధతి',plateSub:'ప్రతి భోజనాన్ని ఇలా తయారు చేయండి',
+    plateADA:'అమెరికన్ డయాబెటిస్ అసోసియేషన్ (ADA 2024) సిఫార్సు',
+    plateTip:'ప్రతి భోజనం: కూరగాయలతో ప్రారంభించండి, ప్రోటీన్ జోడించండి, తర్వాత సంక్లిష్ట కార్బోహైడ్రేట్లు జోడించండి.',
+    profileTitle:'మీ ప్రొఫైల్',profileSub:'ఒకసారి సెట్ చేయండి',
+    ageL:'వయసు',genderL:'లింగం',female:'స్త్రీ',male:'పురుషుడు',
+    wtL:'బరువు (కిలోలు)',htL:'ఎత్తు (సెమీ)',
+    dietL:'నేను తింటాను',nonveg:'మాంసం & చేప',veg:'శాకాహారి',egg:'గుడ్డు శాకాహారి',vegan:'వేగన్',halal:'హలాల్ మాత్రమే',
+    cuisineL:'ఆహార సంస్కృతి',mixed:'మిశ్రమ / అన్నీ',american:'అమెరికన్',indian:'భారతీయ',arabic:'అరబిక్ / GCC',
+    goalL:'నా లక్ష్యం',lose10:'మధుమేహానికి సహాయంగా బరువు తగ్గడానికి',maintain:'బరువు నిర్వహించడానికి',lose5:'కొంచెం బరువు తగ్గడానికి',
+    saveBtn:'నా ప్రొఫైల్ సేవ్ చేయండి →',saved:'సేవ్ చేయబడింది ✓',
+    streakTitle:'లాగింగ్ స్ట్రీక్',streakSub:'మీ పురోగతిని ట్రాక్ చేయడానికి ప్రతిరోజు లాగ్ చేయండి',
+    mealQ:'ఏ భోజనం?',breakfast:'🌅 అల్పాహారం',snack1:'🫐 ఉదయం స్నాక్',lunch:'☀ మధ్యాహ్న భోజనం',snack2:'🍎 మధ్యాహ్నం స్నాక్',dinner:'🌙 రాత్రి భోజనం',
+    allR:'అన్నీ',americanR:'🇺🇸 అమెరికన్',indianR:'🇮🇳 భారతీయ',arabicR:'🌙 అరబిక్/GCC',
+    adjustTitle:'భాగం పరిమాణం సర్దుబాటు చేయండి',adjustSub:'పైన ఆహారాన్ని నొక్కి, ఆపై ఇక్కడ పరిమాణం మార్చండి',
+    foodSel:'ఆహారం',qtyL:'పరిమాణం',unitL:'యూనిట్',addManBtn:'లాగ్‌కు జోడించు →',
+    loggedTitle:'నేడు లాగ్ చేసింది',loggedSub:' అంశం',loggedSubP:' అంశాలు',
+    totCal:'మొత్తం కేలరీలు',totCarb:'మొత్తం కార్బోహైడ్రేట్లు',
+    progTitle:'నేటి పోషణ',progSub:'మీ లక్ష్యాలకు వ్యతిరేకంగా మీరు ఎలా ట్రాక్ చేస్తున్నారు',
+    carbTitle:'భోజనం వారీగా కార్బ్ లు',carbSub:'ప్రతి భోజనానికి 45–60g లక్ష్యంగా',
+    giTitle:'రక్తంలో చక్కెరపై ప్రభావం',giSub:'మీరు తిన్న ఆహారం యొక్క గ్లైసెమిక్ ఇండెక్స్',
+    fullNutTitle:'పూర్తి పోషక నివేదిక',fullNutSub:'మీ లక్ష్యాలకు వ్యతిరేకంగా అన్ని పోషకాలు',
+    topDefTitle:'⚠ అగ్ర లోపాలు',topExcTitle:'📈 అగ్ర అధికత',
+    noDefMsg:'✓ నేడు ముఖ్యమైన పోషక లోపాలు లేవు.',noExcMsg:'✓ నేడు ముఖ్యమైన అధికత లేదు.',
+    riskTitle:'నా మధుమేహ ప్రమాదాన్ని తనిఖీ చేయండి',riskSub:'30 సెకన్లు పడుతుంది. సమాచార ప్రయోజనాల కోసం మాత్రమే.',
+    famH:'కుటుంబంలో ఎవరికైనా మధుమేహం?',noFam:'లేదు',grandFam:'తాత/అమ్మమ్మ, మావయ్య/అత్త',closeFam:'తల్లిదండ్రులు లేదా అన్న-అక్క',
+    paL:'రోజు 30 నిమిషాలు వ్యాయామం?',paY:'అవును',paNo:'లేదు',
+    vegFL:'రోజూ కూరగాయలు/పళ్ళు?',vegY:'అవును',vegNo:'ఎల్లప్పుడూ కాదు',
+    bpL:'రక్తపోటు మందు?',bpN:'లేదు',bpY:'అవును',
+    checkRiskBtn:'నా ప్రమాదాన్ని తనిఖీ చేయండి →',
+    planTitle:'2-రోజుల భోజన ప్రణాళిక',planSub:'మీ ప్రొఫైల్ మరియు ప్రాధాన్యతల ఆధారంగా',
+    genPlanBtn:'నా భోజన ప్రణాళిక రూపొందించండి →',
+    swapsTitle:'తెలివైన ఆహార మార్పులు',swapsSub:'చిన్న మార్పులు, రక్తంలో చక్కెరపై పెద్ద తేడా',
+    americanSW:'🇺🇸 అమెరికన్',indianSW:'🇮🇳 భారతీయ',arabicSW:'🌙 అరబిక్/GCC',
+    giExplainTitle:'గ్లైసెమిక్ ఇండెక్స్ అంటే ఏమిటి?',
+    giExplainBody:'గ్లైసెమిక్ ఇండెక్స్ (GI) ఒక ఆహారం రక్తంలో చక్కెరను ఎంత త్వరగా పెంచుతుందో చెప్తుంది.',
+    giLow:'తక్కువ GI',giMed:'మధ్యస్థ GI',giHigh:'అధిక GI',
+    giLowDesc:'నెమ్మదిగా చక్కెర పెరుగుతుంది. అత్యుత్తమ ఎంపిక.',giMedDesc:'చిన్న భాగాలలో సరే.',giHighDesc:'చక్కెరను వేగంగా పెంచుతుంది.',
+    giTip:'అధిక GI ఆహారాన్ని ప్రోటీన్‌తో తింటే చక్కెర పెరుగుదల మందగిస్తుంది.',
+    tipsTitle:'మీ ఆరోగ్యానికి ముఖ్యమైన చిట్కాలు',
+    metforminTitle:'మెట్‌ఫార్మిన్ తీసుకుంటే: B12 తనిఖీ చేయండి',
+    metforminBody:'దీర్ఘకాలిక మెట్‌ఫార్మిన్ వాడకం రక్తంలో B12ని తగ్గించవచ్చు.',
+    karelaTitle:'కారెల (చేదు వంకాయ) మీ స్నేహితుడు',
+    karelaBody:'రక్తంలో చక్కెరను నిర్వహించడంలో సహాయపడే సహజ ఆహారంగా కారెలకు పరిశోధన మద్దతు ఉంది.',
+    vitDTitle:'మీ విటమిన్ D తనిఖీ చేయండి',
+    vitDBody:'GCC మరియు దక్షిణ ఆసియాలో చాలా సాధారణమైన లోపం.',
+    walkTitle:'తిన్న తర్వాత నడవండి',
+    walkBody:'తిన్న తర్వాత 10–15 నిమిషాలు నడవడం రక్తంలో చక్కెరను 10–30% తగ్గించవచ్చు.',
+    navHome:'హోమ్',navLog:'ఆహారం లాగ్',navProg:'పురోగతి',navLearn:'నేర్చుకోండి',
+    csvFormat:'CSV ఫార్మాట్: food_key,quantity_g,meal',dlSample:'నమూనా డౌన్‌లోడ్',
+    usdaTitle:'ఏ ఆహారమైనా వెతకండి',usdaSub:'USDA FoodData Central ద్వారా లైవ్ శోధన',
+    usdaPlaceholder:'ఉదా: గ్రిల్డ్ చికెన్, బ్రౌన్ రైస్…',usdaBtn:'వెతకండి',
+    ckTitle:'CalorieKing లో చూడండి',ckSub:'బ్రాండెడ్ ఆహారాలు, రెస్టారెంట్ అంశాలు',
+    ckPlaceholder:'ఉదా: మెక్‌డొనాల్డ్స్ బిగ్ మాక్…',ckBtn:'వెతకండి',
+    disclaimer:'⚕ ఈ యాప్ సాధారణ పోషక సమాచారాన్ని మాత్రమే అందిస్తుంది.',
+  },
+  ur:{dir:'rtl',lang:'ur',subtitle:'مریض',
+    greetMorning:'صبح بخیر!',greetAfternoon:'دوپہر بخیر!',greetEvening:'شام بخیر!',
+    bannerDefault:'اپنا کھانا ٹریک کریں، بلڈ شوگر کنٹرول کریں، اور سمجھیں کہ آپ کیا کھاتے ہیں۔',
+    score:'آج کا غذائی سکور',scoreSub:'آپ کے لاگ کھانوں کی بنیاد پر',logFirst:'پہلے کھانا لاگ کریں',
+    plateTitle:'ذیابیطس پلیٹ طریقہ',plateSub:'ہر کھانا اس طرح بنائیں',
+    plateADA:'امریکن ڈایابیٹیز ایسوسی ایشن (ADA 2024) کی سفارش',
+    plateTip:'ہر کھانا: سبزیوں سے شروع کریں، پروٹین شامل کریں، پھر پیچیدہ کاربوہائیڈریٹس کی چھوٹی مقدار شامل کریں۔',
+    profileTitle:'آپ کی پروفائل',profileSub:'ایک بار ترتیب دیں',
+    ageL:'عمر',genderL:'جنس',female:'خاتون',male:'مرد',
+    wtL:'وزن (کلوگرام)',htL:'قد (سینٹی میٹر)',
+    dietL:'میں کھاتا/کھاتی ہوں',nonveg:'گوشت اور مچھلی',veg:'سبزی خور',egg:'انڈہ خور',vegan:'ویگن',halal:'صرف حلال',
+    cuisineL:'کھانے کی ثقافت',mixed:'مخلوط / سب',american:'امریکی',indian:'ہندوستانی',arabic:'عربی / خلیجی',
+    goalL:'میرا ہدف',lose10:'ذیابیطس میں مدد کے لیے وزن کم کریں',maintain:'وزن برقرار رکھیں',lose5:'تھوڑا وزن کم کریں',
+    saveBtn:'میری پروفائل محفوظ کریں →',saved:'محفوظ ✓',
+    streakTitle:'لاگنگ سلسلہ',streakSub:'اپنی پیشرفت ٹریک کرنے کے لیے روزانہ لاگ کریں',
+    mealQ:'کون سا کھانا؟',breakfast:'🌅 ناشتہ',snack1:'🫐 صبح کا ناشتہ',lunch:'☀ دوپہر کا کھانا',snack2:'🍎 دوپہر بعد ناشتہ',dinner:'🌙 رات کا کھانا',
+    allR:'سب',americanR:'🇺🇸 امریکی',indianR:'🇮🇳 ہندوستانی',arabicR:'🌙 عربی/خلیجی',
+    adjustTitle:'حصہ کا سائز ایڈجسٹ کریں',adjustSub:'اوپر کوئی کھانا ٹیپ کریں، پھر یہاں مقدار تبدیل کریں',
+    foodSel:'کھانا',qtyL:'مقدار',unitL:'اکائی',addManBtn:'لاگ میں شامل کریں →',
+    loggedTitle:'آج لاگ کیا',loggedSub:' آئٹم',loggedSubP:' آئٹمز',
+    totCal:'کل کیلوریز',totCarb:'کل کاربوہائیڈریٹس',
+    progTitle:'آج کی غذائیت',progSub:'آپ اپنے اہداف کے مقابلے میں کیسے ہیں',
+    carbTitle:'کھانے کے مطابق کاربس',carbSub:'ہر کھانے میں 45–60g کا ہدف رکھیں',
+    giTitle:'بلڈ شوگر پر اثر',giSub:'آپ نے جو کھایا اس کا گلائسیمک انڈیکس',
+    fullNutTitle:'مکمل غذائیت رپورٹ',fullNutSub:'آپ کے اہداف کے مقابلے تمام غذائی اجزاء',
+    topDefTitle:'⚠ اہم کمیاں',topExcTitle:'📈 اہم زیادتیاں',
+    noDefMsg:'✓ آج کوئی اہم غذائی کمی نہیں ملی۔',noExcMsg:'✓ آج کوئی اہم زیادتی نہیں ملی۔',
+    riskTitle:'میرا ذیابیطس خطرہ چیک کریں',riskSub:'30 سیکنڈ لگتے ہیں۔ صرف معلوماتی مقاصد کے لیے۔',
+    famH:'خاندان میں کسی کو ذیابیطس؟',noFam:'نہیں',grandFam:'دادا/دادی، چچا/پھپھی',closeFam:'والدین یا بھائی-بہن',
+    paL:'روزانہ 30 منٹ ورزش؟',paY:'ہاں',paNo:'نہیں',
+    vegFL:'روزانہ سبزیاں/پھل؟',vegY:'ہاں',vegNo:'ہمیشہ نہیں',
+    bpL:'بلڈ پریشر دوا؟',bpN:'نہیں',bpY:'ہاں',
+    checkRiskBtn:'میرا خطرہ چیک کریں →',
+    planTitle:'2-دن کی کھانے کی منصوبہ بندی',planSub:'آپ کی پروفائل اور ترجیحات کی بنیاد پر',
+    genPlanBtn:'میری کھانے کی منصوبہ بندی بنائیں →',
+    swapsTitle:'ذہین غذائی تبادلے',swapsSub:'چھوٹی تبدیلیاں، بلڈ شوگر پر بڑا فرق',
+    americanSW:'🇺🇸 امریکی',indianSW:'🇮🇳 ہندوستانی',arabicSW:'🌙 عربی/خلیجی',
+    giExplainTitle:'گلائسیمک انڈیکس کیا ہے؟',
+    giExplainBody:'گلائسیمک انڈیکس (GI) آپ کو بتاتا ہے کہ کوئی کھانا آپ کی بلڈ شوگر کو کتنی تیزی سے بڑھاتا ہے۔',
+    giLow:'کم GI',giMed:'درمیانہ GI',giHigh:'زیادہ GI',
+    giLowDesc:'آہستہ، نرم شوگر اضافہ۔ بہترین انتخاب۔',giMedDesc:'چھوٹے حصوں میں ٹھیک ہے۔',giHighDesc:'شوگر تیزی سے بڑھاتا ہے۔',
+    giTip:'زیادہ GI کھانے کو پروٹین کے ساتھ کھانے سے شوگر اضافہ سست ہوتا ہے۔',
+    tipsTitle:'آپ کی صحت کے لیے اہم نکات',
+    metforminTitle:'اگر آپ میٹفارمن لیتے ہیں: B12 چیک کروائیں',
+    metforminBody:'میٹفارمن کا طویل مدتی استعمال خون میں Vitamin B12 کو کم کر سکتا ہے۔',
+    karelaTitle:'کریلا آپ کا دوست ہے',
+    karelaBody:'تحقیق کریلے کو ایک فطری غذا کے طور پر ثابت کرتی ہے جو بلڈ شوگر کنٹرول میں مدد کرتی ہے۔',
+    vitDTitle:'اپنا وٹامن D چیک کروائیں',
+    vitDBody:'خلیجی ممالک اور جنوبی ایشیا میں بہت عام کمی، اور یہ ذیابیطس کنٹرول کو مشکل بناتی ہے۔',
+    walkTitle:'کھانے کے بعد چہل قدمی کریں',
+    walkBody:'کھانے کے بعد 10–15 منٹ کی چہل قدمی بلڈ شوگر کو 10–30% کم کر سکتی ہے۔',
+    navHome:'ہوم',navLog:'کھانا لاگ',navProg:'پیشرفت',navLearn:'سیکھیں',
+    csvFormat:'CSV فارمیٹ: food_key,quantity_g,meal',dlSample:'نمونہ ڈاؤن لوڈ',
+    usdaTitle:'کوئی بھی کھانا تلاش کریں',usdaSub:'USDA FoodData Central کے ذریعے براہ راست تلاش',
+    usdaPlaceholder:'مثلاً: گرلڈ چکن، براؤن رائس…',usdaBtn:'تلاش کریں',
+    ckTitle:'CalorieKing پر دیکھیں',ckSub:'برانڈڈ کھانے، ریستوران آئٹمز',
+    ckPlaceholder:'مثلاً: میک ڈونلڈز بگ میک…',ckBtn:'تلاش کریں',
+    disclaimer:'⚕ یہ ایپ صرف عام غذائی معلومات فراہم کرتی ہے۔ ہمیشہ اپنے ڈاکٹر کی ہدایت پر عمل کریں۔',
+  }
+};
+
+let patLang='en';
+function PT(k){return(PTR[patLang]||PTR.en)[k]||(PTR.en[k])||k;}
+
+function setPatLang(lang){
+  patLang=lang;
+  const L=PTR[lang]||PTR.en;
+  document.documentElement.setAttribute('dir',L.dir);
+  document.documentElement.setAttribute('lang',L.lang);
+  const h=document.getHours?new Date().getHours():new Date().getHours();
+  document.getElementById('patSubtitle').textContent=L.subtitle;
+  // Banner greeting
+  const h2=document.getElementById('greet');
+  if(h2){const hr=new Date().getHours();h2.textContent=hr<12?L.greetMorning:hr<17?L.greetAfternoon:L.greetEvening;}
+  const bm=document.getElementById('bnrMsg');if(bm&&log2.length===0)bm.textContent=L.bannerDefault;
+  // Score card
+  const sc=document.querySelector('.ct');// handled dynamically
+  // Streak
+  const ss=document.getElementById('streakSub');if(ss)ss.textContent=L.streakSub;
+  // Bottom nav
+  const navBtns=document.querySelectorAll('.nb .nl');
+  if(navBtns.length>=4){navBtns[0].textContent=L.navHome;navBtns[1].textContent=L.navLog;navBtns[2].textContent=L.navProg;navBtns[3].textContent=L.navLearn;}
+  // Meal chips
+  const mealChips=document.querySelectorAll('.mc');
+  const mealKeys=['breakfast','snack1','lunch','snack2','dinner'];
+  mealChips.forEach((c,i)=>{if(mealKeys[i])c.textContent=L[mealKeys[i]];});
+  // Region tabs in log
+  document.querySelectorAll('.rtabs .rt').forEach((t,i)=>{
+    const rKeys=['allR','americanR','indianR','arabicR'];
+    if(rKeys[i])t.textContent=L[rKeys[i]];
+  });
+  // Profile fields
+  const pfLabels=document.querySelectorAll('#profileCard label');
+  // Disclaimer
+  const discEl=document.querySelector('.al-i:last-child .at');
+  if(discEl)discEl.textContent=L.disclaimer;
+}
+
+init();
+</body>
+</html>
