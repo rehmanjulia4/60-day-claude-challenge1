@@ -1,4 +1,4 @@
-# Day 29: Operation Lifeline, Healthcare Supply Chain Crisis Lab
+# Day 29: Operation Lifeline, a Bilingual Healthcare Supply Chain Crisis Lab
 
 **60-Day Claude Challenge | Dr. Julia Rehman, DHA, MBA, MHA, MPH, FACHE**
 Healthcare Technology and Operations Executive · United States and GCC
@@ -9,18 +9,28 @@ Healthcare Technology and Operations Executive · United States and GCC
 
 Operation Lifeline is a single-file, fully offline interactive simulator that walks a healthcare executive through eight steps of a supply chain crisis, from the opening organizational profile to a board-ready performance scorecard.
 
-For Day 29 the tool was run through two live scenarios that share one engine but almost nothing else:
+For Day 29 the tool is **fully bilingual, English and Arabic**, with a one-tap language toggle and complete right-to-left (RTL) support for the Arabic interface. It was run through two live scenarios that share one engine but almost nothing else:
 
-- **United States run:** a rural Montana critical access network facing a domestic port labor dispute that strands its only source of dialysis consumables.
-- **GCC run:** a Gulf payer-provider facing the actual 2026 Strait of Hormuz closure, which severed the air corridor for temperature-sensitive biologics and Indian-sourced active pharmaceutical ingredient (API).
+- **United States run (English UI):** a rural Montana critical access network facing a domestic port labor dispute that strands its only source of dialysis consumables.
+- **GCC run (Arabic UI, RTL):** a Gulf payer-provider facing the actual 2026 Strait of Hormuz closure, which severed the air corridor for temperature-sensitive biologics and Indian-sourced active pharmaceutical ingredient (API).
 
-The deliverable is a 10-slide LinkedIn walkthrough carousel: slides 1 to 5 cover the US run, slides 6 to 9 cover the GCC run, and slide 10 synthesizes the shared discipline across both.
+The deliverable is a 10-slide LinkedIn walkthrough carousel: slides 1 to 5 cover the US run in English, slides 6 to 9 cover the GCC run in Arabic, and slide 10 synthesizes the shared discipline and the case for bilingual localization.
+
+---
+
+## Bilingual and localization features
+
+- **One-tap language toggle** in the command header. The button shows the target language (ع when in English, EN when in Arabic). Switching re-renders the entire interface and the current scenario in the other language without losing progress.
+- **Full Arabic translation** of every element: all 6 health systems, all 5 crisis scenarios, all 6 war room actions, the 4 negotiation rounds with every option, the 5 CEO boardroom questions with rationales, the 5 AI investments, every UI label and button, and the auto-generated executive board summary.
+- **Right-to-left layout** when Arabic is active. Step navigation, sidebar, cards, and option rows all mirror correctly. Data figures remain in Western numerals for consistency across both languages.
+- **Healthcare-appropriate Arabic terminology** throughout, including clinical and regulatory language. The Strait of Hormuz biologics and API corridor crisis renders as إغلاق مضيق هرمز: فقدان ممر المنتجات الحيوية والمواد الفعالة.
+- **Localization, not just translation.** The Arabic board summary is written so a Gulf executive can present it as-is, in Arabic, to a Gulf board.
 
 ---
 
 ## The two scenarios
 
-### US run: Ridgeline Community Health (Montana)
+### US run: Ridgeline Community Health (Montana), English UI
 
 | Attribute | Value |
 |---|---|
@@ -38,7 +48,7 @@ The deliverable is a 10-slide LinkedIn walkthrough carousel: slides 1 to 5 cover
 
 **Result:** Overall Crisis Score 81 (Strong). Leadership 100, Negotiation 77, Resilience 81, Cost Control 41, Risk Management 79, Patient Satisfaction 91. All 936 weekly dialysis sessions preserved. Cost control absorbed the hit through emergency air freight and off-contract GPO procurement, which is the correct call under CMS critical access obligations.
 
-### GCC run: Gulf Medical City Network (Abu Dhabi, UAE)
+### GCC run: Gulf Medical City Network (Abu Dhabi, UAE), Arabic UI
 
 | Attribute | Value |
 |---|---|
@@ -52,7 +62,7 @@ The deliverable is a 10-slide LinkedIn walkthrough carousel: slides 1 to 5 cover
 
 **Crisis:** The 2026 Strait of Hormuz closure and Gulf airspace restrictions sever the primary air corridor for temperature-sensitive biologics and Indian-sourced API. Hamad and Dubai cargo hubs operate at reduced capacity, carriers cut payloads to carry extra fuel for Cape of Good Hope reroutes, and war-risk insurance for Gulf transit is suspended. 14,200 vaccine doses and nine days of oncology biologics are exposed. mAb and insulin reorders that normally clear in six days now quote 17 to 21 days.
 
-**Why it is realistic:** This scenario is anchored to current events as of mid-2026. Following the February 28, 2026 strikes (Operation Epic Fury) and the subsequent Strait of Hormuz closure, commercial shipping was effectively halted, Gulf air-cargo hubs in Dubai, Doha, and Bahrain were restricted, war-risk insurance for Gulf transit was suspended, and pharma cargo was rerouted around the Cape of Good Hope, adding 10 to 14 days. The GCC pharmaceutical market is roughly $23.7B and about 80% import-dependent through Gulf airspace and the Strait. Biologics and API have no slow-boat alternative.
+**Why it is realistic:** This scenario is anchored to current events as of mid-2026. Following the February 28, 2026 strikes and the subsequent Strait of Hormuz closure, commercial shipping was effectively halted, Gulf air-cargo hubs in Dubai, Doha, and Bahrain were restricted, war-risk insurance for Gulf transit was suspended, and pharma cargo was rerouted around the Cape of Good Hope, adding 10 to 14 days. The GCC pharmaceutical market is roughly $23.7B and about 80% import-dependent through Gulf airspace and the Strait. Biologics and API have no slow-boat alternative.
 
 **Result:** Overall Crisis Score 82 (Strong). Leadership 100, Negotiation 80, Resilience 77, Cost Control 64, Risk Management 84, Patient Satisfaction 73. Cost control was protected through clinical conservation protocols and emergency supplier qualification rather than pure air freight, which is the appropriate response when the entire regional air corridor is constrained and every health system is competing for the same scarce capacity.
 
@@ -73,7 +83,7 @@ The deliverable is a 10-slide LinkedIn walkthrough carousel: slides 1 to 5 cover
 
 ## The shared discipline
 
-The two runs share almost nothing at the surface. One is a domestic labor dispute on a single consumable; the other is a geopolitical chokepoint closure on an entire air corridor. One is local and bounded; the other is regional and open-ended.
+The two runs share almost nothing at the surface. One is a domestic labor dispute on a single consumable; the other is a geopolitical chokepoint closure on an entire air corridor. One is local and bounded; the other is regional and open-ended. One is presented in English, the other in Arabic.
 
 Yet the same three things decided the outcome in both:
 
@@ -81,7 +91,7 @@ Yet the same three things decided the outcome in both:
 2. **Supplier trust built before the crisis, not during it.** Leading negotiations with partnership rather than coercion creates a buffer that secures scarce allocation when every peer is competing for the same constrained capacity.
 3. **AI visibility that turns reactive into proactive.** Supplier risk monitoring would have flagged the exposure weeks early in both runs, converting a scramble into an early-warning signal.
 
-Resilience is not a region. It is a discipline.
+Resilience is not a region. It is a discipline. And a decision-support tool that only speaks English is a tool that half the room across the GCC cannot fully use, which is why the bilingual build matters.
 
 ---
 
@@ -91,15 +101,17 @@ Resilience is not a region. It is a discipline.
 - **Reproducible demo state:** The tool uses a mulberry32 seeded pseudo-random number generator for reproducible synthetic data, with deterministic scenario overrides used for screenshot capture.
 - **Clinical and regulatory grounding:** ESRD session frequency and clinical deterioration thresholds, ASHP shortage practices, WHO PIC/S and USP cold-chain handling, CMS critical access obligations, Joint Commission and JCIA patient safety duties, and HIMSS, AHRMM, and ASHP ROI benchmarks.
 - **GCC crisis grounding:** 2026 Strait of Hormuz closure and Gulf airspace restrictions; GCC pharmaceutical market sizing and import dependence; emergency freight surcharges and war-risk insurance suspension; Cape of Good Hope rerouting transit impact.
-- **Offline first:** The single-file HTML tool runs fully offline with React, ReactDOM, and Babel inlined, so the entire flow works with no live API dependency.
+- **Offline first:** The single-file HTML tool runs fully offline with React, ReactDOM, and Babel inlined, so the entire flow works in both languages with no live API dependency.
 
 ---
 
 ## Files in this deliverable
 
-- `operation-lifeline-tool.html`: the playable single-file simulator (both scenarios reachable).
-- `carousel.html`: the 10-slide walkthrough carousel (US run, GCC run, synthesis).
+- `operation-lifeline-bilingual.html`: the playable single-file bilingual simulator (English and Arabic, both scenarios reachable, one-tap language toggle).
+- `operation-lifeline-tool.html`: identical copy under the standard tool filename.
+- `carousel.html`: the 10-slide walkthrough carousel (US run in English, GCC run in Arabic, synthesis).
 - `slides/slide_01.png` through `slides/slide_10.png`: individual 1080x1080 carousel slides, ready to upload.
+- `screenshots/`: full-page tool captures of the live interface. Files `01_en` through `09_en` document the complete English flow; files `10_ar` through `13_ar` document the Arabic flow with RTL layout.
 
 ---
 
@@ -110,6 +122,7 @@ Resilience is not a region. It is a discipline.
 - **Numerical integrity:** Every score and figure in the slide narrative matches the captured screenshot exactly. The screenshots are the source of truth.
 - **Typography:** No em dashes anywhere in the slide text or in the tool screenshots. Colons, periods, and commas are used instead.
 - **Fit discipline:** Screenshots are rendered at `width:100%; height:auto` so the full width always fits with no horizontal cropping, then centered in available vertical space so nothing is clipped.
+- **RTL discipline:** Arabic screens were verified to mirror correctly, with the sidebar, step navigation, and card rows flowing right-to-left and all Arabic strings rendering without truncation.
 
 ---
 
