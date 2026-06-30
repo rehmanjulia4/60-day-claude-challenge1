@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HealthNexus Supply Chain Optimizer | Day 30</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=DM+Sans:wght@300;400;500;600;700&family=Noto+Naskh+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<style>
+:root{
+  --bg-deep:#04080f;--bg-card:#0a1628;--bg-card2:#0d1e35;
+  --teal:#0fd4be;--teal-dim:rgba(15,212,190,0.12);--teal-glow:rgba(15,212,190,0.35);
+  --gold:#c9a84c;--gold-dim:rgba(201,168,76,0.12);
+  --amber:#e8923a;--red:#e05252;--green:#34d399;
+  --text-primary:#e8f0f8;--text-secondary:#7a9ab5;--text-muted:#3d5670;
+  --border:rgba(15,212,190,0.15);--border-hover:rgba(15,212,190,0.4);
+  --radius:14px;--radius-sm:8px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:"DM Sans",sans-serif;background:var(--bg-deep);color:var(--text-primary);min-height:100vh;overflow-x:hidden;}
+body.rtl{font-family:"Noto Naskh Arabic","DM Sans",sans-serif;direction:rtl;}
+body::before{content:"";position:fixed;inset:0;background-image:linear-gradient(rgba(15,212,190,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(15,212,190,0.025) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0;}
+#root{position:relative;z-index:1;}
+
+/* Lang toggle */
+.lang-toggle{position:fixed;top:16px;right:16px;z-index:200;display:flex;gap:6px;}
+body.rtl .lang-toggle{right:auto;left:16px;}
+.lang-btn{background:var(--bg-card);border:1.5px solid var(--border);border-radius:20px;padding:6px 14px;font-size:12px;font-weight:700;cursor:pointer;color:var(--text-secondary);transition:all 0.2s;letter-spacing:0.06em;}
+.lang-btn.active{border-color:var(--teal);color:var(--teal);background:var(--teal-dim);}
+.lang-btn:hover{border-color:var(--border-hover);}
+
+/* Welcome */
+.welcome-container{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;position:relative;}
+.welcome-glow{position:absolute;width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(15,212,190,0.08) 0%,transparent 70%);pointer-events:none;}
+.nexus-badge{display:inline-flex;align-items:center;gap:8px;background:var(--teal-dim);border:1px solid var(--border);border-radius:20px;padding:6px 16px;font-size:11px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--teal);margin-bottom:28px;}
+.nexus-badge .dot{width:6px;height:6px;border-radius:50%;background:var(--teal);animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.3;}}
+.welcome-title{font-family:"Cormorant Garamond",serif;font-size:clamp(36px,6vw,68px);font-weight:700;line-height:1.05;text-align:center;margin-bottom:16px;background:linear-gradient(135deg,#e8f0f8 0%,var(--teal) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+body.rtl .welcome-title{font-family:"Noto Naskh Arabic",serif;font-size:clamp(32px,5vw,60px);}
+.welcome-subtitle{font-size:16px;color:var(--text-secondary);text-align:center;max-width:580px;line-height:1.8;margin-bottom:48px;}
+.welcome-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:32px;max-width:700px;width:100%;margin-bottom:32px;}
+.welcome-card h3{font-family:"Cormorant Garamond",serif;font-size:22px;font-weight:600;color:var(--gold);margin-bottom:16px;}
+body.rtl .welcome-card h3{font-family:"Noto Naskh Arabic",serif;}
+.welcome-card p{color:var(--text-secondary);line-height:1.85;font-size:14px;margin-bottom:12px;}
+.welcome-pillars{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin-top:20px;}
+.pillar-item{background:var(--bg-card2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px;text-align:center;}
+.pillar-icon{font-size:24px;margin-bottom:6px;display:block;}
+.pillar-label{font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--teal);}
+body.rtl .pillar-label{letter-spacing:0;}
+.btn-primary{background:linear-gradient(135deg,var(--teal) 0%,#0aa896 100%);color:#04080f;border:none;border-radius:50px;padding:14px 40px;font-family:"DM Sans",sans-serif;font-size:15px;font-weight:700;cursor:pointer;transition:all 0.25s;box-shadow:0 0 30px var(--teal-glow);}
+body.rtl .btn-primary{font-family:"Noto Naskh Arabic",sans-serif;}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 0 50px var(--teal-glow);}
+
+/* Layout */
+.app-layout{display:grid;grid-template-columns:290px 1fr;min-height:100vh;max-width:1400px;margin:0 auto;}
+@media(max-width:900px){.app-layout{grid-template-columns:1fr;}}
+.sidebar{background:var(--bg-card);border-right:1px solid var(--border);padding:24px 18px;display:flex;flex-direction:column;gap:18px;position:sticky;top:0;height:100vh;overflow-y:auto;}
+body.rtl .sidebar{border-right:none;border-left:1px solid var(--border);}
+.sidebar-logo{font-family:"Cormorant Garamond",serif;font-size:20px;font-weight:700;color:var(--teal);margin-bottom:2px;}
+body.rtl .sidebar-logo{font-family:"Noto Naskh Arabic",serif;}
+.sidebar-day{font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-muted);margin-bottom:16px;}
+.company-card{background:var(--bg-card2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px;}
+.company-name{font-family:"Cormorant Garamond",serif;font-size:16px;font-weight:700;color:var(--gold);margin-bottom:2px;}
+body.rtl .company-name{font-family:"Noto Naskh Arabic",serif;}
+.company-sector{font-size:11px;color:var(--text-secondary);margin-bottom:10px;}
+.company-stat{display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid rgba(255,255,255,0.04);font-size:11px;}
+.company-stat:last-child{border-bottom:none;}
+.company-stat-label{color:var(--text-muted);}
+.company-stat-value{color:var(--text-primary);font-weight:600;}
+.steps-list{list-style:none;}
+.step-item{display:flex;align-items:center;gap:10px;padding:7px 0;font-size:11px;color:var(--text-muted);transition:color 0.2s;}
+.step-item.active{color:var(--teal);}
+.step-item.done{color:var(--text-secondary);}
+.step-dot{width:20px;height:20px;border-radius:50%;border:1.5px solid var(--text-muted);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0;transition:all 0.2s;}
+.step-item.active .step-dot{border-color:var(--teal);background:var(--teal-dim);color:var(--teal);}
+.step-item.done .step-dot{border-color:var(--green);background:rgba(52,211,153,0.1);color:var(--green);}
+.metrics-section{margin-top:4px;}
+.metrics-title{font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-muted);margin-bottom:10px;}
+.metric-row{margin-bottom:10px;}
+.metric-header{display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px;}
+.metric-label{color:var(--text-secondary);}
+.metric-value{font-weight:700;}
+.metric-bar-bg{height:4px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden;}
+.metric-bar-fill{height:100%;border-radius:3px;transition:width 0.7s cubic-bezier(0.4,0,0.2,1);}
+
+/* Main */
+.main-content{padding:36px;display:flex;flex-direction:column;gap:22px;}
+@media(max-width:600px){.main-content{padding:18px;}}
+.step-panel{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;animation:fadeSlide 0.4s ease;}
+@keyframes fadeSlide{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
+.step-header{padding:18px 26px 14px;border-bottom:1px solid var(--border);background:linear-gradient(90deg,var(--bg-card2),var(--bg-card));}
+body.rtl .step-header{background:linear-gradient(270deg,var(--bg-card2),var(--bg-card));}
+.step-eyebrow{font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:var(--teal);margin-bottom:5px;}
+body.rtl .step-eyebrow{letter-spacing:0;}
+.step-title{font-family:"Cormorant Garamond",serif;font-size:26px;font-weight:700;color:var(--text-primary);}
+body.rtl .step-title{font-family:"Noto Naskh Arabic",serif;font-size:28px;}
+.step-body{padding:22px 26px;}
+.concept-box{background:var(--gold-dim);border:1px solid rgba(201,168,76,0.2);border-radius:var(--radius-sm);padding:14px 18px;margin-bottom:22px;font-size:13px;color:#d4b86a;line-height:1.85;}
+.concept-box strong{color:var(--gold);display:block;margin-bottom:4px;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;}
+body.rtl .concept-box strong{letter-spacing:0;}
+.options-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;}
+.option-card{background:var(--bg-card2);border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:18px;cursor:pointer;transition:all 0.22s;position:relative;overflow:hidden;}
+.option-card::before{content:"";position:absolute;inset:0;background:linear-gradient(135deg,var(--teal-dim),transparent);opacity:0;transition:opacity 0.22s;}
+.option-card:hover{border-color:var(--border-hover);transform:translateY(-2px);}
+.option-card:hover::before{opacity:1;}
+.option-card.selected{border-color:var(--teal);box-shadow:0 0 20px var(--teal-dim);}
+.option-card.selected::before{opacity:1;}
+.option-icon{font-size:26px;margin-bottom:8px;display:block;position:relative;z-index:1;}
+.option-name{font-weight:700;font-size:13px;color:var(--text-primary);margin-bottom:5px;position:relative;z-index:1;}
+.option-desc{font-size:11px;color:var(--text-secondary);line-height:1.7;margin-bottom:12px;position:relative;z-index:1;}
+.option-impacts{display:flex;flex-wrap:wrap;gap:4px;position:relative;z-index:1;}
+.impact-tag{font-size:9px;font-weight:600;padding:2px 7px;border-radius:10px;}
+.impact-tag.good{background:rgba(52,211,153,0.12);color:var(--green);}
+.impact-tag.bad{background:rgba(224,82,82,0.12);color:var(--red);}
+.impact-tag.neutral{background:var(--teal-dim);color:var(--teal);}
+.btn-confirm{background:linear-gradient(135deg,var(--teal) 0%,#0aa896 100%);color:#04080f;border:none;border-radius:8px;padding:11px 26px;font-family:"DM Sans",sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all 0.2s;margin-top:18px;}
+body.rtl .btn-confirm{font-family:"Noto Naskh Arabic",sans-serif;}
+.btn-confirm:hover{transform:translateY(-1px);box-shadow:0 4px 20px var(--teal-glow);}
+.btn-confirm:disabled{opacity:0.35;cursor:not-allowed;transform:none;}
+.tradeoff-reveal{background:var(--bg-card2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:18px;margin-top:18px;animation:fadeSlide 0.35s ease;}
+.tradeoff-title{font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--teal);margin-bottom:8px;}
+body.rtl .tradeoff-title{letter-spacing:0;}
+.tradeoff-text{font-size:13px;color:var(--text-secondary);line-height:1.85;}
+.tradeoff-gcc{margin-top:10px;font-size:12px;color:var(--gold);font-style:italic;line-height:1.7;border-top:1px solid rgba(201,168,76,0.15);padding-top:10px;}
+
+/* Dashboard */
+.dashboard{animation:fadeSlide 0.4s ease;}
+.dashboard-hero{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:36px;text-align:center;margin-bottom:18px;position:relative;overflow:hidden;}
+.dashboard-hero::before{content:"";position:absolute;top:-80px;left:50%;transform:translateX(-50%);width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(15,212,190,0.07) 0%,transparent 70%);}
+.score-label{font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-muted);margin-bottom:4px;}
+.score-rating{font-family:"Cormorant Garamond",serif;font-size:30px;font-weight:700;margin-bottom:8px;}
+body.rtl .score-rating{font-family:"Noto Naskh Arabic",serif;}
+.score-desc{font-size:13px;color:var(--text-secondary);max-width:440px;margin:0 auto;line-height:1.75;}
+.dashboard-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:14px;margin-bottom:18px;}
+.dash-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;}
+.dash-card-title{font-size:10px;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;gap:7px;}
+body.rtl .dash-card-title{letter-spacing:0;}
+.dash-list{list-style:none;}
+.dash-list li{display:flex;align-items:flex-start;gap:9px;font-size:12px;color:var(--text-secondary);line-height:1.75;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.04);}
+.dash-list li:last-child{border-bottom:none;}
+.dash-bullet{width:17px;height:17px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;margin-top:2px;}
+.bullet-green{background:rgba(52,211,153,0.15);color:var(--green);}
+.bullet-red{background:rgba(224,82,82,0.15);color:var(--red);}
+.bullet-teal{background:var(--teal-dim);color:var(--teal);}
+.risk-banner{background:rgba(224,82,82,0.08);border:1px solid rgba(224,82,82,0.25);border-radius:var(--radius-sm);padding:14px 18px;margin-bottom:14px;display:flex;align-items:flex-start;gap:12px;}
+.risk-icon{font-size:20px;flex-shrink:0;}
+.risk-text{font-size:12px;color:#f0a0a0;line-height:1.75;}
+.risk-text strong{color:var(--red);display:block;margin-bottom:2px;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;}
+body.rtl .risk-text strong{letter-spacing:0;}
+.btn-replay{background:transparent;color:var(--teal);border:1.5px solid var(--teal);border-radius:8px;padding:10px 24px;font-family:"DM Sans",sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all 0.2s;}
+body.rtl .btn-replay{font-family:"Noto Naskh Arabic",sans-serif;}
+.btn-replay:hover{background:var(--teal-dim);transform:translateY(-1px);}
+.day-badge{position:fixed;bottom:18px;right:18px;background:var(--bg-card);border:1px solid var(--border);border-radius:20px;padding:7px 14px;font-size:10px;color:var(--text-muted);z-index:100;}
+body.rtl .day-badge{right:auto;left:18px;}
+.day-badge span{color:var(--teal);font-weight:700;}
+.metrics-final-strip{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:18px;}
+@media(max-width:700px){.metrics-final-strip{grid-template-columns:repeat(2,1fr);}}
+.metric-final-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px;text-align:center;}
+.metric-final-value{font-family:"Cormorant Garamond",serif;font-size:28px;font-weight:700;margin-bottom:3px;}
+.metric-final-label{font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);}
+body.rtl .metric-final-label{letter-spacing:0;}
+.choices-summary{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:18px;}
+.choices-title{font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-muted);margin-bottom:12px;}
+body.rtl .choices-title{letter-spacing:0;}
+.choices-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;}
+.choice-chip{background:var(--bg-card2);border:1px solid var(--border);border-radius:6px;padding:10px 12px;}
+.choice-chip-label{color:var(--text-muted);font-size:9px;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:3px;}
+body.rtl .choice-chip-label{letter-spacing:0;}
+.choice-chip-value{color:var(--teal);font-weight:600;font-size:12px;}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+
+// ===== TRANSLATIONS =====
+const T = {
+  en: {
+    langName: 'EN',
+    badge: 'HealthNexus SCM Intelligence',
+    welcomeTitle: 'Healthcare Supply Chain\nOptimizer',
+    welcomeSubtitle: 'Build and stress-test a healthcare supply chain for your organization. Every decision teaches you the tradeoffs real health system executives navigate across GCC and US markets.',
+    welcomeCardTitle: 'Why Supply Chain Is a Clinical Issue',
+    welcomeCardBody1: 'Healthcare supply chain is not just a procurement function. It is a patient safety function. The Association for Health Care Resource and Materials Management (AHRMM) estimates supply chain costs represent 30-35% of total hospital operating expense, second only to labor.',
+    welcomeCardBody2: 'When supply chains fail, surgeries are delayed, medications are substituted, and clinicians improvise with alternatives. The 2020-2022 global disruption period exposed critical weaknesses in health system supply strategy worldwide, including in GCC markets that had previously relied on concentrated import models.',
+    pillars: ['Sourcing','Manufacturing','Warehousing','Logistics','Inventory'],
+    startBtn: 'Generate Your Health System \u2192',
+    sidebarLogo: 'HealthNexus SCM',
+    sidebarDay: 'Day 30 \u2022 60-Day Claude Challenge',
+    statLabels: { region:'Region', facilities:'Facilities', beds:'Beds', demand:'Demand', spend:'Annual Supply Spend' },
+    stepLabels: ['Sourcing','Manufacturing','Distribution','Logistics','Inventory'],
+    metricsTitle: 'Live Chain Performance',
+    metricNames: { cost:'Cost Efficiency', speed:'Delivery Speed', risk:'Supply Resilience', satisfaction:'Patient Satisfaction', sustainability:'Sustainability' },
+    whyMatters: 'Why This Decision Matters',
+    tradeoffTitle: 'Tradeoff Analysis',
+    gccNote: 'GCC Market Context',
+    confirmBtn: 'Confirm & Continue \u2192',
+    selectPrompt: 'Select an option to continue',
+    scorelabel: 'Overall Supply Chain Score',
+    scoreDesc: 'Your healthcare supply chain strategy for {name} has been evaluated across five operational dimensions against GCC and US health system benchmarks.',
+    choicesTitle: 'Your Supply Chain Configuration',
+    biggestRisk: 'Biggest Risk Identified',
+    strengths: 'Chain Strengths',
+    weaknesses: 'Weaknesses to Address',
+    improvements: 'Recommended Improvements',
+    replayBtn: '\u21BA Replay with New Health System',
+    dayBadge: 'Day 30 \u2022 HealthNexus SCM',
+    finalMetricLabels: ['Cost Efficiency','Delivery Speed','Resilience','Patient Sat.','Sustainability'],
+    stepEyebrows: ['Step 01 of 05','Step 02 of 05','Step 03 of 05','Step 04 of 05','Step 05 of 05'],
+    stepTitles: ['Sourcing Strategy','Manufacturing Source','Distribution Model','Logistics Method','Inventory Strategy'],
+  },
+  ar: {
+    langName: '\u0639\u0631',
+    badge: '\u0630\u0643\u0627\u0621 \u0633\u0644\u0633\u0644\u0629 \u0627\u0644\u062a\u0648\u0631\u064a\u062f \u0627\u0644\u0635\u062d\u064a',
+    welcomeTitle: '\u0645\u062d\u0633\u0651\u0646 \u0633\u0644\u0633\u0644\u0629 \u0627\u0644\u062a\u0648\u0631\u064a\u062f\n\u0644\u0644\u0642\u0637\u0627\u0639 \u0627\u0644\u0635\u062d\u064a',
+    welcomeSubtitle: '\u0628\u0646\u0627\u0621 \u0648\u0627\u062e\u062a\u0628\u0627\u0631 \u0633\u0644\u0633\u0644\u0629 \u062a\u0648\u0631\u064a\u062f \u0635\u062d\u064a\u0629 \u0644\u0645\u0646\u0638\u0645\u062a\u0643. \u0643\u0644 \u0642\u0631\u0627\u0631 \u064a\u0639\u0644\u0651\u0645\u0643 \u0627\u0644\u0645\u0648\u0627\u0632\u0646\u0627\u062a \u0627\u0644\u062d\u0642\u064a\u0642\u064a\u0629 \u0627\u0644\u062a\u064a \u064a\u062a\u0639\u0627\u0645\u0644 \u0645\u0639\u0647\u0627 \u0627\u0644\u0645\u062f\u064a\u0631\u0648\u0646 \u0627\u0644\u062a\u0646\u0641\u064a\u0630\u064a\u0648\u0646 \u0641\u064a \u0623\u0633\u0648\u0627\u0642 \u062f\u0648\u0644 \u0645\u062c\u0644\u0633 \u0627\u0644\u062a\u0639\u0627\u0648\u0646 \u0648\u0627\u0644\u0648\u0644\u0627\u064a\u0627\u062a \u0627\u0644\u0645\u062a\u062d\u062f\u0629.',
+    welcomeCardTitle: '\u0644\u0645\u0627\u0630\u0627 \u062a\u0639\u062f \u0633\u0644\u0633\u0644\u0629 \u0627\u0644\u062a\u0648\u0631\u064a\u062f \u0642\u0636\u064a\u0629 \u0633\u0631\u064a\u0631\u064a\u0629\u061f',
+    welcomeCardBody1: '\u0633\u0644\u0633\u0644\u0629 \u0627\u0644\u062a\u0648\u0631\u064a\u062f \u0641\u064a \u0627\u0644\u0642\u0637\u0627\u0639 \u0627\u0644\u0635\u062d\u064a \u0644\u064a\u0633\u062a \u0645\u062c\u0631\u062f \u0648\u0638\u064a\u0641\u0629 \u0634\u0631\u0627\u0621. \u0625\u0646\u0647\u0627 \u0648\u0638\u064a\u0641\u0629 \u0633\u0644\u0627\u0645\u0629 \u0627\u0644\u0645\u0631\u064a\u0636. \u062a\u0634\u064a\u0631 AHRMM \u0625\u0644\u0649 \u0623\u0646 \u062a\u0643\u0627\u0644\u064a\u0641 \u0633\u0644\u0633\u0644\u0629 \u0627\u0644\u062a\u0648\u0631\u064a\u062f \u062a\u0645\u062b\u0644 30-35\u0025 \u0645\u0646 \u0625\u062c\u0645\u0627\u0644\u064a \u062a\u0643\u0627\u0644\u064a\u0641 \u062a\u0634\u063a\u064a\u0644 \u0627\u0644\u0645\u0633\u062a\u0634\u0641\u0649.',
+    welcomeCardBody2: '\u0639\u0646\u062f\u0645\u0627 \u062a\u0641\u0634\u0644 \u0633\u0644\u0627\u0633\u0644 \u0627\u0644\u062a\u0648\u0631\u064a\u062f\u060c \u062a\u062a\u0623\u062e\u0631 \u0627\u0644\u0639\u0645\u0644\u064a\u0627\u062a\u060c \u0648\u062a\u064f\u0633\u062a\u0628\u062f\u0644 \u0627\u0644\u0623\u062f\u0648\u064a\u0629\u060c \u0648\u064a\u0636\u0637\u0631 \u0627\u0644\u0637\u0627\u0642\u0645 \u0627\u0644\u0637\u0628\u064a \u0644\u0644\u0628\u062d\u062b \u0639\u0646 \u0628\u062f\u0627\u0626\u0644. \u0643\u0634\u0641\u062a \u0641\u062a\u0631\u0629 2020-2022 \u0639\u0646 \u062a\u0642\u0635\u064a\u0631\u0627\u062a \u062c\u0648\u0647\u0631\u064a\u0629 \u0641\u064a \u0627\u0633\u062a\u0631\u0627\u062a\u064a\u062c\u064a\u0627\u062a \u0627\u0644\u062a\u0648\u0631\u064a\u062f \u0639\u0627\u0644\u0645\u064a\u0627.',
+    pillars: ['\u0627\u0644\u062a\u0648\u0631\u064a\u062f','\u0627\u0644\u062a\u0635\u0646\u064a\u0639','\u0627\u0644\u062a\u062e\u0632\u064a\u0646','\u0627\u0644\u0644\u0648\u062c\u0633\u062a\u064a\u0643','\u0627\u0644\u0645\u062e\u0632\u0648\u0646'],
+    startBtn: '\u062a\u0648\u0644\u064a\u062f \u0646\u0638\u0627\u0645\u0643 \u0627\u0644\u0635\u062d\u064a \u2190',
+    sidebarLogo: 'HealthNexus \u0633\u0644\u0633\u0644\u0629 \u0627\u0644\u062a\u0648\u0631\u064a\u062f',
+    sidebarDay: '\u0627\u0644\u064a\u0648\u0645 30 \u2022 \u062a\u062d\u062f\u064a 60 \u064a\u0648\u0645\u0627',
+    statLabels: { region:'\u0627\u0644\u0645\u0646\u0637\u0642\u0629', facilities:'\u0627\u0644\u0645\u0646\u0634\u0622\u062a', beds:'\u0627\u0644\u0623\u0633\u0631\u0629', demand:'\u0627\u0644\u0637\u0644\u0628', spend:'\u0627\u0644\u0625\u0646\u0641\u0627\u0642 \u0627\u0644\u0633\u0646\u0648\u064a' },
+    stepLabels: ['\u0627\u0644\u062a\u0648\u0631\u064a\u062f','\u0627\u0644\u062a\u0635\u0646\u064a\u0639','\u0627\u0644\u062a\u0648\u0632\u064a\u0639','\u0627\u0644\u0644\u0648\u062c\u0633\u062a\u064a\u0643','\u0627\u0644\u0645\u062e\u0632\u0648\u0646'],
+    metricsTitle: '\u0627\u0644\u0623\u062f\u0627\u0621 \u0627\u0644\u062d\u064a \u0644\u0633\u0644\u0633\u0644\u0629 \u0627\u0644\u062a\u0648\u0631\u064a\u062f',
+    metricNames: { cost:'\u0643\u0641\u0627\u0621\u0629 \u0627\u0644\u062a\u0643\u0644\u0641\u0629', speed:'\u0633\u0631\u0639\u0629 \u0627\u0644\u062a\u0633\u0644\u064a\u0645', risk:'\u0645\u0631\u0648\u0646\u0629 \u0627\u0644\u062a\u0648\u0631\u064a\u062f', satisfaction:'\u0631\u0636\u0627 \u0627\u0644\u0645\u0631\u064a\u0636', sustainability:'\u0627\u0644\u0627\u0633\u062a\u062f\u0627\u0645\u0629' },
+    whyMatters: '\u0644\u0645\u0627\u0630\u0627 \u064a\u0647\u0645 \u0647\u0630\u0627 \u0627\u0644\u0642\u0631\u0627\u0631',
+    tradeoffTitle: '\u062a\u062d\u0644\u064a\u0644 \u0627\u0644\u0645\u0648\u0627\u0632\u0646\u0627\u062a',
+    gccNote: '\u0627\u0644\u0633\u064a\u0627\u0642 \u0641\u064a \u062f\u0648\u0644 \u0645\u062c\u0644\u0633 \u0627\u0644\u062a\u0639\u0627\u0648\u0646',
+    confirmBtn: '\u062a\u0623\u0643\u064a\u062f \u0648\u0627\u0644\u0645\u062a\u0627\u0628\u0639\u0629 \u2190',
+    selectPrompt: '\u0627\u062e\u062a\u0631 \u062e\u064a\u0627\u0631\u0627\u064b \u0644\u0644\u0645\u062a\u0627\u0628\u0639\u0629',
+    scorelabel: '\u062f\u0631\u062c\u0629 \u0633\u0644\u0633\u0644\u0629 \u0627\u0644\u062a\u0648\u0631\u064a\u062f \u0627\u0644\u0625\u062c\u0645\u0627\u0644\u064a\u0629',
+    scoreDesc: '\u062a\u0645 \u062a\u0642\u064a\u064a\u0645 \u0627\u0633\u062a\u0631\u0627\u062a\u064a\u062c\u064a\u0629 \u0633\u0644\u0633\u0644\u0629 \u0627\u0644\u062a\u0648\u0631\u064a\u062f \u0644\u0640 {name} \u0639\u0628\u0631 \u062e\u0645\u0633\u0629 \u0645\u062d\u0627\u0648\u0631 \u062a\u0634\u063a\u064a\u0644\u064a\u0629.',
+    choicesTitle: '\u062a\u0643\u0648\u064a\u0646 \u0633\u0644\u0633\u0644\u0629 \u0627\u0644\u062a\u0648\u0631\u064a\u062f \u0627\u0644\u062e\u0627\u0635\u0629 \u0628\u0643',
+    biggestRisk: '\u0623\u0643\u0628\u0631 \u062e\u0637\u0631 \u0645\u062d\u062f\u062f',
+    strengths: '\u0646\u0642\u0627\u0637 \u0642\u0648\u0629 \u0627\u0644\u0633\u0644\u0633\u0644\u0629',
+    weaknesses: '\u0646\u0642\u0627\u0637 \u0636\u0639\u0641 \u062a\u062d\u062a\u0627\u062c \u0645\u0639\u0627\u0644\u062c\u0629',
+    improvements: '\u062a\u062d\u0633\u064a\u0646\u0627\u062a \u0645\u0648\u0635\u0649 \u0628\u0647\u0627',
+    replayBtn: '\u21BA \u0625\u0639\u0627\u062f\u0629 \u0627\u0644\u062a\u0634\u063a\u064a\u0644 \u0628\u0646\u0638\u0627\u0645 \u062c\u062f\u064a\u062f',
+    dayBadge: '\u0627\u0644\u064a\u0648\u0645 30 \u2022 HealthNexus',
+    finalMetricLabels: ['\u0643\u0641\u0627\u0621\u0629 \u0627\u0644\u062a\u0643\u0644\u0641\u0629','\u0633\u0631\u0639\u0629 \u0627\u0644\u062a\u0633\u0644\u064a\u0645','\u0627\u0644\u0645\u0631\u0648\u0646\u0629','\u0631\u0636\u0627 \u0627\u0644\u0645\u0631\u064a\u0636','\u0627\u0644\u0627\u0633\u062a\u062f\u0627\u0645\u0629'],
+    stepEyebrows: ['\u0627\u0644\u062e\u0637\u0648\u0629 01 \u0645\u0646 05','\u0627\u0644\u062e\u0637\u0648\u0629 02 \u0645\u0646 05','\u0627\u0644\u062e\u0637\u0648\u0629 03 \u0645\u0646 05','\u0627\u0644\u062e\u0637\u0648\u0629 04 \u0645\u0646 05','\u0627\u0644\u062e\u0637\u0648\u0629 05 \u0645\u0646 05'],
+    stepTitles: ['\u0627\u0633\u062a\u0631\u0627\u062a\u064a\u062c\u064a\u0629 \u0627\u0644\u062a\u0648\u0631\u064a\u062f','\u0645\u0635\u062f\u0631 \u0627\u0644\u062a\u0635\u0646\u064a\u0639','\u0646\u0645\u0648\u0630\u062c \u0627\u0644\u062a\u0648\u0632\u064a\u0639','\u0637\u0631\u064a\u0642\u0629 \u0627\u0644\u0634\u062d\u0646','\u0627\u0633\u062a\u0631\u0627\u062a\u064a\u062c\u064a\u0629 \u0627\u0644\u0645\u062e\u0632\u0648\u0646'],
+  }
+};
+
+// ===== PRNG =====
+function mulberry32(seed) {
+  return function() {
+    seed |= 0; seed = seed + 0x6D2B79F5 | 0;
+    var t = Math.imul(seed ^ seed >>> 15, 1 | seed);
+    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  };
+}
+
+// ===== COMPANY DATA =====
+const COMPANY_PROFILES = [
+  { sector: 'Tertiary Hospital System', sectorAr: '\u0646\u0638\u0627\u0645 \u0645\u0633\u062a\u0634\u0641\u064a\u0627\u062a \u062b\u0644\u0627\u062b\u064a', region: 'UAE & Saudi Arabia', regionAr: '\u0627\u0644\u0625\u0645\u0627\u0631\u0627\u062a \u0648\u0627\u0644\u0645\u0645\u0644\u0643\u0629 \u0627\u0644\u0639\u0631\u0628\u064a\u0629 \u0627\u0644\u0633\u0639\u0648\u062f\u064a\u0629', demand: 'High', demandAr: '\u0645\u0631\u062a\u0641\u0639', beds: '1,200', facilities: 4 },
+  { sector: 'Primary Care Network', sectorAr: '\u0634\u0628\u0643\u0629 \u0631\u0639\u0627\u064a\u0629 \u0623\u0648\u0644\u064a\u0629', region: 'Qatar & Bahrain', regionAr: '\u0642\u0637\u0631 \u0648\u0627\u0644\u0628\u062d\u0631\u064a\u0646', demand: 'Moderate', demandAr: '\u0645\u0639\u062a\u062f\u0644', beds: '340', facilities: 12 },
+  { sector: 'Academic Medical Center', sectorAr: '\u0645\u0631\u0643\u0632 \u0637\u0628\u064a \u0623\u0643\u0627\u062f\u064a\u0645\u064a', region: 'US Midwest', regionAr: '\u0648\u0633\u0637 \u0627\u0644\u0648\u0644\u0627\u064a\u0627\u062a \u0627\u0644\u0645\u062a\u062d\u062f\u0629', demand: 'Very High', demandAr: '\u0645\u0631\u062a\u0641\u0639 \u062c\u062f\u0627', beds: '850', facilities: 2 },
+  { sector: 'Rural Health System', sectorAr: '\u0646\u0638\u0627\u0645 \u0635\u062d\u0629 \u0631\u064a\u0641\u064a', region: 'Montana, USA', regionAr: '\u0645\u0648\u0646\u062a\u0627\u0646\u0627\u060c \u0627\u0644\u0648\u0644\u0627\u064a\u0627\u062a \u0627\u0644\u0645\u062a\u062d\u062f\u0629', demand: 'Variable', demandAr: '\u0645\u062a\u063a\u064a\u0631', beds: '180', facilities: 7 },
+  { sector: 'Integrated Payer-Provider', sectorAr: '\u062f\u0627\u0641\u0639-\u0645\u0632\u0648\u062f \u0645\u062a\u0643\u0627\u0645\u0644', region: 'GCC Multi-Market', regionAr: '\u062f\u0648\u0644 \u0645\u062c\u0644\u0633 \u0627\u0644\u062a\u0639\u0627\u0648\u0646 \u0645\u062a\u0639\u062f\u062f\u0629', demand: 'High', demandAr: '\u0645\u0631\u062a\u0641\u0639', beds: '600', facilities: 9 },
+  { sector: 'Specialty Oncology Center', sectorAr: '\u0645\u0631\u0643\u0632 \u0623\u0648\u0631\u0627\u0645 \u0645\u062a\u062e\u0635\u0635', region: 'Saudi Arabia', regionAr: '\u0627\u0644\u0645\u0645\u0644\u0643\u0629 \u0627\u0644\u0639\u0631\u0628\u064a\u0629 \u0627\u0644\u0633\u0639\u0648\u062f\u064a\u0629', demand: 'Critical', demandAr: '\u062d\u0631\u062c', beds: '220', facilities: 2 },
+  { sector: 'Government Health Authority', sectorAr: '\u0647\u064a\u0626\u0629 \u062d\u0643\u0648\u0645\u064a\u0629 \u0635\u062d\u064a\u0629', region: 'UAE Federal', regionAr: '\u0627\u062a\u062d\u0627\u062f\u064a\u0629 \u0625\u0645\u0627\u0631\u0627\u062a\u064a\u0629', demand: 'Scheduled', demandAr: '\u0645\u062c\u062f\u0648\u0644', beds: '2,400', facilities: 18 },
+];
+const NAMES_A = ['\u0627\u0644\u0634\u0641\u0627\u0621','\u0646\u0648\u0641\u0627\u0645\u064a\u062f','\u0627\u0644\u062e\u0644\u064a\u062c\u064a','\u0633\u0645\u0651\u062a','\u0628\u0631\u0648\u0641\u064a\u062f\u0646\u0633','\u0645\u064a\u0631\u064a\u062f\u064a\u0627\u0646','\u0628\u064a\u0646\u0627\u0643\u0644','\u0647\u0644\u0627\u0644','\u0635\u062d\u0629 \u0627\u0644\u062e\u0644\u064a\u062c','\u0646\u064a\u0643\u0633\u0633'];
+const NAMES_B = ['\u0646\u0638\u0627\u0645 \u0635\u062d\u064a','\u0645\u062c\u0645\u0648\u0639\u0629 \u0637\u0628\u064a\u0629','\u0634\u0628\u0643\u0629 \u0635\u062d\u064a\u0629','\u062a\u062d\u0627\u0644\u0641 \u0631\u0639\u0627\u064a\u0629','\u0645\u062c\u0645\u0648\u0639\u0629 \u0645\u0633\u062a\u0634\u0641\u064a\u0627\u062a','\u0645\u0631\u0643\u0632 \u0637\u0628\u064a','\u0634\u0631\u0643\u0627\u0621 \u0635\u062d\u064a\u0629'];
+
+function generateCompany(rng) {
+  const profile = COMPANY_PROFILES[Math.floor(rng() * COMPANY_PROFILES.length)];
+  const name = NAMES_A[Math.floor(rng() * NAMES_A.length)] + ' ' + NAMES_B[Math.floor(rng() * NAMES_B.length)];
+  const annualSpend = Math.floor(rng() * 180 + 20);
+  return { ...profile, name, annualSpend };
+}
+
+// ===== STEP DATA (bilingual) =====
+const STEP_CONCEPTS = {
+  supplier: {
+    en: 'Your sourcing strategy determines where critical medical supplies, devices, and pharmaceuticals originate. Healthcare systems depend on reliable vendor relationships for patient safety. A disruption in surgical glove supply in 2020 halted elective procedures globally, costing US hospitals an estimated $1.4B in delayed revenue and compromising care access.',
+    ar: '\u062a\u062d\u062f\u062f \u0627\u0633\u062a\u0631\u0627\u062a\u064a\u062c\u064a\u0629 \u0627\u0644\u062a\u0648\u0631\u064a\u062f \u0645\u0635\u062f\u0631 \u0627\u0644\u0645\u0633\u062a\u0644\u0632\u0645\u0627\u062a \u0648\u0627\u0644\u0623\u062f\u0648\u064a\u0629 \u0627\u0644\u062d\u064a\u0648\u064a\u0629. \u0646\u0642\u0635 \u0627\u0644\u0642\u0641\u0627\u0632\u0627\u062a \u0627\u0644\u062c\u0631\u0627\u062d\u064a\u0629 \u0639\u0627\u0645 2020 \u0623\u0648\u0642\u0641 \u0627\u0644\u0639\u0645\u0644\u064a\u0627\u062a \u0627\u0644\u0627\u062e\u062a\u064a\u0627\u0631\u064a\u0629 \u0639\u0627\u0644\u0645\u064a\u0627\u064b \u0648\u0643\u0644\u0641 \u0627\u0644\u0645\u0633\u062a\u0634\u0641\u064a\u0627\u062a \u0627\u0644\u0623\u0645\u0631\u064a\u0643\u064a\u0629 1.4 \u0645\u0644\u064a\u0627\u0631 \u062f\u0648\u0644\u0627\u0631.'
+  },
+  factory: {
+    en: 'Where items are manufactured affects lead times, regulatory compliance, and cost. GCC health systems navigate SFDA (Saudi), DHA (UAE), and NHIC (Qatar) import approval timelines. Proximity to manufacturing reduces cycle time but may limit competitive pricing.',
+    ar: '\u064a\u0624\u062b\u0651\u0631 \u0645\u0648\u0642\u0639 \u0627\u0644\u062a\u0635\u0646\u064a\u0639 \u0639\u0644\u0649 \u0645\u0648\u0627\u0639\u064a\u062f \u0627\u0644\u062a\u0633\u0644\u064a\u0645 \u0648\u0627\u0644\u0627\u0645\u062a\u062b\u0627\u0644 \u0627\u0644\u062a\u0646\u0638\u064a\u0645\u064a. \u062a\u0639\u0645\u0644 \u0623\u0646\u0638\u0645\u0629 \u062f\u0648\u0644 \u0627\u0644\u062e\u0644\u064a\u062c \u0648\u0641\u0642 \u0625\u0637\u0627\u0631 \u0647\u064a\u0626\u0629 \u0627\u0644\u063a\u0630\u0627\u0621 \u0648\u0627\u0644\u062f\u0648\u0627\u0621 \u0627\u0644\u0633\u0639\u0648\u062f\u064a\u0629 \u0648\u0647\u064a\u0626\u0629 \u062f\u0628\u064a \u0648NHIC \u0642\u0637\u0631.'
+  },
+  warehouse: {
+    en: 'Distribution architecture determines how quickly supplies reach your facilities during normal and surge events. For hospital systems across multiple Emirates or US states, centralized vs. distributed warehousing is a strategic tradeoff between cost efficiency and service resilience.',
+    ar: '\u062a\u062d\u062f\u062f \u0628\u0646\u064a\u0629 \u0627\u0644\u062a\u0648\u0632\u064a\u0639 \u0633\u0631\u0639\u0629 \u0648\u0635\u0648\u0644 \u0627\u0644\u0645\u0633\u062a\u0644\u0632\u0645\u0627\u062a \u0625\u0644\u0649 \u0645\u0646\u0634\u0622\u062a\u0643. \u064a\u064f\u0639\u062f \u0627\u0644\u0627\u062e\u062a\u064a\u0627\u0631 \u0628\u064a\u0646 \u0627\u0644\u062a\u062e\u0632\u064a\u0646 \u0627\u0644\u0645\u0631\u0643\u0632\u064a \u0648\u0627\u0644\u0645\u0648\u0632\u0639 \u0645\u0648\u0627\u0632\u0646\u0629 \u0627\u0633\u062a\u0631\u0627\u062a\u064a\u062c\u064a\u0629 \u0628\u064a\u0646 \u0643\u0641\u0627\u0621\u0629 \u0627\u0644\u062a\u0643\u0644\u0641\u0629 \u0648\u0645\u0631\u0648\u0646\u0629 \u0627\u0644\u062e\u062f\u0645\u0629.'
+  },
+  transport: {
+    en: 'Transportation mode affects cost, delivery lead time, and carbon footprint. Healthcare logistics must comply with cold chain requirements for biologics. Air freight costs 4-5x sea freight but delivers in days, not weeks.',
+    ar: '\u064a\u0624\u062b\u0651\u0631 \u0646\u0648\u0639 \u0627\u0644\u0646\u0642\u0644 \u0639\u0644\u0649 \u0627\u0644\u062a\u0643\u0644\u0641\u0629 \u0648\u0645\u062f\u0629 \u0627\u0644\u062a\u0633\u0644\u064a\u0645. \u064a\u062c\u0628 \u0623\u0646 \u062a\u0633\u062a\u0648\u0641\u064a \u0644\u0648\u062c\u0633\u062a\u064a\u0643\u0627\u062a \u0627\u0644\u0631\u0639\u0627\u064a\u0629 \u0627\u0644\u0635\u062d\u064a\u0629 \u0645\u062a\u0637\u0644\u0628\u0627\u062a \u0633\u0644\u0633\u0644\u0629 \u0627\u0644\u062a\u0628\u0631\u064a\u062f \u0644\u0644\u0645\u0633\u062a\u062d\u0636\u0631\u0627\u062a \u0627\u0644\u0628\u064a\u0648\u0644\u0648\u062c\u064a\u0629.'
+  },
+  inventory: {
+    en: 'Inventory strategy balances working capital efficiency against supply security. COVID-19 exposed the risk of just-in-time models in healthcare. HFMA recommends health systems hold 30-90 days of critical supply safety stock depending on item criticality.',
+    ar: '\u062a\u0648\u0627\u0632\u0646 \u0627\u0633\u062a\u0631\u0627\u062a\u064a\u062c\u064a\u0629 \u0627\u0644\u0645\u062e\u0632\u0648\u0646 \u0628\u064a\u0646 \u0643\u0641\u0627\u0621\u0629 \u0631\u0623\u0633 \u0627\u0644\u0645\u0627\u0644 \u0648\u0623\u0645\u0646 \u0627\u0644\u062a\u0648\u0631\u064a\u062f. \u0643\u0634\u0641 \u0643\u0648\u0641\u064a\u062f-19 \u062e\u0637\u0648\u0631\u0629 \u0646\u0645\u0627\u0630\u062c \u0627\u0644\u062a\u0648\u0631\u064a\u062f \u0627\u0644\u0641\u0648\u0631\u064a. \u062a\u0648\u0635\u064a HFMA \u0628\u0627\u062d\u062a\u064a\u0627\u0637\u064a 30-90 \u064a\u0648\u0645\u0627\u064b \u0645\u0646 \u0627\u0644\u0645\u0633\u062a\u0644\u0632\u0645\u0627\u062a \u0627\u0644\u062d\u064a\u0648\u064a\u0629.'
+  }
+};
+
+const STEP_OPTIONS = {
+  supplier: [
+    { id:'single', icon:'\uD83C\uDFE2', name:{en:'Single Source',ar:'\u0645\u0648\u0631\u062f \u0648\u0627\u062d\u062f'}, desc:{en:'One primary supplier per category. Maximizes pricing leverage and simplifies vendor management.',ar:'\u0645\u0648\u0631\u062f \u0648\u0627\u062d\u062f \u0644\u0643\u0644 \u0641\u0626\u0629. \u064a\u0639\u0638\u0651\u0645 \u0627\u0644\u0646\u0641\u0648\u0630 \u0627\u0644\u062a\u0641\u0627\u0648\u0636\u064a \u0644\u0643\u0646\u0647 \u064a\u0632\u064a\u062f \u0627\u0644\u062e\u0637\u0631.'}, impacts:{en:['+Cost Savings','Risk Exposed','-Resilience'],ar:['+\u062a\u0648\u0641\u064a\u0631 \u0627\u0644\u062a\u0643\u0644\u0641\u0629','\u062e\u0637\u0631 \u0645\u0643\u0634\u0648\u0641','-\u0645\u0631\u0648\u0646\u0629']}, delta:{cost:15,speed:5,risk:-20,satisfaction:5,sustainability:5} },
+    { id:'dual', icon:'\uD83E\uDD1D', name:{en:'Dual Source',ar:'\u0645\u0648\u0631\u062f\u0627\u0646 \u0627\u062b\u0646\u0627\u0646'}, desc:{en:'Two qualified suppliers per critical category. Balances savings with backup capability.',ar:'\u0645\u0648\u0631\u062f\u0627\u0646 \u0645\u0624\u0647\u0644\u0627\u0646 \u0644\u0643\u0644 \u0641\u0626\u0629. \u064a\u0648\u0627\u0632\u0646 \u0628\u064a\u0646 \u0627\u0644\u062a\u0648\u0641\u064a\u0631 \u0648\u0627\u0644\u0627\u062d\u062a\u064a\u0627\u0637. \u0645\u0648\u0635\u0649 \u0628\u0647 \u0645\u0646 HFMA.'}, impacts:{en:['+Resilience','Moderate Cost','+Continuity'],ar:['+\u0645\u0631\u0648\u0646\u0629','\u062a\u0643\u0644\u0641\u0629 \u0645\u0639\u062a\u062f\u0644\u0629','+\u0627\u0633\u062a\u0645\u0631\u0627\u0631\u064a\u0629']}, delta:{cost:-5,speed:5,risk:15,satisfaction:10,sustainability:5} },
+    { id:'multi', icon:'\uD83C\uDF10', name:{en:'Multi-Source',ar:'\u0645\u062a\u0639\u062f\u062f \u0627\u0644\u0645\u0635\u0627\u062f\u0631'}, desc:{en:'Diversified supplier base including local, regional, and international vendors.',ar:'\u0642\u0627\u0639\u062f\u0629 \u0645\u0648\u0631\u062f\u064a\u0646 \u0645\u062a\u0646\u0648\u0639\u0629 \u062a\u0634\u0645\u0644 \u0645\u062d\u0644\u064a\u064a\u0646 \u0648\u0625\u0642\u0644\u064a\u0645\u064a\u064a\u0646 \u0648\u062f\u0648\u0644\u064a\u064a\u0646.'}, impacts:{en:['+Max Resilience','-Higher Cost','+GCC Compliance'],ar:['+\u0623\u0642\u0635\u0649 \u0645\u0631\u0648\u0646\u0629','-\u062a\u0643\u0644\u0641\u0629 \u0623\u0639\u0644\u0649','+\u0627\u0645\u062a\u062b\u0627\u0644 \u062f\u0648\u0644 \u0627\u0644\u062e\u0644\u064a\u062c']}, delta:{cost:-15,speed:0,risk:25,satisfaction:15,sustainability:10} },
+  ],
+  factory: [
+    { id:'local', icon:'\uD83C\uDFED', name:{en:'In-Region Manufacturing',ar:'\u062a\u0635\u0646\u064a\u0639 \u0645\u062d\u0644\u064a'}, desc:{en:'Source from GCC/US domestic producers. Faster approvals, supports local mandates.',ar:'\u0627\u0644\u0645\u0635\u0646\u0639\u0648\u0646 \u0627\u0644\u0645\u062d\u0644\u064a\u0648\u0646 \u0641\u064a \u0645\u0646\u0637\u0642\u0629 \u0627\u0644\u062e\u0644\u064a\u062c. \u0645\u0648\u0627\u0641\u0642\u0627\u062a \u062a\u0646\u0638\u064a\u0645\u064a\u0629 \u0623\u0633\u0631\u0639.'}, impacts:{en:['+Regulatory Speed','Higher Cost','+Vision 2030'],ar:['+\u0633\u0631\u0639\u0629 \u062a\u0646\u0638\u064a\u0645\u064a\u0629','\u062a\u0643\u0644\u0641\u0629 \u0623\u0639\u0644\u0649','+\u0631\u0624\u064a\u0629 2030']}, delta:{cost:-12,speed:15,risk:10,satisfaction:10,sustainability:15} },
+    { id:'nearshore', icon:'\uD83C\uDF0D', name:{en:'Nearshore (India, Europe)',ar:'\u0642\u0631\u064a\u0628 \u0645\u0646 \u0627\u0644\u0634\u0627\u0637\u0626 (\u0627\u0644\u0647\u0646\u062f\u060c \u0623\u0648\u0631\u0648\u0628\u0627)'}, desc:{en:'Established pharmaceutical hubs with WHO-GMP certification and strong GCC trade ties.',ar:'\u0645\u0631\u0627\u0643\u0632 \u062f\u0648\u0627\u0626\u064a\u0629 \u0631\u0627\u0633\u062e\u0629 \u0628\u0634\u0647\u0627\u062f\u0627\u062a WHO-GMP \u0648\u0639\u0644\u0627\u0642\u0627\u062a \u062a\u062c\u0627\u0631\u064a\u0629 \u0642\u0648\u064a\u0629.'}, impacts:{en:['+Quality','+Cost Balance','-Lead Time'],ar:['+\u062c\u0648\u062f\u0629','+\u062a\u0648\u0627\u0632\u0646 \u0627\u0644\u062a\u0643\u0644\u0641\u0629','-\u0645\u062f\u0629 \u0627\u0644\u062a\u0633\u0644\u064a\u0645']}, delta:{cost:8,speed:5,risk:5,satisfaction:8,sustainability:5} },
+    { id:'offshore', icon:'\uD83D\uDEA2', name:{en:'Global Offshore',ar:'\u062a\u0635\u0646\u064a\u0639 \u0639\u0627\u0644\u0645\u064a'}, desc:{en:'Low-cost manufacturing in Asia-Pacific. Maximum savings but longer lead times and port risk.',ar:'\u062a\u0635\u0646\u064a\u0639 \u0645\u0646\u062e\u0641\u0636 \u0627\u0644\u062a\u0643\u0644\u0641\u0629 \u0641\u064a \u0622\u0633\u064a\u0627-\u0627\u0644\u0645\u062d\u064a\u0637 \u0627\u0644\u0647\u0627\u062f\u0626. \u0623\u0642\u0635\u0649 \u0648\u0641\u0648\u0631\u0627\u062a \u0628\u062e\u0637\u0631 \u0645\u0648\u0627\u0646\u0626 \u0623\u0637\u0648\u0644.'}, impacts:{en:['+Cost Savings','-Lead Time','Port Risk'],ar:['+\u062a\u0648\u0641\u064a\u0631 \u0623\u0643\u0628\u0631','-\u0645\u062f\u0629 \u062a\u0633\u0644\u064a\u0645 \u0623\u0637\u0648\u0644','\u062e\u0637\u0631 \u0645\u0648\u0627\u0646\u0626']}, delta:{cost:20,speed:-15,risk:-10,satisfaction:-5,sustainability:-5} },
+  ],
+  warehouse: [
+    { id:'central', icon:'\uD83C\uDFDB', name:{en:'Central Distribution Hub',ar:'\u0645\u0631\u0643\u0632 \u062a\u0648\u0632\u064a\u0639 \u0645\u0631\u0643\u0632\u064a'}, desc:{en:'Single large facility (e.g., JAFZA, UAE). Efficient but single point of failure.',ar:'\u0645\u0646\u0634\u0623\u0629 \u0648\u0627\u062d\u062f\u0629 \u0643\u0628\u064a\u0631\u0629 (JAFZA \u0645\u062b\u0644\u0627). \u0641\u0639\u0651\u0627\u0644 \u0644\u0643\u0646 \u0646\u0642\u0637\u0629 \u0641\u0634\u0644 \u0645\u062d\u062a\u0645\u0644\u0629.'}, impacts:{en:['+Cost Efficient','Single Point Risk','+Bulk Pricing'],ar:['+\u0643\u0641\u0627\u0621\u0629 \u0627\u0644\u062a\u0643\u0644\u0641\u0629','\u062e\u0637\u0631 \u0646\u0642\u0637\u0629 \u0648\u0627\u062d\u062f\u0629','+\u062a\u0633\u0639\u064a\u0631 \u0628\u0627\u0644\u062c\u0645\u0644\u0629']}, delta:{cost:15,speed:-5,risk:-10,satisfaction:5,sustainability:10} },
+    { id:'regional', icon:'\uD83D\uDDFA', name:{en:'Regional Network',ar:'\u0634\u0628\u0643\u0629 \u0625\u0642\u0644\u064a\u0645\u064a\u0629'}, desc:{en:'Multiple facilities across Emirates or US regions. Faster delivery to care sites.',ar:'\u0645\u0646\u0634\u0622\u062a \u0645\u062a\u0639\u062f\u062f\u0629 \u0639\u0628\u0631 \u0627\u0644\u0625\u0645\u0627\u0631\u0627\u062a \u0623\u0648 \u0627\u0644\u0648\u0644\u0627\u064a\u0627\u062a. \u062a\u0633\u0644\u064a\u0645 \u0623\u0633\u0631\u0639 \u0644\u0645\u0648\u0627\u0642\u0639 \u0627\u0644\u0631\u0639\u0627\u064a\u0629.'}, impacts:{en:['+Delivery Speed','+Resilience','-Higher OpEx'],ar:['+\u0633\u0631\u0639\u0629 \u0627\u0644\u062a\u0633\u0644\u064a\u0645','+\u0645\u0631\u0648\u0646\u0629','-\u062a\u0643\u0627\u0644\u064a\u0641 \u062a\u0634\u063a\u064a\u0644 \u0623\u0639\u0644\u0649']}, delta:{cost:-10,speed:15,risk:15,satisfaction:15,sustainability:-5} },
+    { id:'hybrid', icon:'\u26A1', name:{en:'Hub + Spoke Hybrid',ar:'\u0646\u0645\u0648\u0630\u062c \u0647\u062c\u064a\u0646'}, desc:{en:'Central hub with satellite forward distribution points at high-volume facilities.',ar:'\u0645\u0631\u0643\u0632 \u0631\u0626\u064a\u0633\u064a \u0645\u0639 \u0646\u0642\u0627\u0637 \u062a\u0648\u0632\u064a\u0639 \u0645\u062a\u0642\u062f\u0645\u0629 \u0641\u064a \u0627\u0644\u0645\u0646\u0634\u0622\u062a \u0630\u0627\u062a \u0627\u0644\u062d\u062c\u0645 \u0627\u0644\u0643\u0628\u064a\u0631.'}, impacts:{en:['+Balanced','+Surge Ready','Moderate Cost'],ar:['+\u062a\u0648\u0627\u0632\u0646','+\u062c\u0627\u0647\u0632 \u0644\u0644\u0632\u064a\u0627\u062f\u0629','\u062a\u0643\u0644\u0641\u0629 \u0645\u0639\u062a\u062f\u0644\u0629']}, delta:{cost:-2,speed:10,risk:20,satisfaction:12,sustainability:5} },
+  ],
+  transport: [
+    { id:'air', icon:'\u2708', name:{en:'Air Freight',ar:'\u0634\u062d\u0646 \u062c\u0648\u064a'}, desc:{en:'Fastest for critical and high-value items. Essential for biologic cold chain.',ar:'\u0627\u0644\u0623\u0633\u0631\u0639 \u0644\u0644\u0645\u0648\u0627\u062f \u0627\u0644\u062d\u064a\u0648\u064a\u0629. \u0636\u0631\u0648\u0631\u064a \u0644\u0633\u0644\u0633\u0644\u0629 \u0627\u0644\u062a\u0628\u0631\u064a\u062f \u0627\u0644\u062d\u064a\u0648\u064a.'}, impacts:{en:['+Speed','-High Cost','-Carbon'],ar:['+\u0633\u0631\u0639\u0629','-\u062a\u0643\u0644\u0641\u0629 \u0639\u0627\u0644\u064a\u0629','-\u0628\u0635\u0645\u0629 \u0643\u0631\u0628\u0648\u0646\u064a\u0629']}, delta:{cost:-20,speed:25,risk:5,satisfaction:20,sustainability:-15} },
+    { id:'sea', icon:'\uD83D\uDEA2', name:{en:'Sea Freight',ar:'\u0634\u062d\u0646 \u0628\u062d\u0631\u064a'}, desc:{en:'Cost-effective for bulk consumables via Jebel Ali or US ports. 3-6 week lead times.',ar:'\u0641\u0639\u0651\u0627\u0644 \u0645\u0646 \u062d\u064a\u062b \u0627\u0644\u062a\u0643\u0644\u0641\u0629 \u0639\u0628\u0631 \u0645\u064a\u0646\u0627\u0621 \u062c\u0628\u0644 \u0639\u0644\u064a. \u0645\u062f\u0629 \u0627\u0644\u062a\u0633\u0644\u064a\u0645 3-6 \u0623\u0633\u0627\u0628\u064a\u0639.'}, impacts:{en:['+Cost Savings','-Slow','+Bulk Volume'],ar:['+\u062a\u0648\u0641\u064a\u0631','-\u0628\u0637\u064a\u0621','+\u062d\u062c\u0645 \u0643\u0628\u064a\u0631']}, delta:{cost:20,speed:-20,risk:-5,satisfaction:-10,sustainability:15} },
+    { id:'road', icon:'\uD83D\uDE9A', name:{en:'Road Transport',ar:'\u0646\u0642\u0644 \u0628\u0631\u064a'}, desc:{en:'Flexible for regional distribution. Ideal for last-mile delivery to facility level.',ar:'\u0645\u0631\u0646 \u0644\u0644\u062a\u0648\u0632\u064a\u0639 \u0627\u0644\u0625\u0642\u0644\u064a\u0645\u064a. \u0645\u062b\u0627\u0644\u064a \u0644\u0644\u0645\u064a\u0644 \u0627\u0644\u0623\u062e\u064a\u0631 \u0625\u0644\u0649 \u0627\u0644\u0645\u0646\u0634\u0623\u0629.'}, impacts:{en:['+Flexibility','Moderate Cost','+Last Mile'],ar:['+\u0645\u0631\u0648\u0646\u0629','\u062a\u0643\u0644\u0641\u0629 \u0645\u0639\u062a\u062f\u0644\u0629','+\u0645\u064a\u0644 \u0623\u062e\u064a\u0631']}, delta:{cost:5,speed:10,risk:5,satisfaction:10,sustainability:0} },
+    { id:'multimodal', icon:'\uD83D\uDCE6', name:{en:'Multimodal',ar:'\u0645\u062a\u0639\u062f\u062f \u0627\u0644\u0648\u0633\u0627\u0626\u0637'}, desc:{en:'Sea for bulk, air for critical, road for last mile. Optimizes the full logistics chain.',ar:'\u0628\u062d\u0631 \u0644\u0644\u0643\u0645\u064a\u0627\u062a \u0627\u0644\u0643\u0628\u064a\u0631\u0629\u060c \u062c\u0648 \u0644\u0644\u062d\u064a\u0648\u064a\u0629\u060c \u0628\u0631 \u0644\u0644\u0645\u064a\u0644 \u0627\u0644\u0623\u062e\u064a\u0631.'}, impacts:{en:['+Optimized','+Resilient','Coordination'],ar:['+\u0645\u062d\u0633\u0651\u0646','+\u0645\u0631\u0646','\u064a\u062a\u0637\u0644\u0628 \u062a\u0646\u0633\u064a\u0642']}, delta:{cost:8,speed:15,risk:15,satisfaction:18,sustainability:5} },
+  ],
+  inventory: [
+    { id:'jit', icon:'\u23F1', name:{en:'Just-In-Time (JIT)',ar:'\u0641\u064a \u0627\u0644\u0648\u0642\u062a \u0627\u0644\u0645\u062d\u062f\u062f'}, desc:{en:'Minimal safety stock. High capital efficiency but surge-vulnerable.',ar:'\u0645\u062e\u0632\u0648\u0646 \u0627\u062d\u062a\u064a\u0627\u0637\u064a \u0623\u062f\u0646\u0649. \u0643\u0641\u0627\u0621\u0629 \u0639\u0627\u0644\u064a\u0629 \u0644\u0643\u0646 \u062d\u0633\u0627\u0633 \u0644\u0644\u0637\u0648\u0627\u0631\u0626.'}, impacts:{en:['+Working Capital','-Surge Risk','Lean Ops'],ar:['+\u0631\u0623\u0633 \u0627\u0644\u0645\u0627\u0644','-\u062e\u0637\u0631 \u0627\u0644\u0637\u0648\u0627\u0631\u0626','\u062a\u0634\u063a\u064a\u0644 \u0646\u062d\u064a\u0641']}, delta:{cost:15,speed:5,risk:-25,satisfaction:-10,sustainability:5} },
+    { id:'balanced', icon:'\u2696', name:{en:'Balanced (30-day buffer)',ar:'\u0645\u062a\u0648\u0627\u0632\u0646 (30 \u064a\u0648\u0645)'}, desc:{en:'30-day safety stock on critical items per HFMA guidance. Balances cost and resilience.',ar:'30 \u064a\u0648\u0645\u0627 \u0627\u062d\u062a\u064a\u0627\u0637\u064a\u0627 \u0648\u0641\u0642 HFMA. \u064a\u0648\u0627\u0632\u0646 \u0627\u0644\u062a\u0643\u0644\u0641\u0629 \u0648\u0627\u0644\u0645\u0631\u0648\u0646\u0629.'}, impacts:{en:['+HFMA Aligned','Moderate Capital','+Surge Buffer'],ar:['+\u0645\u062a\u0648\u0627\u0641\u0642 HFMA','\u0631\u0623\u0633 \u0645\u0627\u0644 \u0645\u0639\u062a\u062f\u0644','+\u062d\u0627\u062c\u0632 \u0637\u0648\u0627\u0631\u0626']}, delta:{cost:-5,speed:5,risk:15,satisfaction:10,sustainability:0} },
+    { id:'strategic', icon:'\uD83D\uDEE1', name:{en:'Strategic Reserve (90-day)',ar:'\u0627\u062d\u062a\u064a\u0627\u0637\u064a \u0627\u0633\u062a\u0631\u0627\u062a\u064a\u062c\u064a (90 \u064a\u0648\u0645)'}, desc:{en:'WHO-recommended model. High capital tie-up but maximum crisis protection.',ar:'\u0646\u0645\u0648\u0630\u062c WHO \u0627\u0644\u0645\u0648\u0635\u0649 \u0628\u0647. \u0631\u0623\u0633 \u0645\u0627\u0644 \u0645\u0631\u062a\u0641\u0639 \u0645\u0639 \u062d\u0645\u0627\u064a\u0629 \u0642\u0635\u0648\u0649 \u0641\u064a \u0627\u0644\u0623\u0632\u0645\u0627\u062a.'}, impacts:{en:['+WHO Standard','-Capital Cost','+Crisis Ready'],ar:['+\u0645\u0639\u064a\u0627\u0631 WHO','-\u062a\u0643\u0644\u0641\u0629 \u0631\u0623\u0633 \u0627\u0644\u0645\u0627\u0644','+\u062c\u0627\u0647\u0632 \u0644\u0644\u0623\u0632\u0645\u0629']}, delta:{cost:-18,speed:0,risk:30,satisfaction:20,sustainability:-5} },
+  ],
+};
+
+const TRADEOFFS = {
+  supplier: {
+    single: { en:'Single-source maximizes price leverage. However, hospitals with single-source agreements in 2020 faced 6-week stockouts while multi-source peers recovered in under 2 weeks. For GCC systems, SFDA vendor qualification timelines mean a single-source disruption could leave you without alternatives for 90+ days.', ar:'\u0627\u0644\u0645\u0635\u062f\u0631 \u0627\u0644\u0648\u0627\u062d\u062f \u064a\u0639\u0638\u0651\u0645 \u0627\u0644\u0646\u0641\u0648\u0630 \u0627\u0644\u062a\u0641\u0627\u0648\u0636\u064a. \u0644\u0643\u0646 \u0639\u0627\u0645 2020\u060c \u0639\u0627\u0646\u062a \u0627\u0644\u0645\u0633\u062a\u0634\u0641\u064a\u0627\u062a \u0630\u0627\u062a \u0627\u0644\u0645\u0635\u062f\u0631 \u0627\u0644\u0648\u0627\u062d\u062f \u0645\u0646 \u0646\u0641\u0627\u062f \u0627\u0644\u0645\u062e\u0632\u0648\u0646 6 \u0623\u0633\u0627\u0628\u064a\u0639\u060c \u0628\u064a\u0646\u0645\u0627 \u062a\u0639\u0627\u0641\u064a\u062a \u0646\u0638\u064a\u0631\u0627\u062a\u0647\u0627 \u0645\u062a\u0639\u062f\u062f\u0629 \u0627\u0644\u0645\u0635\u0627\u062f\u0631 \u062e\u0644\u0627\u0644 \u0623\u0633\u0628\u0648\u0639\u064a\u0646.' },
+    dual: { en:'Dual-source is the HFMA baseline for critical categories. You gain a backup while maintaining pricing discipline. Maps well to GCC frameworks requiring both UAE local content (ADLC) and international sourcing.', ar:'\u0627\u0644\u0645\u0635\u062f\u0631\u0627\u0646 \u0647\u0648 \u0627\u0644\u062e\u0637 \u0627\u0644\u0623\u0633\u0627\u0633\u064a HFMA \u0644\u0644\u0641\u0626\u0627\u062a \u0627\u0644\u062d\u064a\u0648\u064a\u0629. \u064a\u062a\u0648\u0627\u0641\u0642 \u062c\u064a\u062f\u0627 \u0645\u0639 \u0645\u062a\u0637\u0644\u0628\u0627\u062a ADLC \u0627\u0644\u0625\u0645\u0627\u0631\u0627\u062a\u064a\u0629 \u0648\u0627\u0644\u0645\u0635\u0627\u062f\u0631 \u0627\u0644\u062f\u0648\u0644\u064a\u0629.' },
+    multi: { en:'Multi-source delivers the strongest supply continuity and aligns with UAE National Health Strategy and Saudi Vision 2030 pharmaceutical localization. Tradeoff: 8-15% higher unit costs versus single-source contracts.', ar:'\u0645\u062a\u0639\u062f\u062f \u0627\u0644\u0645\u0635\u0627\u062f\u0631 \u064a\u062d\u0642\u0642 \u0623\u0642\u0648\u0649 \u0627\u0633\u062a\u0645\u0631\u0627\u0631\u064a\u0629 \u0648\u064a\u062a\u0648\u0627\u0641\u0642 \u0645\u0639 \u0633\u062a\u0631\u0627\u062a\u064a\u062c\u064a\u0629 \u0627\u0644\u0635\u062d\u0629 \u0627\u0644\u0648\u0637\u0646\u064a\u0629 \u0628\u0627\u0644\u0625\u0645\u0627\u0631\u0627\u062a \u0648\u0631\u0624\u064a\u0629 2030 \u0627\u0644\u0633\u0639\u0648\u062f\u064a\u0629. \u0627\u0644\u062a\u0643\u0644\u0641\u0629 \u0623\u0639\u0644\u0649 8-15\u0025.' },
+  },
+  factory: {
+    local: { en:'In-region manufacturing aligns with Saudi Vision 2030 and UAE Industrial Strategy 2031. SFDA and DHA approval pathways are faster for locally manufactured products. Cost premium of 15-25% over offshore is partly offset by reduced freight and shorter lead times.', ar:'\u0627\u0644\u062a\u0635\u0646\u064a\u0639 \u0627\u0644\u0645\u062d\u0644\u064a \u064a\u062a\u0648\u0627\u0641\u0642 \u0645\u0639 \u0631\u0624\u064a\u0629 2030 \u0648\u0627\u0633\u062a\u0631\u0627\u062a\u064a\u062c\u064a\u0629 \u0627\u0644\u0625\u0645\u0627\u0631\u0627\u062a 2031. \u0645\u0633\u0627\u0631\u0627\u062a \u0627\u0644\u0645\u0648\u0627\u0641\u0642\u0629 \u0623\u0633\u0631\u0639. \u0639\u0644\u0627\u0648\u0629 \u0633\u0639\u0631 15-25\u0025 \u062a\u0639\u0648\u0636\u0647\u0627 \u0627\u0644\u0634\u062d\u0646 \u0627\u0644\u0645\u0646\u062e\u0641\u0636.' },
+    nearshore: { en:'India and Europe represent the backbone of GCC pharmaceutical supply. Indian manufacturers supplying GCC must hold SFDA or DHA GMP certificates. Transit from Mumbai via Jebel Ali averages 9-14 days versus 28-35 days from Asia-Pacific.', ar:'\u062a\u0645\u062b\u0644 \u0627\u0644\u0647\u0646\u062f \u0648\u0623\u0648\u0631\u0648\u0628\u0627 \u0639\u0645\u0648\u062f \u0627\u0644\u062a\u0648\u0631\u064a\u062f \u0627\u0644\u062f\u0648\u0627\u0626\u064a \u0644\u062f\u0648\u0644 \u0627\u0644\u062e\u0644\u064a\u062c. \u0639\u0628\u0648\u0631 \u0645\u0646 \u0645\u0648\u0645\u0628\u0627\u064a \u0639\u0628\u0631 \u062c\u0628\u0644 \u0639\u0644\u064a 9-14 \u064a\u0648\u0645\u0627.' },
+    offshore: { en:'Offshore manufacturing delivers 30-45% unit cost savings. Strategic risk: McKinsey found health systems with offshore-concentrated supply faced 4x longer recovery timelines during disruption events. Cold chain risk increases with extended lead times.', ar:'\u0648\u0641\u0648\u0631\u0627\u062a 30-45\u0025 \u0641\u064a \u062a\u0643\u0644\u0641\u0629 \u0627\u0644\u0648\u062d\u062f\u0629. \u0648\u062c\u062f\u062a \u0645\u0643\u064a\u0646\u0632\u064a \u0623\u0646 \u0627\u0644\u0646\u0638\u0645 \u0630\u0627\u062a \u0627\u0644\u062a\u0648\u0631\u064a\u062f \u0627\u0644\u062e\u0627\u0631\u062c\u064a \u0648\u062a\u0631\u0643\u062a 4 \u0623\u0636\u0639\u0627\u0641 \u0648\u0642\u062a \u0623\u0637\u0648\u0644 \u0644\u0644\u062a\u0639\u0627\u0641\u064a.' },
+  },
+  warehouse: {
+    central: { en:'Centralized distribution at JAFZA or a US regional DC minimizes real estate and operating overhead. Risk: a facility closure, cyberattack, or natural disaster creates system-wide stockout simultaneously.', ar:'\u0627\u0644\u062a\u0648\u0632\u064a\u0639 \u0627\u0644\u0645\u0631\u0643\u0632\u064a \u064a\u0642\u0644\u0644 \u062a\u0643\u0627\u0644\u064a\u0641 \u0627\u0644\u0639\u0642\u0627\u0631\u0627\u062a \u0648\u0627\u0644\u062a\u0634\u063a\u064a\u0644. \u0627\u0644\u062e\u0637\u0631: \u0625\u063a\u0644\u0627\u0642 \u0648\u0627\u062d\u062f \u064a\u062e\u0644\u0642 \u0646\u0642\u0635 \u0645\u062e\u0632\u0648\u0646 \u0641\u064a \u062c\u0645\u064a\u0639 \u0627\u0644\u0645\u0646\u0634\u0622\u062a \u0641\u064a \u0622\u0646 \u0648\u0627\u062d\u062f.' },
+    regional: { en:'A regional network places inventory closer to care delivery. For systems spanning multiple Emirates, regional nodes reduce delivery time from days to hours. Operating costs increase 20-30% but surge response capability improves dramatically.', ar:'\u0627\u0644\u0634\u0628\u0643\u0629 \u0627\u0644\u0625\u0642\u0644\u064a\u0645\u064a\u0629 \u062a\u0636\u0639 \u0627\u0644\u0645\u062e\u0632\u0648\u0646 \u0623\u0642\u0631\u0628 \u0644\u0645\u0648\u0627\u0642\u0639 \u0627\u0644\u0631\u0639\u0627\u064a\u0629. \u062a\u0646\u062e\u0641\u0636 \u0645\u062f\u0629 \u0627\u0644\u062a\u0633\u0644\u064a\u0645 \u0645\u0646 \u0623\u064a\u0627\u0645 \u0625\u0644\u0649 \u0633\u0627\u0639\u0627\u062a.' },
+    hybrid: { en:'The hub-and-spoke hybrid is current best practice for large health systems. A central hub manages bulk purchasing while satellite points handle just-in-time replenishment to facilities. Embedded in supply chain design of major GCC health groups.', ar:'\u0646\u0645\u0648\u0630\u062c \u0627\u0644\u0645\u062d\u0648\u0631 \u0648\u0627\u0644\u0623\u0630\u0631\u0639\u0629 \u0647\u0648 \u0623\u0641\u0636\u0644 \u0645\u0645\u0627\u0631\u0633\u0629 \u062d\u0627\u0644\u064a\u0627. \u0645\u0636\u0645\u0651\u0646 \u0641\u064a \u062a\u0635\u0645\u064a\u0645 \u0633\u0644\u0633\u0644\u0629 \u062a\u0648\u0631\u064a\u062f \u0645\u062c\u0645\u0648\u0639\u0627\u062a \u0635\u062d\u064a\u0629 \u0643\u0628\u0631\u0649 \u0641\u064a \u062f\u0648\u0644 \u0627\u0644\u062e\u0644\u064a\u062c.' },
+  },
+  transport: {
+    air: { en:'Air freight is non-negotiable for biologics and temperature-sensitive pharmaceuticals. Emirates SkyCargo and Qatar Airways Cargo are WHO-GDP certified cold chain partners. Cost premium is 4-5x sea freight but delivery in 24-72 hours versus 3-6 weeks.', ar:'\u0627\u0644\u0634\u062d\u0646 \u0627\u0644\u062c\u0648\u064a \u0636\u0631\u0648\u0631\u064a \u0644\u0644\u0645\u0633\u062a\u062d\u0636\u0631\u0627\u062a \u0627\u0644\u062d\u0633\u0627\u0633\u0629 \u0644\u0644\u062d\u0631\u0627\u0631\u0629. \u0634\u0631\u0643\u0627\u062a \u0637\u064a\u0631\u0627\u0646 \u0627\u0644\u0625\u0645\u0627\u0631\u0627\u062a \u0648\u0642\u0637\u0631 \u0645\u0639\u062a\u0645\u062f\u0629 WHO-GDP. \u0627\u0644\u062a\u0633\u0644\u064a\u0645 \u062e\u0644\u0627\u0644 24-72 \u0633\u0627\u0639\u0629.' },
+    sea: { en:'Sea freight via Jebel Ali (world rank 9) is the backbone of GCC healthcare commodity supply. The 2021 Suez Canal blockage added $400M in healthcare logistics delays globally, illustrating concentration risk.', ar:'\u0645\u064a\u0646\u0627\u0621 \u062c\u0628\u0644 \u0639\u0644\u064a (\u0627\u0644\u0645\u0631\u062a\u0628\u0629 9 \u0639\u0627\u0644\u0645\u064a\u0627) \u0639\u0645\u0648\u062f \u062a\u0648\u0631\u064a\u062f \u0627\u0644\u0633\u0644\u0639 \u0627\u0644\u0635\u062d\u064a\u0629 \u0641\u064a \u0627\u0644\u062e\u0644\u064a\u062c. \u0623\u0636\u0627\u0641\u062a \u0623\u0632\u0645\u0629 \u0642\u0646\u0627\u0629 \u0627\u0644\u0633\u0648\u064a\u0633 2021 \u062a\u0623\u062e\u064a\u0631\u0627\u062a \u0628\u0642\u064a\u0645\u0629 400 \u0645\u0644\u064a\u0648\u0646 \u062f\u0648\u0644\u0627\u0631.' },
+    road: { en:'Road transport is the essential last-mile layer. Within GCC, road logistics across UAE, Oman, Qatar, and Saudi Arabia enables 24-48 hour inter-country delivery. In rural US markets, road reliability is the single largest determinant of supply chain performance.', ar:'\u0627\u0644\u0646\u0642\u0644 \u0627\u0644\u0628\u0631\u064a \u0637\u0628\u0642\u0629 \u0627\u0644\u0645\u064a\u0644 \u0627\u0644\u0623\u062e\u064a\u0631 \u0627\u0644\u0623\u0633\u0627\u0633\u064a\u0629. \u062f\u0627\u062e\u0644 \u0627\u0644\u062e\u0644\u064a\u062c\u060c \u064a\u0645\u0643\u0651\u0646 \u0627\u0644\u062a\u0633\u0644\u064a\u0645 \u0628\u064a\u0646 \u062f\u0648\u0644 \u0627\u0644\u062e\u0644\u064a\u062c 24-48 \u0633\u0627\u0639\u0629.' },
+    multimodal: { en:'Multimodal is the design standard for mature health system supply chains. Sea for non-critical bulk, air for critical, road for last-mile. Requires a 3PL partner with visibility technology across modes. 10-15% cost premium over single-mode.', ar:'\u0627\u0644\u0646\u0645\u0648\u0630\u062c \u0645\u062a\u0639\u062f\u062f \u0627\u0644\u0648\u0633\u0627\u0626\u0637 \u0647\u0648 \u0627\u0644\u0645\u0639\u064a\u0627\u0631 \u0627\u0644\u062a\u0635\u0645\u064a\u0645\u064a \u0644\u0633\u0644\u0627\u0633\u0644 \u0627\u0644\u062a\u0648\u0631\u064a\u062f \u0627\u0644\u0646\u0627\u0636\u062c\u0629. \u062a\u0643\u0644\u0641\u0629 \u0625\u0636\u0627\u0641\u064a\u0629 10-15\u0025 \u0645\u0642\u0627\u0628\u0644 \u0645\u0631\u0648\u0646\u0629 \u0648\u062c\u0648\u062f\u0629 \u0623\u0639\u0644\u0649.' },
+  },
+  inventory: {
+    jit: { en:'JIT minimizes capital in inventory (8-12% of annual supply spend). For a $100M supply chain, JIT could free $8-12M working capital. But 72% of US hospitals on JIT reported critical shortages within 14 days of COVID demand surge (AHA, 2020).', ar:'\u0627\u0644\u062a\u0648\u0631\u064a\u062f \u0627\u0644\u0641\u0648\u0631\u064a \u064a\u0642\u0644\u0644 \u0631\u0623\u0633 \u0627\u0644\u0645\u0627\u0644 8-12\u0025. \u0644\u0643\u0646 72\u0025 \u0645\u0646 \u0627\u0644\u0645\u0633\u062a\u0634\u0641\u064a\u0627\u062a \u0639\u0644\u0649 \u0647\u0630\u0627 \u0627\u0644\u0646\u0645\u0648\u0630\u062c \u0639\u0627\u0646\u062a \u0645\u0646 \u0646\u0642\u0635 \u062d\u0627\u062f \u062e\u0644\u0627\u0644  14 \u064a\u0648\u0645\u0627 \u0645\u0646 \u0643\u0648\u0641\u064a\u062f-19.' },
+    balanced: { en:'A 30-day safety stock buffer on critical items is the HFMA recommended baseline. GCC health authorities typically mandate 30-day minimums for essential medicines under national health security frameworks.', ar:'\u0627\u062d\u062a\u064a\u0627\u0637\u064a 30 \u064a\u0648\u0645\u0627 \u0647\u0648 \u062e\u0637 \u0627\u0644\u0623\u0633\u0627\u0633 HFMA. \u062a\u0641\u0631\u0636 \u0633\u0644\u0637\u0627\u062a \u062f\u0648\u0644 \u0627\u0644\u062e\u0644\u064a\u062c \u0639\u0627\u062f\u0629 \u062d\u062f\u0627 \u0623\u062f\u0646\u0649 30 \u064a\u0648\u0645\u0627 \u0644\u0644\u0623\u062f\u0648\u064a\u0629 \u0627\u0644\u0623\u0633\u0627\u0633\u064a\u0629.' },
+    strategic: { en:'WHO recommends 90-day strategic reserves for essential medicines. Post-COVID, multiple GCC health authorities have legislated 90-day reserve requirements for critical supply categories. High carrying cost (25-35% annually) but maximum operational resilience.', ar:'\u062a\u0648\u0635\u064a WHO \u0628\u0627\u062d\u062a\u064a\u0627\u0637\u064a\u0627\u062a \u0627\u0633\u062a\u0631\u0627\u062a\u064a\u062c\u064a\u0629 90 \u064a\u0648\u0645\u0627. \u0633\u0646\u0651\u062a \u062f\u0648\u0644 \u062e\u0644\u064a\u062c\u064a\u0629 \u0639\u062f\u064a\u062f\u0629 \u0645\u062a\u0637\u0644\u0628\u0627\u062a \u0627\u062d\u062a\u064a\u0627\u0637\u064a\u0629 90 \u064a\u0648\u0645\u0627 \u0628\u0639\u062f \u0643\u0648\u0641\u064a\u062f. \u062a\u0643\u0644\u0641\u0629 \u0627\u062d\u062a\u062c\u0627\u0632 \u0639\u0627\u0644\u064a\u0629 \u0644\u0643\u0646 \u0645\u0631\u0648\u0646\u0629 \u0642\u0635\u0648\u0649.' },
+  }
+};
+
+const GCC_NOTES = {
+  'supplier-single': { en:'GCC: Single-source strategies require SFDA/DHA-approved backup vendor registration before primary vendor qualification to meet regulatory continuity requirements.', ar:'\u062f\u0648\u0644 \u0627\u0644\u062e\u0644\u064a\u062c: \u062a\u062a\u0637\u0644\u0628 \u0627\u0633\u062a\u0631\u0627\u062a\u064a\u062c\u064a\u0629 \u0627\u0644\u0645\u0635\u062f\u0631 \u0627\u0644\u0648\u0627\u062d\u062f \u062a\u0633\u062c\u064a\u0644 \u0645\u0648\u0631\u062f \u0627\u062d\u062a\u064a\u0627\u0637\u064a \u0645\u0639\u062a\u0645\u062f \u0645\u0646 SFDA/DHA \u0642\u0628\u0644 \u062a\u0623\u0647\u064a\u0644 \u0627\u0644\u0645\u0648\u0631\u062f \u0627\u0644\u0631\u0626\u064a\u0633\u064a.' },
+  'supplier-dual': { en:'GCC: UAE ADLC and Saudi ICV frameworks incentivize including at least one local or regional supplier in dual-source arrangements.', ar:'\u062f\u0648\u0644 \u0627\u0644\u062e\u0644\u064a\u062c: ADLC \u0627\u0644\u0625\u0645\u0627\u0631\u0627\u062a\u064a\u0629 \u0648ICV \u0627\u0644\u0633\u0639\u0648\u062f\u064a\u0629 \u062a\u062d\u0641\u0651\u0632 \u0639\u0644\u0649 \u0625\u062f\u0631\u0627\u062c \u0645\u0648\u0631\u062f \u0645\u062d\u0644\u064a \u0648\u0627\u062d\u062f \u0639\u0644\u0649 \u0627\u0644\u0623\u0642\u0644.' },
+  'supplier-multi': { en:'GCC: Multi-source aligns with Saudi Vision 2030 pharmaceutical localization and UAE Net Zero 2050 sustainability supply chain goals.', ar:'\u062f\u0648\u0644 \u0627\u0644\u062e\u0644\u064a\u062c: \u0645\u062a\u0639\u062f\u062f \u0627\u0644\u0645\u0635\u0627\u062f\u0631 \u064a\u062a\u0648\u0627\u0641\u0642 \u0645\u0639 \u0623\u0647\u062f\u0627\u0641 \u0627\u0644\u062a\u0648\u0637\u064a\u0646 \u0627\u0644\u062f\u0648\u0627\u0626\u064a \u0644\u0631\u0624\u064a\u0629 2030 \u0648\u0627\u0644\u0627\u0633\u062a\u062f\u0627\u0645\u0629 \u0627\u0644\u0625\u0645\u0627\u0631\u0627\u062a\u064a\u0629.' },
+  'factory-local': { en:'GCC: SFDA Priority Review for domestically manufactured products. UAE Industrial Strategy 2031 offers investment incentives for in-country pharmaceutical production.', ar:'\u062f\u0648\u0644 \u0627\u0644\u062e\u0644\u064a\u062c: SFDA \u0645\u0633\u0627\u0631 \u0645\u0631\u0627\u062c\u0639\u0629 \u0633\u0631\u064a\u0639\u0629 \u0644\u0644\u0645\u0646\u062a\u062c\u0627\u062a \u0627\u0644\u0645\u062d\u0644\u064a\u0629. \u0627\u0633\u062a\u0631\u0627\u062a\u064a\u062c\u064a\u0629 2031 \u062a\u0642\u062f\u0645 \u062d\u0648\u0627\u0641\u0632 \u0644\u0644\u0625\u0646\u062a\u0627\u062c \u0627\u0644\u062f\u0648\u0627\u0626\u064a \u0627\u0644\u0645\u062d\u0644\u064a.' },
+  'factory-nearshore': { en:'GCC: India-GCC pharmaceutical corridor estimated at $3.2B annually. Indian manufacturers must hold SFDA or DHA GMP certificates for GCC supply.', ar:'\u062f\u0648\u0644 \u0627\u0644\u062e\u0644\u064a\u062c: \u0645\u0645\u0631 \u0627\u0644\u062f\u0648\u0627\u0621 \u0627\u0644\u0647\u0646\u062f\u064a-\u0627\u0644\u062e\u0644\u064a\u062c\u064a \u064a\u0628\u0644\u063a 3.2 \u0645\u0644\u064a\u0627\u0631 \u062f\u0648\u0644\u0627\u0631 \u0633\u0646\u0648\u064a\u0627. \u064a\u062c\u0628 \u0623\u0646 \u064a\u062d\u0645\u0644 \u0627\u0644\u0645\u0635\u0646\u0651\u0639\u0648\u0646 \u0634\u0647\u0627\u062f\u0627\u062a GMP \u0645\u0646 SFDA \u0623\u0648 DHA.' },
+  'factory-offshore': { en:'GCC: Products from offshore manufacturers require SFDA/DHA product registration and typically 6-18 month regulatory approval timelines for new product introduction.', ar:'\u062f\u0648\u0644 \u0627\u0644\u062e\u0644\u064a\u062c: \u062a\u062a\u0637\u0644\u0628 \u0627\u0644\u0645\u0646\u062a\u062c\u0627\u062a \u0627\u0644\u062e\u0627\u0631\u062c\u064a\u0629 \u062a\u0633\u062c\u064a\u0644 SFDA/DHA \u0648\u0645\u0648\u0627\u0641\u0642\u0629 6-18 \u0634\u0647\u0631\u0627 \u0644\u0644\u0645\u0646\u062a\u062c\u0627\u062a \u0627\u0644\u062c\u062f\u064a\u062f\u0629.' },
+  'warehouse-central': { en:'GCC: JAFZA hosts 20+ global healthcare logistics operators with GDP-certified cold chain infrastructure and customs facilitation for GCC-wide distribution.', ar:'\u062f\u0648\u0644 \u0627\u0644\u062e\u0644\u064a\u062c: \u062a\u0636\u0645 JAFZA \u0623\u0643\u062b\u0631 \u0645\u0646 20 \u0645\u0634\u063a\u0644 \u0644\u0648\u062c\u0633\u062a\u064a\u0643\u0627\u062a \u0635\u062d\u064a\u0629 \u0639\u0627\u0644\u0645\u064a\u0627 \u0628\u0634\u0647\u0627\u062f\u0627\u062a GDP \u0648\u062e\u062f\u0645\u0627\u062a \u062c\u0645\u0631\u0643\u064a\u0629 \u0644\u062f\u0648\u0644 \u0627\u0644\u062e\u0644\u064a\u062c.' },
+  'warehouse-regional': { en:'GCC: Major GCC health groups use regional hub models as reference architecture for public health supply resilience across the Emirates.', ar:'\u062f\u0648\u0644 \u0627\u0644\u062e\u0644\u064a\u062c: \u062a\u0633\u062a\u062e\u062f\u0645 \u0645\u062c\u0645\u0648\u0639\u0627\u062a \u0635\u062d\u064a\u0629 \u062e\u0644\u064a\u062c\u064a\u0629 \u0643\u0628\u0631\u0649 \u0646\u0645\u0627\u0630\u062c \u0645\u0631\u0643\u0632\u064a\u0629 \u0625\u0642\u0644\u064a\u0645\u064a\u0629 \u0643\u0628\u0646\u064a\u0629 \u0645\u0631\u062c\u0639\u064a\u0629 \u0644\u0645\u0631\u0648\u0646\u0629 \u0633\u0644\u0633\u0644\u0629 \u0627\u0644\u062a\u0648\u0631\u064a\u062f.' },
+  'warehouse-hybrid': { en:'GCC: PureHealth and Burjeel Holdings use hub-and-spoke models in UAE with central distribution at Abu Dhabi and satellite points at high-volume hospital facilities.', ar:'\u062f\u0648\u0644 \u0627\u0644\u062e\u0644\u064a\u062c: PureHealth \u0648Burjeel \u064a\u0633\u062a\u062e\u062f\u0645\u0627\u0646 \u0646\u0645\u0648\u0630\u062c \u0645\u0631\u0643\u0632-\u0623\u0630\u0631\u0639\u0629 \u0641\u064a \u0627\u0644\u0625\u0645\u0627\u0631\u0627\u062a \u0645\u0639 \u062a\u0648\u0632\u064a\u0639 \u0645\u0631\u0643\u0632\u064a \u0641\u064a \u0623\u0628\u0648\u0638\u0628\u064a.' },
+  'transport-air': { en:'GCC: Dubai and Abu Dhabi airports are CEIV Pharma certified (IATA). Qatar Airways Cargo QR Pharma supports WHO-GDP cold chain compliance.', ar:'\u062f\u0648\u0644 \u0627\u0644\u062e\u0644\u064a\u062c: \u0645\u0637\u0627\u0631\u0627 \u062f\u0628\u064a \u0648\u0623\u0628\u0648\u0638\u0628\u064a \u062d\u0627\u0635\u0644\u0627\u0646 \u0639\u0644\u0649 \u0634\u0647\u0627\u062f\u0629 CEIV Pharma. \u0634\u062d\u0646 \u0627\u0644\u062e\u0637\u0648\u0637 \u0627\u0644\u062c\u0648\u064a\u0629 \u0627\u0644\u0642\u0637\u0631\u064a\u0629 \u064a\u062f\u0639\u0645 WHO-GDP.' },
+  'transport-sea': { en:'GCC: Jebel Ali Port handles approximately 80% of UAE healthcare import volume. Port Health Authority clearance averages 24-48 hours for pre-registered products.', ar:'\u062f\u0648\u0644 \u0627\u0644\u062e\u0644\u064a\u062c: \u064a\u0639\u0627\u0644\u062c \u0645\u064a\u0646\u0627\u0621 \u062c\u0628\u0644 \u0639\u0644\u064a 80\u0025 \u0645\u0646 \u0648\u0627\u0631\u062f\u0627\u062a \u0627\u0644\u0631\u0639\u0627\u064a\u0629 \u0627\u0644\u0635\u062d\u064a\u0629 \u0627\u0644\u0625\u0645\u0627\u0631\u0627\u062a\u064a\u0629. \u0645\u062a\u0648\u0633\u0637 \u062a\u062e\u0644\u064a\u0635 \u062c\u0645\u0631\u0643\u064a 24-48 \u0633\u0627\u0639\u0629.' },
+  'transport-road': { en:'GCC: GCC Customs Union facilitates road transport across member states without full re-inspection at borders. UAE-Saudi road corridor handles significant healthcare distribution volume.', ar:'\u062f\u0648\u0644 \u0627\u0644\u062e\u0644\u064a\u062c: \u064a\u0633\u0647\u0651\u0644 \u0627\u0644\u0627\u062a\u062d\u0627\u062f \u0627\u0644\u062c\u0645\u0631\u0643\u064a \u0627\u0644\u0646\u0642\u0644 \u0628\u064a\u0646 \u062f\u0648\u0644 \u0627\u0644\u062e\u0644\u064a\u062c \u062f\u0648\u0646 \u0641\u062d\u0635 \u0643\u0627\u0645\u0644 \u0639\u0646\u062f \u0627\u0644\u062d\u062f\u0648\u062f.' },
+  'transport-multimodal': { en:'GCC: Aramex, Agility, and DHL have GCC-wide multimodal healthcare logistics with cold chain and track-and-trace meeting DHA and SFDA requirements.', ar:'\u062f\u0648\u0644 \u0627\u0644\u062e\u0644\u064a\u062c: \u0623\u0631\u0627\u0645\u0643\u0633 \u0648Agility \u0648DHL \u062a\u0645\u062a\u0644\u0643 \u0644\u0648\u062c\u0633\u062a\u064a\u0643\u0627\u062a \u0635\u062d\u064a\u0629 \u0645\u062a\u0639\u062f\u062f\u0629 \u0627\u0644\u0648\u0633\u0627\u0626\u0637 \u062a\u0644\u0628\u064a SFDA \u0648DHA.' },
+  'inventory-jit': { en:'GCC: UAE DOH and Saudi MOH supply circulars post-COVID specifically caution against JIT as the primary model for Category A (critical) medical supplies.', ar:'\u062f\u0648\u0644 \u0627\u0644\u062e\u0644\u064a\u062c: \u062d\u0630\u0651\u0631 DOH \u0627\u0644\u0625\u0645\u0627\u0631\u0627\u062a\u064a \u0648\u0648\u0632\u0627\u0631\u0629 \u0627\u0644\u0635\u062d\u0629 \u0627\u0644\u0633\u0639\u0648\u062f\u064a\u0629 \u0635\u0631\u0627\u062d\u0629 \u0645\u0646 \u0627\u0639\u062a\u0645\u0627\u062f \u0627\u0644\u062a\u0648\u0631\u064a\u062f \u0627\u0644\u0641\u0648\u0631\u064a \u0644\u0644\u0645\u0633\u062a\u0644\u0632\u0645\u0627\u062a \u0627\u0644\u062d\u064a\u0648\u064a\u0629.' },
+  'inventory-balanced': { en:'GCC: UAE MOHAP national pharmaceutical safety stock policy mandates 30-day minimum reserves for essential medicines at distributor level.', ar:'\u062f\u0648\u0644 \u0627\u0644\u062e\u0644\u064a\u062c: \u062a\u0641\u0631\u0636 MOHAP \u0633\u064a\u0627\u0633\u0629 \u0627\u062d\u062a\u064a\u0627\u0637\u064a\u0629 \u062f\u0648\u0627\u0626\u064a\u0629 \u0644\u0627 \u062a\u0642\u0644 \u0639\u0646 30 \u064a\u0648\u0645\u0627 \u0639\u0644\u0649 \u0645\u0633\u062a\u0648\u0649 \u0627\u0644\u0645\u0648\u0632\u0639.' },
+  'inventory-strategic': { en:'GCC: Saudi Arabia\'s Strategic Health Reserves maintain 90-day national reserves for essential medicines. GCC facilities required to align with legislated reserve thresholds.', ar:'\u062f\u0648\u0644 \u0627\u0644\u062e\u0644\u064a\u062c: \u062a\u062d\u062a\u0641\u0638 \u0627\u0644\u0645\u0645\u0644\u0643\u0629 \u0627\u0644\u0639\u0631\u0628\u064a\u0629 \u0627\u0644\u0633\u0639\u0648\u062f\u064a\u0629 \u0628\u0627\u062d\u062a\u064a\u0627\u0637\u064a\u0627\u062a \u0648\u0637\u0646\u064a\u0629 90 \u064a\u0648\u0645\u0627. \u0645\u0644\u0632\u0645\u0629 \u0645\u0646\u0634\u0622\u062a \u062f\u0648\u0644 \u0627\u0644\u062e\u0644\u064a\u062c \u0628\u0627\u0644\u0627\u0645\u062a\u062b\u0627\u0644.' },
+};
+
+// Scoring & insights
+function computeScore(m){ return Math.round(Object.values(m).reduce((a,b)=>a+b,0)/Object.values(m).length); }
+function getRating(score,lang){
+  if(score>=85) return {label:lang==='ar'?'\u0627\u0633\u062a\u062b\u0646\u0627\u0626\u064a':'Exceptional',color:'#34d399'};
+  if(score>=70) return {label:lang==='ar'?'\u0642\u0648\u064a':'Strong',color:'#0fd4be'};
+  if(score>=55) return {label:lang==='ar'?'\u0645\u0639\u062a\u062f\u0644':'Moderate',color:'#c9a84c'};
+  if(score>=40) return {label:lang==='ar'?'\u062e\u0637\u0631 \u0645\u0631\u062a\u0641\u0639':'Elevated Risk',color:'#e8923a'};
+  return {label:lang==='ar'?'\u062e\u0637\u0631 \u0639\u0627\u0644\u064a':'High Risk',color:'#e05252'};
+}
+function getMetricColor(v){ return v>=75?'#34d399':v>=55?'#0fd4be':v>=40?'#c9a84c':v>=25?'#e8923a':'#e05252'; }
+
+function generateInsights(choices, metrics, lang) {
+  const ar = lang==='ar';
+  const strengths=[], weaknesses=[], improvements=[];
+  if(metrics.risk>=60) strengths.push(ar?'\u0625\u062f\u0627\u0631\u0629 \u0645\u062e\u0627\u0637\u0631 \u0627\u0633\u062a\u0645\u0631\u0627\u0631\u064a\u0629 \u0627\u0644\u062a\u0648\u0631\u064a\u062f \u062a\u062a\u062c\u0627\u0648\u0632 \u0645\u0633\u062a\u0648\u0649 \u0627\u0644\u0635\u0646\u0627\u0639\u0629.':'Supply continuity risk management exceeds healthcare industry baseline.');
+  if(metrics.cost>=60) strengths.push(ar?'\u0643\u0641\u0627\u0621\u0629 \u0627\u0644\u062a\u0643\u0644\u0641\u0629 \u062a\u062f\u0639\u0645 \u0623\u062f\u0627\u0621 \u0627\u0644\u0647\u0627\u0645\u0634 \u0627\u0644\u062a\u0634\u063a\u064a\u0644\u064a.':'Cost efficiency supports strong margin performance.');
+  if(metrics.satisfaction>=65) strengths.push(ar?'\u0645\u0633\u062a\u0648\u064a\u0627\u062a \u062e\u062f\u0645\u0629 \u0627\u0644\u0645\u0631\u064a\u0636 \u0645\u062f\u0639\u0648\u0645\u0629 \u062c\u064a\u062f\u0627 \u0645\u0646 \u062a\u0648\u0641\u064a\u0631 \u0627\u0644\u0645\u0633\u062a\u0644\u0632\u0645\u0627\u062a.':'Patient service levels well-supported by supply availability.');
+  if(metrics.speed>=60) strengths.push(ar?'\u0633\u0631\u0639\u0629 \u0627\u0644\u062a\u0633\u0644\u064a\u0645 \u062a\u0639\u062a\u0645\u062f \u0627\u0644\u062a\u062c\u062f\u064a\u062f \u0627\u0644\u0633\u0631\u064a\u0639 \u0644\u0644\u0645\u0646\u0627\u0637\u0642 \u0627\u0644\u0633\u0631\u064a\u0631\u064a\u0629.':'Delivery speed enables responsive replenishment to clinical areas.');
+  if(metrics.sustainability>=60) strengths.push(ar?'\u0645\u0644\u0641 \u0627\u0644\u0627\u0633\u062a\u062f\u0627\u0645\u0629 \u0645\u062a\u0648\u0627\u0641\u0642 \u0645\u0639 \u0623\u0637\u0631 \u0631\u0624\u064a\u0629 2030 \u0648\u0627\u0644\u062e\u0637\u0637 \u0627\u0644\u0623\u0645\u0631\u064a\u0643\u064a\u0629.':'Sustainability profile aligned with GCC Vision 2030 and US ESG frameworks.');
+  if(strengths.length===0) strengths.push(ar?'\u0627\u0644\u0633\u0644\u0633\u0644\u0629 \u062a\u0639\u0645\u0644. \u0627\u0644\u0623\u0633\u0627\u0633 \u0645\u0648\u062c\u0648\u062f \u0644\u0644\u062a\u062d\u0633\u064a\u0646.':'Chain is operational. Foundation established for optimization.');
+  if(metrics.risk<45) weaknesses.push(ar?'\u0648\u0636\u0639 \u0627\u0633\u062a\u0645\u0631\u0627\u0631\u064a\u0629 \u0627\u0644\u062a\u0648\u0631\u064a\u062f \u062f\u0648\u0646 \u0627\u0644\u062d\u062f \u0627\u0644\u0623\u062f\u0646\u0649 HFMA. \u0623\u064a \u0627\u0636\u0637\u0631\u0627\u0628 \u0642\u062f \u064a\u062a\u0633\u0628\u0628 \u0641\u064a \u0646\u0642\u0635 \u0633\u0631\u064a\u0631\u064a.':'Supply continuity posture is below HFMA minimum resilience standards. A single disruption could trigger clinical supply shortage.');
+  if(metrics.cost<40) weaknesses.push(ar?'\u0647\u064a\u0643\u0644 \u0627\u0644\u062a\u0643\u0644\u0641\u0629 \u0641\u0648\u0642 \u0645\u0639\u064a\u0627\u0631 \u0627\u0644\u0646\u0638\u064a\u0631. \u064a\u064f\u0648\u0635\u0649 \u0628\u0645\u0631\u0627\u062c\u0639\u0629 \u0644\u062c\u0646\u0629 \u062a\u062d\u0644\u064a\u0644 \u0627\u0644\u0642\u064a\u0645\u0629.':'Cost structure is above peer benchmark. Value analysis committee review recommended.');
+  if(metrics.speed<40) weaknesses.push(ar?'\u0645\u062f\u062f \u062a\u0633\u0644\u064a\u0645 \u0637\u0648\u064a\u0644\u0629 \u062a\u062e\u0644\u0642 \u0641\u062c\u0648\u0627\u062a \u062a\u062c\u062f\u064a\u062f. \u0642\u062f \u062a\u0639\u0627\u0646\u064a \u0627\u0644\u0645\u0646\u0627\u0637\u0642 \u0627\u0644\u0633\u0631\u064a\u0631\u064a\u0629 \u0645\u0646 \u0646\u0641\u0627\u062f \u0627\u0644\u0645\u062e\u0632\u0648\u0646.':'Extended lead times create replenishment gaps. Clinical areas may experience stockouts during demand spikes.');
+  if(metrics.sustainability<40) weaknesses.push(ar?'\u0628\u0635\u0645\u0629 \u0627\u0644\u0643\u0631\u0628\u0648\u0646 \u0645\u0631\u062a\u0641\u0639\u0629. \u062a\u062a\u0639\u0627\u0631\u0636 \u0645\u0639 \u0627\u0644\u062a\u0632\u0627\u0645\u0627\u062a \u0631\u0624\u064a\u0629 2030 \u0648ESG.':'Carbon footprint is elevated. Conflicts with GCC Vision 2030 and US ESG reporting obligations.');
+  if(weaknesses.length===0) weaknesses.push(ar?'\u0644\u0627 \u062a\u0648\u062c\u062f \u0636\u0639\u0641 \u062d\u0631\u062c\u064a. \u062a\u0647\u0646\u0626\u0629!':'No critical weaknesses identified. Well configured.');
+  improvements.push(ar?'\u062a\u0637\u0628\u064a\u0642 \u0645\u0646\u0635\u0629 \u0631\u0624\u064a\u0629 \u0633\u0644\u0633\u0644\u0629 \u0627\u0644\u062a\u0648\u0631\u064a\u062f \u0644\u062a\u0642\u0644\u064a\u0644 \u0648\u0642\u062a \u0627\u0643\u062a\u0634\u0627\u0641 \u0627\u0646\u0642\u0637\u0627\u0639 \u0627\u0644\u0645\u062e\u0632\u0648\u0646 \u0645\u0646 \u0623\u064a\u0627\u0645 \u0625\u0644\u0649 \u0633\u0627\u0639\u0627\u062a.':'Implement a supply chain control tower platform to reduce stockout detection time from days to hours (GHX, Oracle Health SCM).');
+  improvements.push(ar?'\u0625\u0646\u0634\u0627\u0621 \u0628\u0637\u0627\u0642\u0629 \u0623\u062f\u0627\u0621 \u0627\u0644\u0645\u0648\u0631\u062f\u064a\u0646 \u0645\u062a\u0648\u0627\u0641\u0642\u0629 \u0645\u0639 \u0635\u064a\u063a \u0627\u0644\u0642\u064a\u0645\u0629\u060c \u062a\u0631\u0627\u0642\u0628 \u0627\u0644\u062c\u0648\u062f\u0629 \u0648\u0627\u0644\u0627\u0645\u062a\u062b\u0627\u0644 \u0627\u0644\u062a\u0646\u0638\u064a\u0645\u064a.':'Establish formulary-aligned vendor scorecard reviewed quarterly, tracking quality, delivery performance, and regulatory compliance.');
+  improvements.push(ar?'\u062a\u0637\u0648\u064a\u0631 \u062a\u0635\u0646\u064a\u0641 \u062d\u0631\u062c\u064a\u0629 \u0645\u062a\u062f\u0631\u062c\u0629 (A/B/C) \u0644\u062a\u062d\u062f\u064a\u062f \u0633\u064a\u0627\u0633\u0629 \u0645\u062e\u0632\u0648\u0646 \u062a\u062a\u0648\u0627\u0641\u0642 \u0645\u0639 \u0645\u062e\u0627\u0637\u0631 \u0633\u0631\u064a\u0631\u064a\u0629.':'Develop tiered criticality classification (A/B/C) aligning safety stock levels to patient risk, not uniform policy across all SKUs.');
+  const biggestRisk = metrics.risk<metrics.cost ?
+    (ar?'\u062e\u0637\u0631 \u0627\u0646\u0642\u0637\u0627\u0639 \u0627\u0644\u062a\u0648\u0631\u064a\u062f \u0647\u0648 \u0623\u0643\u062b\u0631 \u0645\u062e\u0627\u0648\u0641\u0643. \u0641\u0634\u0644 \u0645\u0648\u0631\u062f \u0648\u0627\u062d\u062f \u0642\u062f \u064a\u062e\u0644\u0642 \u062a\u0623\u062b\u064a\u0631\u0627 \u0639\u0644\u0649 \u0631\u0639\u0627\u064a\u0629 \u0627\u0644\u0645\u0631\u064a\u0636 \u062e\u0644\u0627\u0644 \u0623\u064a\u0627\u0645.':'Supply disruption risk is your most critical exposure. A single-vendor or single-mode failure could create patient care impact within days.')
+    : (ar?'\u0647\u064a\u0643\u0644 \u0627\u0644\u062a\u0643\u0644\u0641\u0629 \u064a\u062d\u062a\u0627\u062c \u0627\u0646\u062a\u0628\u0627\u0647\u0627. \u0627\u0644\u0625\u0646\u0641\u0627\u0642 \u063a\u064a\u0631 \u0627\u0644\u0645\u0636\u0628\u0648\u0637 \u064a\u0622\u0643\u0644 \u0647\u0627\u0645\u0634 \u0627\u0644\u0631\u0628\u062d \u0627\u0644\u062a\u0634\u063a\u064a\u0644\u064a.':'Cost structure requires attention. Uncontrolled supply spend erodes operating margin and limits reinvestment in care quality.');
+  return { strengths, weaknesses, improvements, biggestRisk };
+}
+
+// ===== COMPONENTS =====
+function MetricBar({ label, value, color }) {
+  return (
+    <div className="metric-row">
+      <div className="metric-header">
+        <span className="metric-label">{label}</span>
+        <span className="metric-value" style={{color}}>{value}</span>
+      </div>
+      <div className="metric-bar-bg">
+        <div className="metric-bar-fill" style={{width:value+'%', background:`linear-gradient(90deg,${color}80,${color})`}}/>
+      </div>
+    </div>
+  );
+}
+
+function ScoreRing({ score, color }) {
+  const r=54, cx=64, cy=64, s=8, circ=2*Math.PI*r;
+  const filled=(score/100)*circ;
+  return (
+    <svg width="128" height="128" style={{display:'block',margin:'0 auto 16px',overflow:'visible'}}>
+      <circle cx={cx} cy={cy} r={r} fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth={s}/>
+      <circle cx={cx} cy={cy} r={r} fill="none" stroke={color} strokeWidth={s}
+        strokeDasharray={`${filled} ${circ-filled}`} strokeLinecap="round"
+        transform={`rotate(-90 ${cx} ${cy})`}
+        style={{filter:`drop-shadow(0 0 10px ${color}88)`,transition:'stroke-dasharray 1.2s cubic-bezier(0.4,0,0.2,1)'}}
+      />
+      <text x={cx} y={cy-6} textAnchor="middle" fill="#e8f0f8" fontSize="26" fontWeight="700" fontFamily="Cormorant Garamond, serif">{score}</text>
+      <text x={cx} y={cy+14} textAnchor="middle" fill="#7a9ab5" fontSize="11">/ 100</text>
+    </svg>
+  );
+}
+
+function LangToggle({ lang, setLang }) {
+  return (
+    <div className="lang-toggle">
+      <button className={`lang-btn ${lang==='en'?'active':''}`} onClick={()=>setLang('en')}>EN</button>
+      <button className={`lang-btn ${lang==='ar'?'active':''}`} onClick={()=>setLang('ar')}>\u0639\u0631</button>
+    </div>
+  );
+}
+
+function WelcomeScreen({ onStart, lang }) {
+  const t = T[lang];
+  const lines = t.welcomeTitle.split('\n');
+  return (
+    <div className="welcome-container">
+      <div className="welcome-glow"/>
+      <div className="nexus-badge"><span className="dot"></span>{t.badge}</div>
+      <h1 className="welcome-title">{lines[0]}<br/>{lines[1]}</h1>
+      <p className="welcome-subtitle">{t.welcomeSubtitle}</p>
+      <div className="welcome-card">
+        <h3>{t.welcomeCardTitle}</h3>
+        <p>{t.welcomeCardBody1}</p>
+        <p>{t.welcomeCardBody2}</p>
+        <div className="welcome-pillars">
+          {['\uD83D\uDCE6','\uD83C\uDFED','\uD83C\uDFDB','\uD83D\uDE9A','\uD83D\uDCCA'].map((icon,i)=>(
+            <div className="pillar-item" key={i}>
+              <span className="pillar-icon">{icon}</span>
+              <div className="pillar-label">{t.pillars[i]}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+      <button className="btn-primary" onClick={onStart}>{t.startBtn}</button>
+    </div>
+  );
+}
+
+function Sidebar({ company, currentStep, choices, metrics, lang }) {
+  const t = T[lang];
+  const ar = lang==='ar';
+  const stepIds = ['supplier','factory','warehouse','transport','inventory'];
+  return (
+    <div className="sidebar">
+      <div>
+        <div className="sidebar-logo">{t.sidebarLogo}</div>
+        <div className="sidebar-day">{t.sidebarDay}</div>
+      </div>
+      {company && (
+        <div className="company-card">
+          <div className="company-name">{company.name}</div>
+          <div className="company-sector">{ar ? company.sectorAr : company.sector}</div>
+          {[
+            [t.statLabels.region, ar ? company.regionAr : company.region],
+            [t.statLabels.facilities, company.facilities],
+            [t.statLabels.beds, company.beds],
+            [t.statLabels.demand, ar ? company.demandAr : company.demand],
+            [t.statLabels.spend, `$${company.annualSpend}M`],
+          ].map(([l,v])=>(
+            <div className="company-stat" key={l}>
+              <span className="company-stat-label">{l}</span>
+              <span className="company-stat-value">{v}</span>
+            </div>
+          ))}
+        </div>
+      )}
+      <ul className="steps-list">
+        {t.stepLabels.map((label,i)=>{
+          const status = i<currentStep?'done':i===currentStep?'active':'';
+          const choiceId = choices[stepIds[i]];
+          const optName = choiceId ? (STEP_OPTIONS[stepIds[i]]?.find(o=>o.id===choiceId)?.name?.[lang]||choiceId) : null;
+          return (
+            <li className={`step-item ${status}`} key={label}>
+              <div className="step-dot">{i<currentStep?'\u2713':i+1}</div>
+              {label}
+              {optName && <span style={{marginLeft:'auto',marginRight:ar?'auto':0,fontSize:'9px',color:'#0fd4be',fontWeight:700}}>{optName}</span>}
+            </li>
+          );
+        })}
+      </ul>
+      {currentStep>0 && (
+        <div className="metrics-section">
+          <div className="metrics-title">{t.metricsTitle}</div>
+          {Object.entries(t.metricNames).map(([key,label])=>(
+            <MetricBar key={key} label={label} value={metrics[key]} color={getMetricColor(metrics[key])}/>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function StepView({ stepIndex, company, choices, setChoices, metrics, setMetrics, onNext, showTradeoff, onShowTradeoff, lang }) {
+  const t = T[lang];
+  const stepId = ['supplier','factory','warehouse','transport','inventory'][stepIndex];
+  const options = STEP_OPTIONS[stepId];
+  const selected = choices[stepId];
+  const concept = STEP_CONCEPTS[stepId][lang];
+
+  function select(optId) {
+    if(selected) return;
+    const opt = options.find(o=>o.id===optId);
+    setChoices(c=>({...c,[stepId]:optId}));
+    const nm = {...metrics};
+    Object.keys(opt.delta).forEach(k=>{ nm[k]=Math.min(100,Math.max(5,(nm[k]||50)+opt.delta[k])); });
+    setMetrics(nm);
+    onShowTradeoff(true);
+  }
+
+  const trKey = selected ? `${stepId}-${selected}` : null;
+  const tradeoffText = trKey && TRADEOFFS[stepId][selected] ? TRADEOFFS[stepId][selected][lang] : null;
+  const gccNote = trKey && GCC_NOTES[trKey] ? GCC_NOTES[trKey][lang] : null;
+
+  return (
+    <div className="step-panel">
+      <div className="step-header">
+        <div className="step-eyebrow">{t.stepEyebrows[stepIndex]}</div>
+        <div className="step-title">{t.stepTitles[stepIndex]}</div>
+      </div>
+      <div className="step-body">
+        <div className="concept-box">
+          <strong>{t.whyMatters}</strong>
+          {concept}
+        </div>
+        <div className="options-grid">
+          {options.map(opt=>(
+            <div key={opt.id}
+              className={`option-card ${selected===opt.id?'selected':''}`}
+              onClick={()=>!selected && select(opt.id)}
+              style={{cursor:selected?(selected===opt.id?'default':'not-allowed'):'pointer',opacity:selected&&selected!==opt.id?0.5:1}}
+            >
+              <span className="option-icon">{opt.icon}</span>
+              <div className="option-name">{opt.name[lang]}</div>
+              <div className="option-desc">{opt.desc[lang]}</div>
+              <div className="option-impacts">
+                {opt.impacts[lang].map((imp,i)=>{
+                  const cls = imp.startsWith('+') ? 'good' : imp.startsWith('-') ? 'bad' : 'neutral';
+                  return <span key={i} className={`impact-tag ${cls}`}>{imp}</span>;
+                })}
+              </div>
+            </div>
+          ))}
+        </div>
+        {showTradeoff && tradeoffText && (
+          <div className="tradeoff-reveal">
+            <div className="tradeoff-title">{t.tradeoffTitle}</div>
+            <p className="tradeoff-text">{tradeoffText}</p>
+            {gccNote && <p className="tradeoff-gcc">{gccNote}</p>}
+          </div>
+        )}
+        <button className="btn-confirm" disabled={!selected} onClick={onNext}>
+          {selected ? t.confirmBtn : t.selectPrompt}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function Dashboard({ company, choices, metrics, onReplay, lang }) {
+  const t = T[lang];
+  const ar = lang==='ar';
+  const score = computeScore(metrics);
+  const rating = getRating(score, lang);
+  const insights = generateInsights(choices, metrics, lang);
+  const stepIds = ['supplier','factory','warehouse','transport','inventory'];
+
+  return (
+    <div className="dashboard">
+      <div className="dashboard-hero">
+        <ScoreRing score={score} color={rating.color}/>
+        <div className="score-label">{t.scorelabel}</div>
+        <div className="score-rating" style={{color:rating.color}}>{rating.label}</div>
+        <p className="score-desc">{t.scoreDesc.replace('{name}', company.name)}</p>
+      </div>
+      <div className="metrics-final-strip">
+        {Object.entries(t.metricNames).map(([key,label],i)=>(
+          <div className="metric-final-card" key={key}>
+            <div className="metric-final-value" style={{color:getMetricColor(metrics[key])}}>{metrics[key]}</div>
+            <div className="metric-final-label">{t.finalMetricLabels[i]}</div>
+          </div>
+        ))}
+      </div>
+      <div className="choices-summary">
+        <div className="choices-title">{t.choicesTitle}</div>
+        <div className="choices-grid">
+          {stepIds.map((sid,i)=>{
+            const optName = choices[sid] ? (STEP_OPTIONS[sid]?.find(o=>o.id===choices[sid])?.name?.[lang]||choices[sid]) : '-';
+            return (
+              <div className="choice-chip" key={sid}>
+                <div className="choice-chip-label">{t.stepLabels[i]}</div>
+                <div className="choice-chip-value">{optName}</div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+      {insights.biggestRisk && (
+        <div className="risk-banner">
+          <div className="risk-icon">\u26A0</div>
+          <div className="risk-text"><strong>{t.biggestRisk}</strong>{insights.biggestRisk}</div>
+        </div>
+      )}
+      <div className="dashboard-grid">
+        <div className="dash-card">
+          <div className="dash-card-title" style={{color:'#34d399'}}>\u2713 {t.strengths}</div>
+          <ul className="dash-list">
+            {insights.strengths.map((s,i)=><li key={i}><div className="dash-bullet bullet-green">\u2713</div>{s}</li>)}
+          </ul>
+        </div>
+        <div className="dash-card">
+          <div className="dash-card-title" style={{color:'#e05252'}}>\u26A0 {t.weaknesses}</div>
+          <ul className="dash-list">
+            {insights.weaknesses.map((w,i)=><li key={i}><div className="dash-bullet bullet-red">!</div>{w}</li>)}
+          </ul>
+        </div>
+        <div className="dash-card">
+          <div className="dash-card-title" style={{color:'#0fd4be'}}>\uD83D\uDCA1 {t.improvements}</div>
+          <ul className="dash-list">
+            {insights.improvements.map((imp,i)=><li key={i}><div className="dash-bullet bullet-teal">{i+1}</div>{imp}</li>)}
+          </ul>
+        </div>
+      </div>
+      <div style={{textAlign:'center',paddingBottom:'40px'}}>
+        <button className="btn-replay" onClick={onReplay}>{t.replayBtn}</button>
+      </div>
+    </div>
+  );
+}
+
+// ===== MAIN =====
+function App() {
+  const [lang, setLang] = React.useState('en');
+  const [screen, setScreen] = React.useState('welcome');
+  const [company, setCompany] = React.useState(null);
+  const [currentStep, setCurrentStep] = React.useState(0);
+  const [choices, setChoices] = React.useState({});
+  const [metrics, setMetrics] = React.useState({cost:50,speed:50,risk:50,satisfaction:50,sustainability:50});
+  const [showTradeoff, setShowTradeoff] = React.useState(false);
+
+  React.useEffect(()=>{
+    document.documentElement.lang = lang;
+    document.documentElement.dir = lang==='ar' ? 'rtl' : 'ltr';
+    document.body.className = lang==='ar' ? 'rtl' : '';
+  }, [lang]);
+
+  function startNew() {
+    const rng = mulberry32(Math.floor(Math.random()*999999));
+    setCompany(generateCompany(rng));
+    setCurrentStep(0);
+    setChoices({});
+    setMetrics({cost:50,speed:50,risk:50,satisfaction:50,sustainability:50});
+    setShowTradeoff(false);
+    setScreen('game');
+  }
+
+  function handleNext() {
+    setShowTradeoff(false);
+    if(currentStep<4) setCurrentStep(s=>s+1);
+    else setScreen('dashboard');
+  }
+
+  const t = T[lang];
+
+  return (
+    <>
+      <LangToggle lang={lang} setLang={setLang}/>
+      {screen==='welcome' && <WelcomeScreen onStart={startNew} lang={lang}/>}
+      {screen==='game' && (
+        <div className="app-layout">
+          <Sidebar company={company} currentStep={currentStep} choices={choices} metrics={metrics} lang={lang}/>
+          <div className="main-content">
+            <StepView stepIndex={currentStep} company={company} choices={choices} setChoices={setChoices}
+              metrics={metrics} setMetrics={setMetrics} onNext={handleNext}
+              showTradeoff={showTradeoff} onShowTradeoff={setShowTradeoff} lang={lang}/>
+          </div>
+        </div>
+      )}
+      {screen==='dashboard' && (
+        <div className="app-layout">
+          <Sidebar company={company} currentStep={5} choices={choices} metrics={metrics} lang={lang}/>
+          <div className="main-content">
+            <Dashboard company={company} choices={choices} metrics={metrics} onReplay={startNew} lang={lang}/>
+          </div>
+        </div>
+      )}
+      <div className="day-badge">Day <span>30</span> \u2022 HealthNexus SCM</div>
+    </>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>
