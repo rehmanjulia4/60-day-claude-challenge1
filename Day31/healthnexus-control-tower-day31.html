@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HealthNexus | Hospital Supply Chain Control Tower</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=DM+Sans:wght@400;500;700&family=Noto+Naskh+Arabic:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#060d1a;
+  --navy2:#0d1e35;
+  --card:#0a1830;
+  --teal:#0fd4be;
+  --gold:#c9a84c;
+  --red:#ff4d5e;
+  --orange:#ff9f43;
+  --green:#2ee6a6;
+  --ink-lo:#7d8aa3;
+  --ink-hi:#e2e8f0;
+  --ink-mid:#cbd5e1;
+  --border:rgba(255,255,255,0.08);
+  --display:'Cormorant Garamond',Georgia,serif;
+  --body:'DM Sans',Arial,sans-serif;
+  --arabic:'Noto Naskh Arabic',serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;}
+body{
+  background:radial-gradient(circle at 20% 0%, #0d2240 0%, var(--navy) 45%) fixed;
+  color:var(--ink-hi);
+  font-family:var(--body);
+  min-height:100vh;
+  overflow-x:hidden;
+}
+body.rtl{direction:rtl;font-family:var(--arabic);}
+body.rtl .ltr-only{display:none;}
+.bg-grid{
+  position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:
+    linear-gradient(rgba(15,212,190,0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(15,212,190,0.045) 1px, transparent 1px);
+  background-size:42px 42px;
+  mask-image:radial-gradient(ellipse at 50% 20%, black 0%, transparent 75%);
+}
+.glow{position:fixed;border-radius:50%;filter:blur(90px);opacity:0.35;pointer-events:none;z-index:0;}
+.glow1{width:520px;height:520px;background:var(--teal);top:-200px;left:-150px;}
+.glow2{width:420px;height:420px;background:var(--gold);bottom:-150px;right:-100px;opacity:0.18;}
+
+#app{position:relative;z-index:1;max-width:1180px;margin:0 auto;padding:18px 20px 60px;}
+
+/* ---------- TOP BAR ---------- */
+.topbar{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 20px;border:1px solid var(--border);border-radius:16px;
+  background:linear-gradient(180deg, rgba(13,30,53,0.9), rgba(10,24,48,0.7));
+  backdrop-filter:blur(6px);margin-bottom:18px;
+}
+.brand{display:flex;align-items:center;gap:12px;}
+.brand-mark{
+  width:38px;height:38px;border-radius:10px;
+  background:linear-gradient(135deg,var(--teal),#0a8f80);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--display);font-weight:700;color:var(--navy);font-size:19px;
+}
+.brand-text h1{font-family:var(--display);font-size:21px;font-weight:700;letter-spacing:.2px;}
+.brand-text span{font-size:11px;letter-spacing:2.5px;text-transform:uppercase;color:var(--teal);}
+.topbar-actions{display:flex;gap:8px;align-items:center;}
+.icon-btn{
+  width:38px;height:38px;border-radius:10px;border:1px solid var(--border);
+  background:rgba(255,255,255,0.03);color:var(--ink-mid);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;font-size:16px;
+  transition:all .15s ease;
+}
+.icon-btn:hover{border-color:var(--teal);color:var(--teal);background:rgba(15,212,190,0.08);}
+.icon-btn.active{color:var(--teal);border-color:var(--teal);background:rgba(15,212,190,0.12);}
+.lang-toggle{
+  font-family:var(--body);font-weight:700;font-size:13px;
+  width:auto;padding:0 14px;
+}
+@media(max-width:480px){
+  .topbar{padding:12px 14px;flex-wrap:wrap;gap:10px;}
+  .topbar-actions{gap:6px;}
+  .icon-btn{width:34px;height:34px;font-size:14px;}
+  .lang-toggle{padding:0 10px;font-size:12px;}
+  .brand-text h1{font-size:17px;}
+}
+
+/* ---------- SCREENS ---------- */
+.screen{display:none;}
+.screen.visible{display:block;animation:fadein .35s ease;}
+@keyframes fadein{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+
+/* START SCREEN */
+.start-hero{
+  border:1px solid var(--border);border-radius:20px;padding:44px 40px;
+  background:linear-gradient(160deg, rgba(13,30,53,0.85), rgba(6,13,26,0.85));
+  text-align:center;position:relative;overflow:hidden;
+}
+.start-hero::before{
+  content:'';position:absolute;top:-40%;left:50%;transform:translateX(-50%);
+  width:600px;height:300px;background:radial-gradient(ellipse, rgba(15,212,190,0.18), transparent 70%);
+}
+.eyebrow{
+  display:inline-block;font-size:11px;letter-spacing:3px;text-transform:uppercase;
+  color:var(--gold);border:1px solid rgba(201,168,76,0.35);padding:6px 14px;border-radius:99px;
+  margin-bottom:18px;position:relative;
+}
+.start-hero h2{
+  font-family:var(--display);font-size:46px;font-weight:700;line-height:1.08;margin-bottom:14px;position:relative;
+}
+.start-hero h2 .accent{color:var(--teal);}
+.start-hero p.lede{
+  color:var(--ink-mid);font-size:16px;max-width:620px;margin:0 auto 30px;line-height:1.6;position:relative;
+}
+.region-select{
+  display:flex;gap:14px;justify-content:center;margin-bottom:30px;flex-wrap:wrap;position:relative;
+}
+.region-card{
+  width:280px;border:1px solid var(--border);border-radius:14px;padding:18px 20px;
+  background:rgba(255,255,255,0.025);cursor:pointer;text-align:left;transition:all .15s ease;
+}
+body.rtl .region-card{text-align:right;}
+.region-card:hover{border-color:rgba(15,212,190,0.4);}
+.region-card.selected{border-color:var(--teal);background:rgba(15,212,190,0.07);box-shadow:0 0 0 1px var(--teal);}
+.region-card .flag{font-size:22px;margin-bottom:8px;}
+.region-card h3{font-size:16px;font-weight:700;margin-bottom:4px;}
+.region-card p{font-size:12.5px;color:var(--ink-lo);line-height:1.5;}
+.btn-primary{
+  font-family:var(--body);font-weight:700;font-size:15px;letter-spacing:.3px;
+  background:linear-gradient(135deg,var(--teal),#0a9e8e);color:var(--navy);
+  border:none;padding:16px 38px;border-radius:12px;cursor:pointer;
+  box-shadow:0 8px 24px rgba(15,212,190,0.25);transition:transform .15s ease;
+  position:relative;
+}
+.btn-primary:hover{transform:translateY(-2px);}
+.btn-primary:disabled{opacity:.4;cursor:not-allowed;transform:none;}
+.btn-ghost{
+  font-family:var(--body);font-weight:600;font-size:13.5px;
+  background:transparent;color:var(--ink-mid);border:1px solid var(--border);
+  padding:10px 20px;border-radius:10px;cursor:pointer;
+}
+.btn-ghost:hover{border-color:var(--teal);color:var(--teal);}
+.start-meta{
+  display:flex;justify-content:center;gap:34px;margin-top:34px;flex-wrap:wrap;position:relative;
+}
+.start-meta div{text-align:center;}
+.start-meta .num{font-family:var(--display);font-size:26px;color:var(--teal);font-weight:700;}
+.start-meta .lbl{font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--ink-lo);}
+
+/* ---------- GAME SCREEN ---------- */
+.kpi-strip{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px;
+}
+@media(max-width:760px){.kpi-strip{grid-template-columns:repeat(2,1fr);}}
+.kpi-card{
+  border:1px solid var(--border);border-radius:13px;padding:13px 15px;
+  background:linear-gradient(160deg, rgba(13,30,53,0.8), rgba(8,18,36,0.8));
+  position:relative;overflow:hidden;
+}
+.kpi-card::after{
+  content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--bar,var(--teal));
+}
+.kpi-card .lbl{font-size:10.5px;text-transform:uppercase;letter-spacing:1.2px;color:var(--ink-lo);margin-bottom:4px;}
+.kpi-card .val{font-family:var(--display);font-size:25px;font-weight:700;}
+.kpi-card .delta{font-size:11px;font-weight:700;margin-top:2px;}
+.delta.up{color:var(--green);}
+.delta.down{color:var(--red);}
+.delta.flat{color:var(--ink-lo);}
+
+.status-row{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  border:1px solid var(--border);border-radius:13px;padding:12px 18px;margin-bottom:14px;
+  background:rgba(255,255,255,0.02);flex-wrap:wrap;
+}
+.timer-wrap{display:flex;align-items:center;gap:10px;}
+.timer{font-family:var(--display);font-size:30px;font-weight:700;color:var(--gold);min-width:78px;}
+.timer.urgent{color:var(--red);animation:pulse 1s infinite;}
+.score-wrap{display:flex;align-items:center;gap:10px;}
+.score-val{font-family:var(--display);font-size:30px;font-weight:700;color:var(--teal);}
+.progress-bar-outer{flex:1;min-width:160px;height:8px;border-radius:99px;background:rgba(255,255,255,0.06);overflow:hidden;}
+.progress-bar-inner{height:100%;background:linear-gradient(90deg,var(--teal),var(--gold));border-radius:99px;transition:width .3s linear;}
+
+.game-grid{display:grid;grid-template-columns:1.6fr 1fr;gap:16px;}
+@media(max-width:860px){.game-grid{grid-template-columns:1fr;}}
+.panel{
+  border:1px solid var(--border);border-radius:16px;padding:16px;
+  background:linear-gradient(160deg, rgba(13,30,53,0.65), rgba(7,15,30,0.65));
+  min-height:420px;
+}
+.panel h3{font-family:var(--display);font-size:18px;margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+.panel h3 .dot{width:8px;height:8px;border-radius:50%;background:var(--red);box-shadow:0 0 8px var(--red);}
+
+#alertFeed{display:flex;flex-direction:column;gap:10px;}
+.alert-card{
+  border:1px solid var(--border);border-radius:13px;padding:14px 16px;
+  background:rgba(255,255,255,0.025);position:relative;overflow:hidden;animation:slidein .3s ease;
+}
+@keyframes slidein{from{opacity:0;transform:translateX(-10px);}to{opacity:1;transform:translateX(0);}}
+.alert-card.critical{border-color:rgba(255,77,94,0.45);}
+.alert-card.critical::before{
+  content:'';position:absolute;inset:0;border-radius:13px;
+  box-shadow:0 0 0 1px rgba(255,77,94,0.3) inset;animation:pulseGlow 1.4s infinite;
+}
+@keyframes pulseGlow{0%,100%{box-shadow:0 0 0 1px rgba(255,77,94,0.15) inset;}50%{box-shadow:0 0 14px 1px rgba(255,77,94,0.35) inset;}}
+.alert-card.high{border-color:rgba(255,159,67,0.4);}
+.alert-card.medium{border-color:rgba(255,255,255,0.1);}
+.alert-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:6px;}
+.alert-title-wrap{display:flex;align-items:center;gap:9px;}
+.alert-icon{font-size:19px;}
+.alert-title{font-weight:700;font-size:14.5px;}
+.badge{font-size:9.5px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:3px 8px;border-radius:99px;white-space:nowrap;}
+.badge.critical{background:rgba(255,77,94,0.15);color:var(--red);}
+.badge.high{background:rgba(255,159,67,0.15);color:var(--orange);}
+.badge.medium{background:rgba(255,255,255,0.08);color:var(--ink-mid);}
+.alert-desc{font-size:12.5px;color:var(--ink-mid);line-height:1.5;margin-bottom:6px;}
+.alert-impact{font-size:11px;color:var(--ink-lo);margin-bottom:10px;}
+.alert-impact b{color:var(--gold);font-weight:700;}
+.alert-timer-row{display:flex;align-items:center;gap:8px;margin-bottom:10px;}
+.alert-timer-bar{flex:1;height:5px;border-radius:99px;background:rgba(255,255,255,0.07);overflow:hidden;}
+.alert-timer-fill{height:100%;border-radius:99px;background:var(--orange);transition:width 1s linear;}
+.alert-timer-txt{font-size:11px;font-weight:700;color:var(--ink-lo);min-width:30px;text-align:right;}
+.action-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;}
+.action-btn{
+  font-family:var(--body);font-size:11.8px;font-weight:600;
+  border:1px solid var(--border);background:rgba(255,255,255,0.03);color:var(--ink-hi);
+  padding:9px 8px;border-radius:9px;cursor:pointer;text-align:center;transition:all .12s ease;line-height:1.3;
+}
+.action-btn:hover{border-color:var(--teal);background:rgba(15,212,190,0.1);color:var(--teal);}
+.action-btn.negative{opacity:0.85;}
+.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;height:300px;color:var(--ink-lo);text-align:center;gap:8px;}
+.empty-state .big{font-size:34px;}
+
+#eventLog{display:flex;flex-direction:column-reverse;gap:7px;max-height:560px;overflow-y:auto;padding-right:4px;}
+#eventLog::-webkit-scrollbar{width:5px;}
+#eventLog::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.12);border-radius:99px;}
+.log-entry{
+  font-size:12px;border-left:2px solid var(--border);padding:6px 10px;
+  background:rgba(255,255,255,0.02);border-radius:0 8px 8px 0;line-height:1.45;
+}
+.log-entry.good{border-color:var(--green);}
+.log-entry.bad{border-color:var(--red);}
+.log-entry.info{border-color:var(--teal);}
+.log-entry .t{color:var(--ink-lo);font-size:10px;margin-right:6px;}
+
+/* ---------- END SCREEN ---------- */
+.end-wrap{border:1px solid var(--border);border-radius:20px;padding:40px;background:linear-gradient(160deg, rgba(13,30,53,0.9), rgba(6,13,26,0.9));text-align:center;}
+.grade-circle{
+  width:130px;height:130px;border-radius:50%;margin:0 auto 18px;
+  display:flex;align-items:center;justify-content:center;flex-direction:column;
+  border:3px solid var(--gold);box-shadow:0 0 30px rgba(201,168,76,0.3);
+  background:rgba(201,168,76,0.06);
+}
+.grade-circle .g{font-family:var(--display);font-size:46px;font-weight:700;color:var(--gold);line-height:1;}
+.grade-circle .s{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--ink-lo);margin-top:4px;}
+.end-wrap h2{font-family:var(--display);font-size:34px;margin-bottom:6px;}
+.end-score{font-family:var(--display);font-size:52px;color:var(--teal);font-weight:700;margin-bottom:4px;}
+.end-sub{color:var(--ink-mid);font-size:13.5px;margin-bottom:26px;}
+.end-kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:26px;}
+@media(max-width:760px){.end-kpi-grid{grid-template-columns:repeat(2,1fr);}}
+.end-summary{
+  text-align:left;background:rgba(255,255,255,0.025);border:1px solid var(--border);
+  border-radius:13px;padding:18px 22px;margin-bottom:26px;font-size:13.5px;color:var(--ink-mid);line-height:1.7;
+}
+body.rtl .end-summary{text-align:right;}
+.end-summary b{color:var(--ink-hi);}
+.end-actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
+.stat-pair-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:26px;}
+.stat-pair{border:1px solid var(--border);border-radius:12px;padding:14px;background:rgba(255,255,255,0.02);}
+.stat-pair .n{font-family:var(--display);font-size:28px;font-weight:700;}
+.stat-pair.good .n{color:var(--green);}
+.stat-pair.bad .n{color:var(--red);}
+.stat-pair .l{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--ink-lo);}
+
+/* ---------- MODAL ---------- */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(2,6,14,0.78);backdrop-filter:blur(4px);
+  display:none;align-items:center;justify-content:center;z-index:50;padding:20px;
+}
+.modal-overlay.visible{display:flex;}
+.modal-box{
+  max-width:560px;width:100%;max-height:80vh;overflow-y:auto;
+  border:1px solid var(--border);border-radius:18px;padding:30px;
+  background:linear-gradient(160deg, var(--navy2), var(--navy));
+}
+.modal-box h2{font-family:var(--display);font-size:26px;margin-bottom:14px;color:var(--teal);}
+.modal-box h4{font-size:13px;margin:14px 0 6px;color:var(--gold);text-transform:uppercase;letter-spacing:1px;}
+.modal-box p, .modal-box li{font-size:13.5px;color:var(--ink-mid);line-height:1.6;}
+.modal-box ul{padding-left:18px;}
+body.rtl .modal-box ul{padding-left:0;padding-right:18px;}
+.modal-close{margin-top:20px;}
+.pause-overlay{
+  position:fixed;inset:0;background:rgba(2,6,14,0.85);display:none;
+  align-items:center;justify-content:center;z-index:40;flex-direction:column;gap:16px;
+}
+.pause-overlay.visible{display:flex;}
+.pause-overlay h2{font-family:var(--display);font-size:38px;color:var(--gold);}
+
+footer.disclosure{
+  margin-top:24px;text-align:center;font-size:11px;color:var(--ink-lo);
+  border-top:1px solid var(--border);padding-top:14px;line-height:1.6;
+}
+</style>
+</head>
+<body>
+<div class="bg-grid"></div>
+<div class="glow glow1"></div>
+<div class="glow glow2"></div>
+
+<div id="app">
+
+  <div class="topbar">
+    <div class="brand">
+      <div class="brand-mark">HN</div>
+      <div class="brand-text">
+        <h1 data-en="HealthNexus Control Tower" data-ar="برج التحكم HealthNexus">HealthNexus Control Tower</h1>
+        <span data-en="Hospital Supply Chain Operations" data-ar="عمليات سلسلة الإمداد بالمستشفى">Hospital Supply Chain Operations</span>
+      </div>
+    </div>
+    <div class="topbar-actions">
+      <button class="icon-btn lang-toggle" id="langBtn" title="Toggle language">EN/AR</button>
+      <button class="icon-btn" id="soundBtn" title="Sound (visual indicator only)">&#128266;</button>
+      <button class="icon-btn" id="pauseBtn" title="Pause">&#10074;&#10074;</button>
+      <button class="icon-btn" id="helpBtn" title="Help">?</button>
+    </div>
+  </div>
+
+  <!-- START SCREEN -->
+  <div class="screen visible" id="screenStart">
+    <div class="start-hero">
+      <span class="eyebrow" data-en="DAY 31 &middot; HEALTHNEXUS BUILD SERIES" data-ar="اليوم ٣١ · سلسلة بناء HealthNexus">DAY 31 &middot; HEALTHNEXUS BUILD SERIES</span>
+      <h2 data-en='Run the Hospital Supply Chain<br><span class="accent">Control Tower</span>' data-ar='أدر برج التحكم<br><span class="accent">بسلسلة إمداد المستشفى</span>'>Run the Hospital Supply Chain<br><span class="accent">Control Tower</span></h2>
+      <p class="lede" data-en="You are the Head of Supply Chain &amp; Operations for a live health system. Blood shortages, drug backorders, cold-chain failures and customs delays arrive in real time. Every decision moves patient safety, satisfaction, inventory health, logistics efficiency, cost and care continuity. Stabilize the system before the shift ends." data-ar="أنت رئيس سلسلة الإمداد والعمليات في نظام صحي فعلي. تصلك حالات نقص الدم، ونفاد الأدوية، وأعطال سلسلة التبريد، وتأخيرات الجمارك في الوقت الفعلي. كل قرار يؤثر على سلامة المرضى ورضاهم وصحة المخزون وكفاءة اللوجستيات والتكلفة واستمرارية الرعاية. ثبّت النظام قبل نهاية المناوبة.">You are the Head of Supply Chain &amp; Operations for a live health system. Blood shortages, drug backorders, cold-chain failures and customs delays arrive in real time. Every decision moves patient safety, satisfaction, inventory health, logistics efficiency, cost and care continuity. Stabilize the system before the shift ends.</p>
+
+      <div class="region-select">
+        <div class="region-card selected" data-region="us" onclick="selectRegion('us')">
+          <div class="flag">&#127482;&#127480;</div>
+          <h3 data-en="Lakeshore Regional Health" data-ar="نظام Lakeshore الإقليمي الصحي">Lakeshore Regional Health</h3>
+          <p data-en="Chicago, Illinois, USA &middot; 612-bed system &middot; FDA / CMS / Joint Commission oversight &middot; USD" data-ar="شيكاغو، إلينوي، الولايات المتحدة · ٦١٢ سريرًا · إشراف FDA / CMS / Joint Commission · دولار أمريكي">Chicago, Illinois, USA &middot; 612-bed system &middot; FDA / CMS / Joint Commission oversight &middot; USD</p>
+        </div>
+        <div class="region-card" data-region="gcc" onclick="selectRegion('gcc')">
+          <div class="flag">&#127462;&#127466;</div>
+          <h3 data-en="Al Noor Health System" data-ar="نظام النور الصحي">Al Noor Health System</h3>
+          <p data-en="Abu Dhabi, UAE &middot; 480-bed system &middot; MOHAP / DOH / SFDA oversight &middot; AED &middot; Jebel Ali port routing" data-ar="أبوظبي، الإمارات · ٤٨٠ سريرًا · إشراف MOHAP / DOH / SFDA · درهم إماراتي · عبر ميناء جبل علي">Abu Dhabi, UAE &middot; 480-bed system &middot; MOHAP / DOH / SFDA oversight &middot; AED &middot; Jebel Ali port routing</p>
+        </div>
+      </div>
+
+      <button class="btn-primary" id="startBtn" data-en="Begin Shift" data-ar="ابدأ المناوبة">Begin Shift</button>
+
+      <div class="start-meta">
+        <div><div class="num">3:00</div><div class="lbl" data-en="Shift Length" data-ar="مدة المناوبة">Shift Length</div></div>
+        <div><div class="num">10</div><div class="lbl" data-en="Alert Types" data-ar="أنواع التنبيهات">Alert Types</div></div>
+        <div><div class="num">8</div><div class="lbl" data-en="Live KPIs" data-ar="مؤشرات حية">Live KPIs</div></div>
+      </div>
+    </div>
+    <footer class="disclosure" data-en="All facility names, alerts, suppliers and figures in this simulation are synthetic and built for training purposes. They do not represent real patients, vendors or incidents." data-ar="جميع أسماء المنشآت والتنبيهات والموردين والأرقام في هذه المحاكاة افتراضية وُضعت لأغراض تدريبية، ولا تمثل مرضى أو موردين أو حوادث حقيقية.">All facility names, alerts, suppliers and figures in this simulation are synthetic and built for training purposes. They do not represent real patients, vendors or incidents.</footer>
+  </div>
+
+  <!-- GAME SCREEN -->
+  <div class="screen" id="screenGame">
+    <div class="kpi-strip" id="kpiStrip"></div>
+    <div class="status-row">
+      <div class="timer-wrap">
+        <span style="font-size:11px;color:var(--ink-lo);text-transform:uppercase;letter-spacing:1px;" data-en="Time Left" data-ar="الوقت المتبقي">Time Left</span>
+        <span class="timer" id="timerVal">3:00</span>
+      </div>
+      <div class="progress-bar-outer"><div class="progress-bar-inner" id="shiftProgress" style="width:0%"></div></div>
+      <div class="score-wrap">
+        <span style="font-size:11px;color:var(--ink-lo);text-transform:uppercase;letter-spacing:1px;" data-en="Score" data-ar="النتيجة">Score</span>
+        <span class="score-val" id="scoreVal">0</span>
+      </div>
+    </div>
+    <div class="game-grid">
+      <div class="panel">
+        <h3><span class="dot"></span><span data-en="Live Alert Feed" data-ar="تنبيهات حية">Live Alert Feed</span></h3>
+        <div id="alertFeed"></div>
+        <div class="empty-state" id="emptyState">
+          <div class="big">&#128737;</div>
+          <div data-en="Monitoring the network. New alerts will appear here." data-ar="جارٍ مراقبة الشبكة. ستظهر التنبيهات الجديدة هنا.">Monitoring the network. New alerts will appear here.</div>
+        </div>
+      </div>
+      <div class="panel">
+        <h3 data-en="Operations Log" data-ar="سجل العمليات">Operations Log</h3>
+        <div id="eventLog"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- END SCREEN -->
+  <div class="screen" id="screenEnd">
+    <div class="end-wrap">
+      <div class="grade-circle"><div class="g" id="finalGrade">A</div><div class="s" data-en="GRADE" data-ar="التقدير">GRADE</div></div>
+      <h2 data-en="Shift Complete" data-ar="انتهت المناوبة">Shift Complete</h2>
+      <div class="end-score" id="finalScore">0</div>
+      <div class="end-sub" data-en="Final Operations Score" data-ar="النتيجة النهائية للعمليات">Final Operations Score</div>
+
+      <div class="stat-pair-grid">
+        <div class="stat-pair good"><div class="n" id="resolvedCount">0</div><div class="l" data-en="Alerts Resolved" data-ar="تنبيهات تمت معالجتها">Alerts Resolved</div></div>
+        <div class="stat-pair good"><div class="n" id="correctCount">0</div><div class="l" data-en="Correct Decisions" data-ar="قرارات صحيحة">Correct Decisions</div></div>
+        <div class="stat-pair bad"><div class="n" id="wrongCount">0</div><div class="l" data-en="Wrong Decisions" data-ar="قرارات خاطئة">Wrong Decisions</div></div>
+        <div class="stat-pair bad"><div class="n" id="missedCount">0</div><div class="l" data-en="Missed / Ignored" data-ar="تم تجاهلها">Missed / Ignored</div></div>
+      </div>
+
+      <div class="end-kpi-grid" id="endKpiGrid"></div>
+
+      <div class="end-summary" id="endSummaryText"></div>
+
+      <div class="end-actions">
+        <button class="btn-primary" id="playAgainBtn" data-en="Play Again" data-ar="إعادة اللعب">Play Again</button>
+        <button class="btn-ghost" id="backStartBtn" data-en="Change Health System" data-ar="تغيير النظام الصحي">Change Health System</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- HELP MODAL -->
+<div class="modal-overlay" id="helpModal">
+  <div class="modal-box">
+    <h2 data-en="How This Works" data-ar="كيف تعمل المحاكاة">How This Works</h2>
+    <h4 data-en="Your Role" data-ar="دورك">Your Role</h4>
+    <p data-en="You run supply chain operations for a live health system for a 3-minute shift. Alerts will appear describing real-world style disruptions: shortages, recalls, delays, failures and demand spikes." data-ar="تدير عمليات سلسلة الإمداد لنظام صحي فعلي خلال مناوبة مدتها ٣ دقائق. ستظهر تنبيهات تصف اضطرابات واقعية: نقص، سحب منتجات، تأخيرات، أعطال، وارتفاع في الطلب.">You run supply chain operations for a live health system for a 3-minute shift. Alerts will appear describing real-world style disruptions: shortages, recalls, delays, failures and demand spikes.</p>
+    <h4 data-en="KPIs" data-ar="المؤشرات">KPIs</h4>
+    <ul>
+      <li data-en="Patient Safety Index, Patient Satisfaction, Inventory Health and Logistics Efficiency rise with good decisions and fall with bad ones." data-ar="يرتفع مؤشر سلامة المرضى ورضا المرضى وصحة المخزون وكفاءة اللوجستيات مع القرارات الجيدة وينخفض مع القرارات السيئة.">Patient Safety Index, Patient Satisfaction, Inventory Health and Logistics Efficiency rise with good decisions and fall with bad ones.</li>
+      <li data-en="Operating Cost and Care Continuity Protected track the financial and clinical consequences of each choice." data-ar="تتبع تكلفة التشغيل واستمرارية الرعاية المحمية الآثار المالية والسريرية لكل قرار.">Operating Cost and Care Continuity Protected track the financial and clinical consequences of each choice.</li>
+    </ul>
+    <h4 data-en="Actions" data-ar="الإجراءات">Actions</h4>
+    <p data-en="Each alert offers several response options. Strong responses (expedite, activate backup, transfer) protect KPIs. Ignoring or delaying a critical alert lets it expire and damages your score." data-ar="يقدم كل تنبيه عدة خيارات استجابة. الاستجابات القوية (التعجيل، تفعيل البديل، النقل) تحمي المؤشرات. تجاهل أو تأخير تنبيه حرج يجعله ينتهي ويضر بنتيجتك.">Each alert offers several response options. Strong responses (expedite, activate backup, transfer) protect KPIs. Ignoring or delaying a critical alert lets it expire and damages your score.</p>
+    <h4 data-en="Methodology Note" data-ar="ملاحظة منهجية">Methodology Note</h4>
+    <p data-en="Alert categories are modeled on documented healthcare supply chain risk types (AHRMM, ASHP drug shortage reporting, FDA/MOHAP recall notices). Specific facility names, suppliers and figures are synthetic." data-ar="تستند فئات التنبيهات إلى أنواع مخاطر سلسلة الإمداد الصحية الموثقة. أسماء المنشآت والموردين والأرقام افتراضية.">Alert categories are modeled on documented healthcare supply chain risk types (AHRMM, ASHP drug shortage reporting, FDA/MOHAP recall notices). Specific facility names, suppliers and figures are synthetic.</p>
+    <button class="btn-ghost modal-close" onclick="closeModal('helpModal')" data-en="Close" data-ar="إغلاق">Close</button>
+  </div>
+</div>
+
+<div class="pause-overlay" id="pauseOverlay">
+  <h2 data-en="Shift Paused" data-ar="المناوبة متوقفة مؤقتًا">Shift Paused</h2>
+  <button class="btn-primary" id="resumeBtn" data-en="Resume Shift" data-ar="استئناف المناوبة">Resume Shift</button>
+</div>
+
+<script>
+/* ===================== STATE ===================== */
+let lang = 'en';
+let region = 'us';
+let gameTimer = null;
+let spawnTimer = null;
+let alertTickTimer = null;
+let elapsed = 0;
+const SHIFT_LENGTH = 180;
+let paused = false;
+let nextAlertId = 1;
+let activeAlerts = [];
+let stats = {resolved:0, correct:0, wrong:0, missed:0};
+
+const REGION_INFO = {
+  us:{ name:'Lakeshore Regional Health', cur:'$', port:'O\'Hare air cargo terminal', reg:'FDA / CMS', cityNote:'Chicago metro distribution network' },
+  gcc:{ name:'Al Noor Health System', cur:'AED ', port:'Jebel Ali Port', reg:'MOHAP / SFDA', cityNote:'Abu Dhabi-Dubai logistics corridor' }
+};
+
+let kpis = {
+  safety:    {label_en:'Patient Safety Index',    label_ar:'مؤشر سلامة المرضى',         val:92, min:0, max:100, suffix:'%'},
+  satisfaction: {label_en:'Patient Satisfaction', label_ar:'رضا المرضى',                  val:88, min:0, max:100, suffix:'%'},
+  inventory: {label_en:'Inventory Health',         label_ar:'صحة المخزون',                 val:85, min:0, max:100, suffix:'%'},
+  logistics: {label_en:'Logistics Efficiency',     label_ar:'كفاءة اللوجستيات',            val:90, min:0, max:100, suffix:'%'},
+  cost:      {label_en:'Operating Cost Impact',    label_ar:'أثر تكلفة التشغيل',           val:0,  min:-999999, max:999999, suffix:'', isCurrency:true, inverse:true},
+  protected: {label_en:'Care Continuity Protected',label_ar:'استمرارية الرعاية المحمية',   val:0,  min:0, max:999999, suffix:'', isCurrency:true}
+};
+let score = 0;
+
+/* ===================== ALERT POOL (TEMPLATES) ===================== */
+function buildAlertPool(){
+  const R = REGION_INFO[region];
+  return [
+    {
+      key:'blood', icon:'&#129666;', priority:'critical', time:30,
+      title_en:'O-Negative Blood Reserve Critical', title_ar:'احتياطي الدم O سالب في مستوى حرج',
+      desc_en:`Trauma bay at ${R.name} reports O-negative units at 6 hours of supply ahead of a forecasted multi-vehicle incident.`,
+      desc_ar:`تشير وحدة الصدمات في ${R.name} إلى أن مخزون فصيلة الدم O سالب يكفي ٦ ساعات فقط قبل حادث متعدد المركبات متوقع.`,
+      impact_en:'Risk: delayed transfusion for trauma patients', impact_ar:'الخطر: تأخر نقل الدم لمرضى الصدمات',
+      actions:[
+        {label_en:'Activate Regional Blood Bank Transfer', label_ar:'تفعيل نقل من بنك الدم الإقليمي', correct:true, d:{safety:4,satisfaction:2,inventory:5,logistics:1,cost:-1800,protected:42000}, log_en:'Regional blood bank transfer activated. Reserve restored within the hour.', log_ar:'تم تفعيل نقل بنك الدم الإقليمي. تمت استعادة الاحتياطي خلال ساعة.'},
+        {label_en:'Request Emergency Donor Drive', label_ar:'طلب حملة تبرع طارئة', correct:false, partial:true, d:{safety:1,satisfaction:1,inventory:2,logistics:0,cost:-600,protected:9000}, log_en:'Donor drive requested. Partial relief expected in 4-6 hours.', log_ar:'تم طلب حملة تبرع. تخفيف جزئي متوقع خلال ٤-٦ ساعات.'},
+        {label_en:'Ignore', label_ar:'تجاهل', correct:false, d:{safety:-9,satisfaction:-5,inventory:-6,logistics:-1,cost:-4200,protected:0}, log_en:'No action taken. Trauma bay flagged a near-miss transfusion delay.', log_ar:'لم يُتخذ أي إجراء. سُجل شبه تأخير حرج في نقل الدم.'},
+        {label_en:'Delay Decision', label_ar:'تأجيل القرار', correct:false, d:{safety:-5,satisfaction:-2,inventory:-3,logistics:-1,cost:-2100,protected:0}, log_en:'Decision delayed. Reserve dropped further before transfer was authorized.', log_ar:'تم تأجيل القرار. انخفض الاحتياطي أكثر قبل اعتماد النقل.'}
+      ]
+    },
+    {
+      key:'drug', icon:'&#128138;', priority:'critical', time:32,
+      title_en:'Critical IV Fluid Backorder', title_ar:'نفاد مخزون محاليل وريدية حرجة',
+      desc_en:`Manufacturer backorder on normal saline and chemotherapy diluent affecting ${R.name} pharmacy for the next 5 days.`,
+      desc_ar:`نفاد من الشركة المصنعة لمحلول الملح الطبيعي ومخفف العلاج الكيميائي يؤثر على صيدلية ${R.name} لمدة ٥ أيام.`,
+      impact_en:'Risk: chemotherapy and hydration protocol delays', impact_ar:'الخطر: تأخر بروتوكولات العلاج الكيميائي والإماهة',
+      actions:[
+        {label_en:'Activate Backup Supplier', label_ar:'تفعيل مورد بديل', correct:true, d:{safety:4,satisfaction:3,inventory:6,logistics:1,cost:-2400,protected:38000}, log_en:'Backup supplier engaged. Full pharmacy stock restored in 24 hours.', log_ar:'تم التعاقد مع مورد بديل. استعادة كامل مخزون الصيدلية خلال ٢٤ ساعة.'},
+        {label_en:'Substitute Therapeutic Equivalent', label_ar:'استبدال ببديل علاجي مكافئ', correct:false, partial:true, d:{safety:2,satisfaction:1,inventory:3,logistics:1,cost:-900,protected:14000}, log_en:'Pharmacy approved therapeutic substitution under protocol.', log_ar:'وافقت الصيدلية على بديل علاجي وفق البروتوكول.'},
+        {label_en:'Ignore', label_ar:'تجاهل', correct:false, d:{safety:-8,satisfaction:-4,inventory:-7,logistics:-1,cost:-3800,protected:0}, log_en:'Oncology unit reports postponed chemotherapy cycles.', log_ar:'أبلغت وحدة الأورام عن تأجيل جلسات العلاج الكيميائي.'},
+        {label_en:'Delay Decision', label_ar:'تأجيل القرار', correct:false, d:{safety:-4,satisfaction:-2,inventory:-4,logistics:-1,cost:-1900,protected:0}, log_en:'Decision delayed. Backorder window narrowed before action.', log_ar:'تم تأجيل القرار. ضاقت نافذة الطلب البديل قبل اتخاذ الإجراء.'}
+      ]
+    },
+    {
+      key:'ppe', icon:'&#128567;', priority:'high', time:28,
+      title_en:'N95 Respirator Stock Below 48-Hour Threshold', title_ar:'مخزون كمامات N95 دون عتبة ٤٨ ساعة',
+      desc_en:`ICU and isolation units at ${R.name} report N95 supply will be exhausted within 48 hours at current burn rate.`,
+      desc_ar:`تشير وحدات العناية المركزة والعزل في ${R.name} إلى نفاد مخزون كمامات N95 خلال ٤٨ ساعة بمعدل الاستهلاك الحالي.`,
+      impact_en:'Risk: staff and patient exposure in isolation units', impact_ar:'الخطر: تعرض الطاقم والمرضى في وحدات العزل',
+      actions:[
+        {label_en:'Expedite Air Freight Shipment', label_ar:'تعجيل الشحن الجوي', correct:true, d:{safety:3,satisfaction:2,inventory:5,logistics:2,cost:-1500,protected:21000}, log_en:`Air freight expedited via ${R.port}. Stock secured for 30 days.`, log_ar:`تم تعجيل الشحن الجوي عبر ${R.port}. تأمين المخزون لمدة ٣٠ يومًا.`},
+        {label_en:'Transfer from Sister Facility', label_ar:'نقل من منشأة شقيقة', correct:true, d:{safety:2,satisfaction:1,inventory:4,logistics:1,cost:-500,protected:12000}, log_en:'Sister facility transfer completed, covering the immediate gap.', log_ar:'تم نقل المخزون من منشأة شقيقة لتغطية الفجوة الفورية.'},
+        {label_en:'Ignore', label_ar:'تجاهل', correct:false, d:{safety:-6,satisfaction:-3,inventory:-5,logistics:-1,cost:-2600,protected:0}, log_en:'Isolation unit forced to ration respirators.', log_ar:'اضطرت وحدة العزل إلى ترشيد استخدام الكمامات.'},
+        {label_en:'Approve Rationing Protocol', label_ar:'اعتماد بروتوكول ترشيد', correct:false, partial:true, d:{safety:-1,satisfaction:-1,inventory:1,logistics:0,cost:-300,protected:4000}, log_en:'Rationing protocol approved as a temporary bridge.', log_ar:'تمت الموافقة على بروتوكول الترشيد كحل مؤقت.'}
+      ]
+    },
+    {
+      key:'coldchain', icon:'&#10052;', priority:'critical', time:26,
+      title_en:'Vaccine Cold Storage Temperature Excursion', title_ar:'انحراف حراري في تخزين اللقاحات المبرد',
+      desc_en:`Pharmacy cold storage unit at ${R.name} logged a temperature excursion outside the 2-8C range for 40 minutes.`,
+      desc_ar:`سجلت وحدة التخزين المبرد في صيدلية ${R.name} انحرافًا حراريًا خارج نطاق ٢-٨ درجات مئوية لمدة ٤٠ دقيقة.`,
+      impact_en:'Risk: loss of vaccine and biologic potency', impact_ar:'الخطر: فقدان فعالية اللقاحات والمستحضرات الحيوية',
+      actions:[
+        {label_en:'Activate Backup Cold Storage', label_ar:'تفعيل تخزين مبرد بديل', correct:true, d:{safety:3,satisfaction:1,inventory:4,logistics:1,cost:-1100,protected:26000}, log_en:'Backup cold storage activated. Inventory integrity preserved.', log_ar:'تم تفعيل التخزين المبرد البديل. تمت المحافظة على سلامة المخزون.'},
+        {label_en:'Discard and Reorder', label_ar:'إتلاف وإعادة الطلب', correct:false, partial:true, d:{safety:1,satisfaction:0,inventory:-2,logistics:0,cost:-3200,protected:6000}, log_en:'Affected stock discarded per protocol; reorder placed.', log_ar:'تم إتلاف المخزون المتأثر وفق البروتوكول، وأُعيد الطلب.'},
+        {label_en:'Ignore', label_ar:'تجاهل', correct:false, d:{safety:-9,satisfaction:-3,inventory:-6,logistics:0,cost:-2000,protected:0}, log_en:'Compromised vaccines remained in circulation. Safety event logged.', log_ar:'بقيت اللقاحات المتأثرة قيد الاستخدام. تم تسجيل حادثة سلامة.'},
+        {label_en:'Delay Decision', label_ar:'تأجيل القرار', correct:false, d:{safety:-5,satisfaction:-1,inventory:-3,logistics:0,cost:-1200,protected:0}, log_en:'Decision delayed. Excursion duration extended before action.', log_ar:'تم تأجيل القرار. امتدت مدة الانحراف الحراري قبل التحرك.'}
+      ]
+    },
+    {
+      key:'recall', icon:'&#9888;', priority:'high', time:30,
+      title_en:'Infusion Pump Recall Notice', title_ar:'إشعار سحب مضخات التسريب الوريدي',
+      desc_en:`${R.reg} recall notice issued for an infusion pump model deployed across med-surg floors at ${R.name}.`,
+      desc_ar:`صدر إشعار سحب من ${R.reg} لطراز مضخة تسريب موزعة في أقسام الجراحة الباطنية في ${R.name}.`,
+      impact_en:'Risk: dosing errors from affected pump model', impact_ar:'الخطر: أخطاء جرعات من طراز المضخة المتأثر',
+      actions:[
+        {label_en:'Quarantine and Swap Backup Units', label_ar:'حجر واستبدال بوحدات بديلة', correct:true, d:{safety:5,satisfaction:1,inventory:3,logistics:1,cost:-2000,protected:31000}, log_en:'Affected pumps quarantined and swapped with backup inventory.', log_ar:'تم حجر المضخات المتأثرة واستبدالها بمخزون احتياطي.'},
+        {label_en:'Schedule Phased Replacement', label_ar:'جدولة استبدال تدريجي', correct:false, partial:true, d:{safety:2,satisfaction:0,inventory:1,logistics:0,cost:-900,protected:9000}, log_en:'Phased replacement scheduled across three shifts.', log_ar:'تمت جدولة استبدال تدريجي عبر ثلاث مناوبات.'},
+        {label_en:'Ignore', label_ar:'تجاهل', correct:false, d:{safety:-10,satisfaction:-4,inventory:-2,logistics:0,cost:-5000,protected:0}, log_en:'Recalled pumps remained in active use. Compliance risk logged.', log_ar:'استمر استخدام المضخات المسحوبة. تم تسجيل خطر امتثال.'},
+        {label_en:'Delay Decision', label_ar:'تأجيل القرار', correct:false, d:{safety:-5,satisfaction:-1,inventory:-1,logistics:0,cost:-2400,protected:0}, log_en:'Decision delayed pending budget review.', log_ar:'تم تأجيل القرار بانتظار مراجعة الميزانية.'}
+      ]
+    },
+    {
+      key:'customs', icon:'&#9875;', priority:'medium', time:34,
+      title_en:'Surgical Implant Shipment Held at Port', title_ar:'احتجاز شحنة غرسات جراحية في الميناء',
+      desc_en:`Orthopedic implant container destined for ${R.name} is held for inspection at ${R.port}, delaying scheduled procedures.`,
+      desc_ar:`احتُجزت حاوية غرسات العظام المتجهة إلى ${R.name} للتفتيش في ${R.port}، ما يؤخر العمليات المجدولة.`,
+      impact_en:'Risk: postponed elective orthopedic cases', impact_ar:'الخطر: تأجيل عمليات العظام الاختيارية',
+      actions:[
+        {label_en:'Expedite Customs Clearance', label_ar:'تعجيل التخليص الجمركي', correct:true, d:{safety:1,satisfaction:3,inventory:3,logistics:4,cost:-1300,protected:18000}, log_en:'Expedited clearance fee paid. Shipment released same day.', log_ar:'تم دفع رسوم التخليص العاجل. أُفرج عن الشحنة في اليوم نفسه.'},
+        {label_en:'Use Backup Local Vendor', label_ar:'استخدام مورد محلي بديل', correct:true, d:{safety:1,satisfaction:2,inventory:2,logistics:2,cost:-1900,protected:14000}, log_en:'Backup local vendor sourced equivalent implants overnight.', log_ar:'وفّر المورد المحلي البديل غرسات مكافئة بين عشية وضحاها.'},
+        {label_en:'Ignore', label_ar:'تجاهل', correct:false, d:{safety:0,satisfaction:-4,inventory:-3,logistics:-3,cost:-2200,protected:0}, log_en:'Three orthopedic cases postponed this week.', log_ar:'تم تأجيل ثلاث عمليات عظام هذا الأسبوع.'},
+        {label_en:'Delay Decision', label_ar:'تأجيل القرار', correct:false, d:{safety:0,satisfaction:-2,inventory:-1,logistics:-2,cost:-1100,protected:0}, log_en:'Decision delayed. Port storage fees accrued.', log_ar:'تم تأجيل القرار. تراكمت رسوم تخزين الميناء.'}
+      ]
+    },
+    {
+      key:'orfail', icon:'&#9881;', priority:'high', time:27,
+      title_en:'Sterilization Autoclave Failure', title_ar:'عطل في جهاز التعقيم Autoclave',
+      desc_en:`Central sterile processing autoclave failure at ${R.name} is delaying instrument turnover for the OR schedule.`,
+      desc_ar:`أدى عطل جهاز التعقيم المركزي في ${R.name} إلى تأخير تجهيز الأدوات لجدول غرف العمليات.`,
+      impact_en:'Risk: cascading OR schedule delays', impact_ar:'الخطر: تأخيرات متسلسلة في جدول العمليات',
+      actions:[
+        {label_en:'Dispatch Emergency Repair Technician', label_ar:'إرسال فني صيانة طارئ', correct:true, d:{safety:2,satisfaction:2,inventory:1,logistics:4,cost:-1700,protected:24000}, log_en:'Repair technician on site within the hour. Unit restored.', log_ar:'وصل فني الصيانة خلال ساعة. تمت استعادة الجهاز.'},
+        {label_en:'Reroute Cases to Sister OR', label_ar:'إعادة توجيه الحالات لغرفة عمليات شقيقة', correct:true, d:{safety:1,satisfaction:1,inventory:0,logistics:3,cost:-1000,protected:16000}, log_en:'Non-urgent cases rerouted to sister facility OR suite.', log_ar:'أُعيد توجيه الحالات غير العاجلة لغرفة عمليات منشأة شقيقة.'},
+        {label_en:'Ignore', label_ar:'تجاهل', correct:false, d:{safety:-3,satisfaction:-4,inventory:-1,logistics:-5,cost:-2800,protected:0}, log_en:'OR schedule backed up by six hours.', log_ar:'تراكم جدول غرف العمليات بمقدار ست ساعات.'},
+        {label_en:'Delay Decision', label_ar:'تأجيل القرار', correct:false, d:{safety:-1,satisfaction:-2,inventory:0,logistics:-3,cost:-1400,protected:0}, log_en:'Decision delayed. Backlog grew before repair was authorized.', log_ar:'تم تأجيل القرار. تفاقم التراكم قبل اعتماد الإصلاح.'}
+      ]
+    },
+    {
+      key:'surge', icon:'&#128200;', priority:'medium', time:35,
+      title_en:'Seasonal Demand Spike: ED Volume +40%', title_ar:'ارتفاع موسمي في الطلب: حجم الطوارئ +٤٠٪',
+      desc_en:`Flu season is driving a 40% surge in emergency department volume across ${R.name}, straining supply par levels.`,
+      desc_ar:`يدفع موسم الإنفلونزا حجم قسم الطوارئ في ${R.name} للارتفاع ٤٠٪، ما يضغط على مستويات المخزون.`,
+      impact_en:'Risk: stockouts across multiple categories', impact_ar:'الخطر: نفاد المخزون في عدة فئات',
+      actions:[
+        {label_en:'Increase Staffing and Par Levels', label_ar:'زيادة التوظيف ومستويات المخزون', correct:true, d:{safety:3,satisfaction:3,inventory:4,logistics:2,cost:-2500,protected:29000}, log_en:'Par levels and staffing increased ahead of projected peak.', log_ar:'تمت زيادة مستويات المخزون والتوظيف قبل الذروة المتوقعة.'},
+        {label_en:'Activate Surge Protocol', label_ar:'تفعيل بروتوكول الذروة', correct:true, d:{safety:2,satisfaction:2,inventory:2,logistics:2,cost:-1500,protected:20000}, log_en:'System-wide surge protocol activated.', log_ar:'تم تفعيل بروتوكول الذروة على مستوى النظام.'},
+        {label_en:'Ignore', label_ar:'تجاهل', correct:false, d:{safety:-4,satisfaction:-6,inventory:-5,logistics:-2,cost:-1800,protected:0}, log_en:'ED reports rolling stockouts on basic supplies.', log_ar:'أبلغ قسم الطوارئ عن نفاد متكرر للمستلزمات الأساسية.'},
+        {label_en:'Delay Decision', label_ar:'تأجيل القرار', correct:false, d:{safety:-2,satisfaction:-3,inventory:-3,logistics:-1,cost:-900,protected:0}, log_en:'Decision delayed. Surge intensified before response.', log_ar:'تم تأجيل القرار. تفاقمت الذروة قبل الاستجابة.'}
+      ]
+    },
+    {
+      key:'count', icon:'&#128203;', priority:'medium', time:33,
+      title_en:'Surgical Tray Inventory Discrepancy', title_ar:'تباين في جرد أدوات الجراحة',
+      desc_en:`Par-level system shows a mismatch against physical count for surgical instrument trays at ${R.name} central supply.`,
+      desc_ar:`يُظهر نظام مستويات المخزون تباينًا مع الجرد الفعلي لصواني الأدوات الجراحية في المخزن المركزي بـ ${R.name}.`,
+      impact_en:'Risk: case cancellations from missing trays', impact_ar:'الخطر: إلغاء عمليات بسبب نقص الصواني',
+      actions:[
+        {label_en:'Trigger Physical Cycle Count', label_ar:'تنفيذ جرد دوري فعلي', correct:true, d:{safety:1,satisfaction:1,inventory:5,logistics:2,cost:-700,protected:11000}, log_en:'Cycle count completed. Discrepancy traced and corrected.', log_ar:'اكتمل الجرد الدوري. تم تحديد التباين وتصحيحه.'},
+        {label_en:'Flag for Audit Next Cycle', label_ar:'وضع علامة للمراجعة في الدورة القادمة', correct:false, partial:true, d:{safety:0,satisfaction:0,inventory:1,logistics:0,cost:-100,protected:2000}, log_en:'Discrepancy flagged for the next scheduled audit.', log_ar:'تم وضع علامة على التباين للمراجعة القادمة.'},
+        {label_en:'Ignore', label_ar:'تجاهل', correct:false, d:{safety:-1,satisfaction:-2,inventory:-4,logistics:-2,cost:-1600,protected:0}, log_en:'Two cases delayed due to missing tray components.', log_ar:'تأخرت عمليتان بسبب نقص مكونات الصواني.'},
+        {label_en:'Delay Decision', label_ar:'تأجيل القرار', correct:false, d:{safety:0,satisfaction:-1,inventory:-2,logistics:-1,cost:-700,protected:0}, log_en:'Decision delayed. Discrepancy widened.', log_ar:'تم تأجيل القرار. اتسع التباين.'}
+      ]
+    },
+    {
+      key:'damaged', icon:'&#128230;', priority:'high', time:29,
+      title_en:'Biologics Shipment Arrived Damaged', title_ar:'وصول شحنة مستحضرات حيوية تالفة',
+      desc_en:`Temperature-sensitive biologics shipment for ${R.name} arrived with packaging damage and a broken cold chain seal.`,
+      desc_ar:`وصلت شحنة المستحضرات الحيوية الحساسة للحرارة المتجهة إلى ${R.name} بتغليف تالف وختم سلسلة تبريد مكسور.`,
+      impact_en:'Risk: unusable biologics, treatment delay', impact_ar:'الخطر: مستحضرات غير صالحة وتأخر العلاج',
+      actions:[
+        {label_en:'File Claim and Expedite Replacement', label_ar:'تقديم مطالبة وتعجيل الاستبدال', correct:true, d:{safety:2,satisfaction:2,inventory:3,logistics:2,cost:-1600,protected:19000}, log_en:'Claim filed; replacement shipment expedited within 24 hours.', log_ar:'تم تقديم المطالبة؛ تعجيل شحنة الاستبدال خلال ٢٤ ساعة.'},
+        {label_en:'Source Emergency Local Supply', label_ar:'توفير إمداد محلي طارئ', correct:true, d:{safety:2,satisfaction:1,inventory:2,logistics:1,cost:-2100,protected:13000}, log_en:'Emergency local supply sourced to bridge the gap.', log_ar:'تم توفير إمداد محلي طارئ لسد الفجوة.'},
+        {label_en:'Ignore', label_ar:'تجاهل', correct:false, d:{safety:-5,satisfaction:-2,inventory:-3,logistics:-1,cost:-2400,protected:0}, log_en:'Damaged biologics used without verification. Risk event logged.', log_ar:'استُخدمت المستحضرات التالفة دون تحقق. تم تسجيل حادثة خطر.'},
+        {label_en:'Delay Decision', label_ar:'تأجيل القرار', correct:false, d:{safety:-2,satisfaction:-1,inventory:-1,logistics:0,cost:-1200,protected:0}, log_en:'Decision delayed. Replacement window narrowed.', log_ar:'تم تأجيل القرار. ضاقت نافذة الاستبدال.'}
+      ]
+    }
+  ];
+}
+let ALERT_POOL = [];
+
+/* ===================== LANGUAGE ===================== */
+function setLang(l){
+  lang = l;
+  document.body.classList.toggle('rtl', l==='ar');
+  document.body.setAttribute('dir', l==='ar' ? 'rtl' : 'ltr');
+  document.querySelectorAll('[data-en]').forEach(el=>{
+    const v = l==='ar' ? el.getAttribute('data-ar') : el.getAttribute('data-en');
+    if(v!==null) el.innerHTML = v;
+  });
+  renderKpiStrip();
+  renderEndKpiGrid();
+}
+document.getElementById('langBtn').addEventListener('click',()=>setLang(lang==='en'?'ar':'en'));
+
+/* ===================== REGION SELECT ===================== */
+function selectRegion(r){
+  region = r;
+  document.querySelectorAll('.region-card').forEach(c=>c.classList.toggle('selected', c.dataset.region===r));
+}
+
+/* ===================== KPI RENDER ===================== */
+function fmtCurrency(v){
+  const R = REGION_INFO[region];
+  const sign = v<0 ? '-' : '';
+  return sign + R.cur + Math.abs(Math.round(v)).toLocaleString();
+}
+function renderKpiStrip(){
+  const strip = document.getElementById('kpiStrip');
+  strip.innerHTML = '';
+  Object.keys(kpis).forEach(k=>{
+    const kpi = kpis[k];
+    const card = document.createElement('div');
+    card.className = 'kpi-card';
+    let barColor = 'var(--teal)';
+    if(['safety','satisfaction','inventory','logistics'].includes(k)){
+      barColor = kpi.val>=80?'var(--teal)':kpi.val>=60?'var(--orange)':'var(--red)';
+    } else if(k==='cost'){ barColor='var(--red)'; } else if(k==='protected'){ barColor='var(--green)'; }
+    card.style.setProperty('--bar', barColor);
+    const label = lang==='ar' ? kpi.label_ar : kpi.label_en;
+    const displayVal = kpi.isCurrency ? fmtCurrency(kpi.val) : Math.round(kpi.val)+kpi.suffix;
+    card.innerHTML = `<div class="lbl">${label}</div><div class="val">${displayVal}</div>`;
+    strip.appendChild(card);
+  });
+}
+
+/* ===================== GAME FLOW ===================== */
+document.getElementById('startBtn').addEventListener('click', startGame);
+document.getElementById('playAgainBtn').addEventListener('click', startGame);
+document.getElementById('backStartBtn').addEventListener('click', ()=>{
+  showScreen('screenStart');
+});
+
+function resetState(){
+  elapsed = 0;
+  activeAlerts = [];
+  nextAlertId = 1;
+  stats = {resolved:0, correct:0, wrong:0, missed:0};
+  score = 0;
+  kpis.safety.val = 92; kpis.satisfaction.val = 88; kpis.inventory.val = 85; kpis.logistics.val = 90;
+  kpis.cost.val = 0; kpis.protected.val = 0;
+  ALERT_POOL = buildAlertPool();
+  document.getElementById('eventLog').innerHTML = '';
+  document.getElementById('alertFeed').innerHTML = '';
+  document.getElementById('emptyState').style.display = 'flex';
+}
+
+function startGame(){
+  resetState();
+  showScreen('screenGame');
+  renderKpiStrip();
+  updateScoreTimer();
+  addLog('info', lang==='ar'?`بدأت المناوبة في ${REGION_INFO[region].name}.`:`Shift started at ${REGION_INFO[region].name}.`);
+  spawnAlert();
+  gameTimer = setInterval(gameTick, 1000);
+  spawnTimer = setInterval(()=>{ if(!paused) maybeSpawn(); }, 1000);
+}
+
+function gameTick(){
+  if(paused) return;
+  elapsed++;
+  updateScoreTimer();
+  // tick alert timers
+  activeAlerts.forEach(a=>{
+    a.remaining--;
+  });
+  activeAlerts.filter(a=>a.remaining<=0).forEach(a=>expireAlert(a.id));
+  renderAlerts();
+  if(elapsed >= SHIFT_LENGTH){
+    clearInterval(gameTimer);
+    clearInterval(spawnTimer);
+    endGame();
+  }
+}
+
+let spawnAccumulator = 0;
+function maybeSpawn(){
+  // increasing frequency: early ~ every 14s, late ~ every 6s
+  const progress = elapsed / SHIFT_LENGTH;
+  const interval = Math.max(6, 16 - Math.floor(progress*10));
+  spawnAccumulator++;
+  if(spawnAccumulator >= interval && activeAlerts.length < 4){
+    spawnAccumulator = 0;
+    spawnAlert();
+  }
+}
+
+function spawnAlert(){
+  const tpl = ALERT_POOL[Math.floor(Math.random()*ALERT_POOL.length)];
+  const id = nextAlertId++;
+  const inst = {
+    id, tpl, remaining: tpl.time, total: tpl.time
+  };
+  activeAlerts.push(inst);
+  renderAlerts();
+}
+
+function updateScoreTimer(){
+  const remain = Math.max(0, SHIFT_LENGTH - elapsed);
+  const m = Math.floor(remain/60), s = remain%60;
+  const timerEl = document.getElementById('timerVal');
+  timerEl.textContent = `${m}:${s.toString().padStart(2,'0')}`;
+  timerEl.classList.toggle('urgent', remain<=30);
+  document.getElementById('scoreVal').textContent = score;
+  document.getElementById('shiftProgress').style.width = (elapsed/SHIFT_LENGTH*100)+'%';
+}
+
+function renderAlerts(){
+  const feed = document.getElementById('alertFeed');
+  document.getElementById('emptyState').style.display = activeAlerts.length ? 'none' : 'flex';
+  feed.innerHTML = '';
+  activeAlerts.forEach(a=>{
+    const tpl = a.tpl;
+    const pct = Math.max(0, (a.remaining/a.total)*100);
+    const card = document.createElement('div');
+    card.className = `alert-card ${tpl.priority}`;
+    const title = lang==='ar'?tpl.title_ar:tpl.title_en;
+    const desc = lang==='ar'?tpl.desc_ar:tpl.desc_en;
+    const impact = lang==='ar'?tpl.impact_ar:tpl.impact_en;
+    const badgeText = {critical: lang==='ar'?'حرج':'CRITICAL', high: lang==='ar'?'مرتفع':'HIGH', medium: lang==='ar'?'متوسط':'MEDIUM'}[tpl.priority];
+    let actionsHtml = '';
+    tpl.actions.forEach((act,idx)=>{
+      const lbl = lang==='ar'?act.label_ar:act.label_en;
+      actionsHtml += `<button class="action-btn ${act.correct?'':'negative'}" onclick="resolveAlert(${a.id},${idx})">${lbl}</button>`;
+    });
+    card.innerHTML = `
+      <div class="alert-top">
+        <div class="alert-title-wrap"><span class="alert-icon">${tpl.icon}</span><span class="alert-title">${title}</span></div>
+        <span class="badge ${tpl.priority}">${badgeText}</span>
+      </div>
+      <div class="alert-desc">${desc}</div>
+      <div class="alert-impact">${lang==='ar'?'الأثر':'Impact'}: <b>${impact}</b></div>
+      <div class="alert-timer-row">
+        <div class="alert-timer-bar"><div class="alert-timer-fill" style="width:${pct}%"></div></div>
+        <div class="alert-timer-txt">${a.remaining}s</div>
+      </div>
+      <div class="action-grid">${actionsHtml}</div>
+    `;
+    feed.appendChild(card);
+  });
+}
+
+function clamp(v,min,max){ return Math.max(min, Math.min(max, v)); }
+
+function applyDelta(d){
+  kpis.safety.val = clamp(kpis.safety.val + (d.safety||0), 0, 100);
+  kpis.satisfaction.val = clamp(kpis.satisfaction.val + (d.satisfaction||0), 0, 100);
+  kpis.inventory.val = clamp(kpis.inventory.val + (d.inventory||0), 0, 100);
+  kpis.logistics.val = clamp(kpis.logistics.val + (d.logistics||0), 0, 100);
+  kpis.cost.val += (d.cost||0);
+  kpis.protected.val += (d.protected||0);
+  renderKpiStrip();
+}
+
+function resolveAlert(id, actionIdx){
+  const idx = activeAlerts.findIndex(a=>a.id===id);
+  if(idx===-1) return;
+  const a = activeAlerts[idx];
+  const act = a.tpl.actions[actionIdx];
+  applyDelta(act.d);
+  let scoreDelta = act.correct ? 120 : (act.partial ? 40 : -60);
+  score = Math.max(0, score + scoreDelta);
+  stats.resolved++;
+  if(act.correct || act.partial) stats.correct++; else stats.wrong++;
+  const logMsg = lang==='ar'?act.log_ar:act.log_en;
+  addLog(act.correct?'good':(act.partial?'info':'bad'), logMsg);
+  activeAlerts.splice(idx,1);
+  renderAlerts();
+  updateScoreTimer();
+}
+
+function expireAlert(id){
+  const idx = activeAlerts.findIndex(a=>a.id===id);
+  if(idx===-1) return;
+  const a = activeAlerts[idx];
+  applyDelta({safety:-6, satisfaction:-4, inventory:-4, logistics:-2, cost:-1500, protected:0});
+  score = Math.max(0, score - 80);
+  stats.missed++;
+  const title = lang==='ar'?a.tpl.title_ar:a.tpl.title_en;
+  addLog('bad', (lang==='ar'?`انتهت مهلة التنبيه دون استجابة: ${title}`:`Alert expired with no response: ${title}`));
+  activeAlerts.splice(idx,1);
+}
+
+function addLog(type, msg){
+  const log = document.getElementById('eventLog');
+  const entry = document.createElement('div');
+  entry.className = `log-entry ${type}`;
+  const remain = Math.max(0, SHIFT_LENGTH - elapsed);
+  const m = Math.floor(remain/60), s = (remain%60).toString().padStart(2,'0');
+  entry.innerHTML = `<span class="t">${m}:${s}</span>${msg}`;
+  log.appendChild(entry);
+  log.scrollTop = log.scrollHeight;
+}
+
+/* ===================== END GAME ===================== */
+function computeGrade(){
+  const avgKpi = (kpis.safety.val + kpis.satisfaction.val + kpis.inventory.val + kpis.logistics.val)/4;
+  if(score>=900 && avgKpi>=85) return 'A+';
+  if(score>=650 && avgKpi>=75) return 'A';
+  if(score>=400 && avgKpi>=60) return 'B';
+  if(score>=200 && avgKpi>=45) return 'C';
+  return 'D';
+}
+function renderEndKpiGrid(){
+  const grid = document.getElementById('endKpiGrid');
+  grid.innerHTML = '';
+  Object.keys(kpis).forEach(k=>{
+    const kpi = kpis[k];
+    const div = document.createElement('div');
+    div.className = 'kpi-card';
+    let barColor = ['safety','satisfaction','inventory','logistics'].includes(k) ? (kpi.val>=80?'var(--teal)':kpi.val>=60?'var(--orange)':'var(--red)') : (k==='cost'?'var(--red)':'var(--green)');
+    div.style.setProperty('--bar', barColor);
+    const label = lang==='ar'?kpi.label_ar:kpi.label_en;
+    const displayVal = kpi.isCurrency ? fmtCurrency(kpi.val) : Math.round(kpi.val)+kpi.suffix;
+    div.innerHTML = `<div class="lbl">${label}</div><div class="val">${displayVal}</div>`;
+    grid.appendChild(div);
+  });
+}
+function endGame(){
+  activeAlerts.forEach(a=> stats.missed++);
+  activeAlerts = [];
+  const grade = computeGrade();
+  document.getElementById('finalGrade').textContent = grade;
+  document.getElementById('finalScore').textContent = score;
+  document.getElementById('resolvedCount').textContent = stats.resolved;
+  document.getElementById('correctCount').textContent = stats.correct;
+  document.getElementById('wrongCount').textContent = stats.wrong;
+  document.getElementById('missedCount').textContent = stats.missed;
+  renderEndKpiGrid();
+  const summaries_en = {
+    'A+':'Exceptional shift. Patient safety and inventory health stayed strong under sustained pressure, and care continuity protection significantly outpaced operating cost.',
+    'A':'Strong shift. Most critical alerts were resolved with the right action before expiry, holding KPIs in a healthy range.',
+    'B':'Solid shift with room to tighten response time. A few alerts were resolved with partial fixes rather than full corrective actions.',
+    'C':'Reactive shift. Several alerts expired or were ignored, pulling patient safety and satisfaction down.',
+    'D':'Crisis-mode shift. Multiple critical alerts went unaddressed, with significant impact on patient safety and operating cost.'
+  };
+  const summaries_ar = {
+    'A+':'مناوبة استثنائية. حافظت على سلامة المرضى وصحة المخزون رغم الضغط المستمر، وتفوقت استمرارية الرعاية المحمية بوضوح على تكلفة التشغيل.',
+    'A':'مناوبة قوية. تمت معالجة معظم التنبيهات الحرجة بالإجراء الصحيح قبل انتهاء المهلة، وبقيت المؤشرات ضمن نطاق صحي.',
+    'B':'مناوبة جيدة مع مجال لتحسين سرعة الاستجابة. عولجت بعض التنبيهات بحلول جزئية بدلاً من إجراءات تصحيحية كاملة.',
+    'C':'مناوبة تفاعلية. انتهت مهلة عدة تنبيهات أو تم تجاهلها، ما أثر سلبًا على سلامة المرضى ورضاهم.',
+    'D':'مناوبة في وضع أزمة. لم تتم معالجة عدة تنبيهات حرجة، بأثر كبير على سلامة المرضى وتكلفة التشغيل.'
+  };
+  document.getElementById('endSummaryText').innerHTML = `<b>${lang==='ar'?'الملخص التشغيلي':'Operational Summary'}:</b> ${lang==='ar'?summaries_ar[grade]:summaries_en[grade]}`;
+  showScreen('screenEnd');
+}
+
+/* ===================== UI HELPERS ===================== */
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('visible'));
+  document.getElementById(id).classList.add('visible');
+}
+function closeModal(id){ document.getElementById(id).classList.remove('visible'); }
+document.getElementById('helpBtn').addEventListener('click',()=>document.getElementById('helpModal').classList.add('visible'));
+document.getElementById('helpModal').addEventListener('click',e=>{ if(e.target.id==='helpModal') closeModal('helpModal'); });
+document.getElementById('soundBtn').addEventListener('click',function(){ this.classList.toggle('active'); this.innerHTML = this.classList.contains('active') ? '&#128266;' : '&#128263;'; });
+document.getElementById('pauseBtn').addEventListener('click',()=>{
+  if(document.getElementById('screenGame').classList.contains('visible')){
+    paused = true;
+    document.getElementById('pauseOverlay').classList.add('visible');
+  }
+});
+document.getElementById('resumeBtn').addEventListener('click',()=>{
+  paused = false;
+  document.getElementById('pauseOverlay').classList.remove('visible');
+});
+
+/* ===================== DEMO MODE (for documentation screenshots) ===================== */
+(function(){
+  const params = new URLSearchParams(window.location.search);
+  if(params.get('demo')==='1'){
+    window.loadDemoCrisis = function(){
+      resetState();
+      showScreen('screenGame');
+      elapsed = 96;
+      score = 540;
+      kpis.safety.val=78; kpis.satisfaction.val=71; kpis.inventory.val=64; kpis.logistics.val=82;
+      kpis.cost.val=-14200; kpis.protected.val=96000;
+      ALERT_POOL = buildAlertPool();
+      activeAlerts = [
+        {id:1, tpl:ALERT_POOL[0], remaining:11, total:30},
+        {id:2, tpl:ALERT_POOL[2], remaining:19, total:28},
+        {id:3, tpl:ALERT_POOL[4], remaining:24, total:30}
+      ];
+      nextAlertId = 4;
+      ['Backup supplier activated for IV fluid backorder. Full stock restored in 24 hours.',
+       'Cycle count completed. Discrepancy traced and corrected.',
+       'Regional blood bank transfer activated. Reserve restored within the hour.',
+       'Sister facility transfer completed, covering the immediate gap.',
+       'Air freight expedited via O\'Hare air cargo terminal. Stock secured for 30 days.'
+      ].forEach((m,i)=>addLog(i%2===0?'good':'info', m));
+      renderKpiStrip();
+      renderAlerts();
+      updateScoreTimer();
+    };
+    window.loadDemoEnd = function(){
+      resetState();
+      elapsed = 180; score = 760;
+      kpis.safety.val=86; kpis.satisfaction.val=82; kpis.inventory.val=79; kpis.logistics.val=88;
+      kpis.cost.val=-21300; kpis.protected.val=224000;
+      stats = {resolved:11, correct:8, wrong:2, missed:1};
+      endGame();
+    };
+  }
+})();
+
+/* ===================== INIT ===================== */
+setLang('en');
+selectRegion('us');
+</script>
+</body>
+</html>
