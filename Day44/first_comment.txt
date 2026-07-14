@@ -1,0 +1,1 @@
+The challenge is completely free. I receive no incentive for sharing it. I've simply enjoyed watching healthcare leaders, students, clinicians, and professionals push themselves to build things they never thought possible. If you'd like to join the challenge: https://www.abtalks.in/?ref=BCVEJQ
