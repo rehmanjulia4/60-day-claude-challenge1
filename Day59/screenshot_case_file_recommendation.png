@@ -1,0 +1,62 @@
+# PROJECT-STRUCTURE.md — HealthNexus Command Center
+
+**Day 53 of 60 · Updated from Day 52 version — now reflects real files, not just planned ones.**
+
+## 1. Full Folder Tree (as of Day 53)
+
+```
+healthnexus-command-center/
+├── .github/
+│   └── workflows/
+│       └── deploy.yml            # Installs deps, builds, deploys public/ to Pages
+├── scripts/
+│   └── build.js                   # Precompiles JSX + bundles src/ into public/index.html
+├── public/
+│   └── index.html                 # GENERATED — not committed, rebuilt by CI on every push
+├── src/
+│   ├── App.jsx                     # Day 53 Hello World shell (Queue/Resolved nav are stubs)
+│   ├── theme.css                   # Design tokens — 3 theme variants
+│   ├── fonts.css                   # Base64-embedded Cormorant Garamond / DM Sans / Noto Sans Arabic
+│   ├── data/
+│   │   ├── prng.js                 # mulberry32 seeded PRNG — DONE (Day 53)
+│   │   ├── schema.js                # JSDoc shapes — DONE (Day 53)
+│   │   ├── generateFacilities.js   # DONE (Day 53)
+│   │   ├── generateIncidents.js    # DONE (Day 53)
+│   │   └── generateRecommendation.js # DONE (Day 53)
+│   ├── state/
+│   │   └── incidentState.js        # DONE (Day 53) — the governance boundary; submitSignOff works today, just has no UI yet
+│   ├── components/                  # EMPTY — Queue/Detail/Recommendation/SignOff/Resolved land Days 54-57
+│   └── i18n/
+│       └── strings.js               # Foundation-level strings only; full translation Day 59
+├── package.json                     # Build-time deps only (React/ReactDOM for UMD files, Babel)
+├── package-lock.json
+├── .gitignore                       # node_modules/, public/index.html
+└── docs/
+    ├── prd.md                       # Day 51
+    ├── blueprint.md                 # Day 51
+    ├── ARCHITECTURE.md               # Day 52
+    ├── SCHEMA.md                     # Day 52
+    ├── API.md                        # Day 52
+    ├── UI-WIREFRAMES.md              # Day 52
+    ├── PROJECT-STRUCTURE.md          # this file, updated Day 53
+    ├── SETUP.md                      # Day 53
+    ├── ENVIRONMENT.md                # Day 53
+    └── DAY3-SUMMARY.md               # Day 53
+```
+
+## 2. What Changed Since the Day 52 Version
+
+- `src/components/` is confirmed still empty — correctly scheduled for Days 54-57, not built early.
+- `scripts/build.js` is new: the Day 52 architecture called for "no build server," which today's implementation satisfies via a one-time local precompile script rather than a persistent dev server or webpack config.
+- `public/index.html` is generated, not authored — added to `.gitignore` accordingly, with the GitHub Actions workflow updated to build it fresh on every deploy.
+- `package.json` was not part of the Day 52 structure sketch; it's added today holding only build-time dependencies (no runtime framework dependency beyond the embedded UMD builds).
+
+## 3. Folder Responsibilities (Unchanged Reasoning, Now With Real Files)
+
+- **`src/data/`** — the synthetic data engine. All five files described in Day 52's plan are now real, working code, verified end-to-end via the Day 53 Hello World (see `DAY3-SUMMARY.md`).
+- **`src/state/incidentState.js`** — the governance boundary. `submitSignOff` already enforces the sign-off gate today, even though no UI calls it yet. This was built now (Day 53) rather than Day 57 because it's foundational state management, not a feature — the Day 57 work is the *UI* for signing off, not the gate logic itself.
+- **`src/components/`** stays empty on purpose — building it now would be exactly the "core feature work" this task explicitly says not to start yet.
+
+## 4. Day 4 (Day 54) Readiness
+
+Everything Day 54's Incident Queue UI needs already exists: `getIncidentQueue()` is implemented and tested (via the Hello World's debug summary), the design tokens are in place, and the bilingual shell renders. Day 54 can start directly on `IncidentQueue.jsx`, `IncidentCard.jsx`, and `SummaryStrip.jsx` with no further setup.
