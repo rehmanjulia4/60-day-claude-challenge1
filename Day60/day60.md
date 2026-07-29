@@ -1,36 +1,25 @@
-# Day 60: Final Review, Portfolio & Graduation
+# Daily Build Prompt (Days 1-30 of the HealthNexus Growth Plan)
 
-**Project:** HealthNexus Command Center
-**Version:** v1.0.0
-**Author:** Dr. Julia Rehman
+Use this exact prompt each day, only changing the day number and pasting that day's milestone from `30-day-growth-plan.md`.
 
-## Note on this submission
+---
 
-Live deployment URL and GitHub repository URL were not provided for this session, so the five-lens review (Senior Engineer, PM, UI/UX, Recruiter, Open Source Maintainer) and README edits were built from the accumulated project context across Days 51-59 rather than a direct live-repo inspection. Before tagging the real v1.0.0 release, run the README Improvement Checklist in `portfolio-assets.md` against the actual repo.
+Day [N] of the 30-Day HealthNexus Command Center Growth Plan.
 
-## Files in this submission
+You are my senior software engineer and product mentor continuing the HealthNexus Command Center capstone build. The stack is fixed: React 18 UMD with Babel-precompiled JSX (classic runtime, no in-browser compilation), a custom no-bundler concatenation build script (`scripts/build.js`), base64-embedded fonts, three themes (Executive Navy, Clinical Teal, GCC Gold), full EN/AR bilingual support with true RTL mirroring, and `incidentState.js` as the single governance boundary. Every AI recommendation still requires named clinician sign-off before any state change, that constraint is never optional or removable.
 
-- `future-scope.md` — 3/6/12-month roadmap
-- `challenge-retrospective.md` — Day 1-60 retrospective, decisions, debugging moments, lessons learned
-- `30-day-growth-plan.md` — MVP to v1.1, one milestone per day
-- `daily-build-prompt.md` — reusable prompt for the 30-day roadmap
-- `graduation-reflection.md` — 200-word graduation reflection
-- `farewell-message.md` — farewell message from Claude
-- `skills-evolution-infographic.html` — single-file HTML infographic, 60-day skills arc culminating in the capstone
-- `certificate.html` / `certificate-of-completion.pdf` — printable Certificate of Completion, AB Talks branded
-- `portfolio-assets.md` — resume bullets, interview talking points, demo script, GitHub metadata, README checklist
-- `linkedin_post.txt` / `first_comment.txt` — graduation LinkedIn post and fixed first comment
+Today's milestone from the growth plan: [paste today's numbered milestone here]
 
-## Key Learnings (Days 51-60)
+Before building, remind me if this milestone touches shared state or lookup tables, since our build has one shared script scope at runtime and duplicate `const` declarations across files collide silently. If it does, centralize the shared pieces in `schema.js` rather than duplicating them.
 
-01. Governance has to be architecture, not a disclaimer, clinician sign-off was load-bearing in the code from day one.
-02. Engagement data is a design signal, the Day 54 content correction only happened because the numbers were watched, not assumed fine.
-03. Programmatic QA catches what visual review misses, the Day 58 hardening pass proved that outright.
+Build only today's milestone. Do not scope-creep into tomorrow's item. When done:
 
-## Outstanding before public release
+1. Show me the complete file(s) changed, with exact paths.
+2. Run our standard Playwright QA (console errors, warnings, pageerrors, overflow checks) at both 1440px and 390px, and in both EN and AR.
+3. Confirm no em dashes anywhere in any new text, code comments, or UI copy.
+4. Confirm any new user-facing data is either real and cited or clearly labeled synthetic.
+5. Tell me in one sentence what tomorrow's milestone will build on top of today's work.
 
-- [ ] Provide deployed application URL and GitHub repository URL
-- [ ] Run the actual five-lens review against the live repo
-- [ ] Confirm README against the checklist in `portfolio-assets.md`
-- [ ] Tag v1.0.0 in the real repository
-- [ ] Confirm Abdul Ghani's LinkedIn handle for precise @ tagging
+If today's milestone is inherently technical, also give me one sentence translating it into what it means for a COO or CMIO reader, in case it becomes LinkedIn content later.
+
+---
